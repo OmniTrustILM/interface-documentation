@@ -915,7 +915,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:

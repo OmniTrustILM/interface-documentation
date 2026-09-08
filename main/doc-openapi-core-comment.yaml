@@ -27,8 +27,12 @@ paths:
       tags:
       - Comments
       summary: List comment threads for an object
-      description: Pages over thread roots; each root carries its reply count. Replies
-        are paged separately.
+      description: "Pages over thread roots in creation order, oldest first unless\
+        \ the direction says otherwise; each root carries its reply count. Replies\
+        \ are paged separately. Pass anchorUuid, a thread root, to open the page holding\
+        \ that thread in the requested direction, in place of the requested page;\
+        \ an anchor that no longer exists or is not a root of this object leaves the\
+        \ requested page unchanged. A reply is anchored on the replies listing."
       operationId: listComments
       parameters:
       - name: resource
@@ -44,6 +48,20 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: anchorUuid
+        in: query
+        description: Thread root whose page replaces the requested one; ignored when
+          it no longer exists or is not a root of this object
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: sortDirection
+        in: query
+        description: Direction of the ordering
+        required: false
+        schema:
+          $ref: "#/components/schemas/SortDirection"
       - name: itemsPerPage
         in: query
         description: Number of entries per page
@@ -293,7 +311,11 @@ paths:
       tags:
       - Comments
       summary: List replies of a comment thread
-      description: Pages over the thread root's replies in creation order.
+      description: "Pages over the thread root's replies in creation order, oldest\
+        \ first unless the direction says otherwise. Pass anchorUuid to open the page\
+        \ holding a particular reply in the requested direction, in place of the requested\
+        \ page; an anchor that no longer exists or is not a reply of this thread leaves\
+        \ the requested page unchanged."
       operationId: listReplies
       parameters:
       - name: uuid
@@ -303,6 +325,20 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: anchorUuid
+        in: query
+        description: Reply whose page replaces the requested one; ignored when it
+          no longer exists or is not a reply of this thread
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: sortDirection
+        in: query
+        description: Direction of the ordering
+        required: false
+        schema:
+          $ref: "#/components/schemas/SortDirection"
       - name: itemsPerPage
         in: query
         description: Number of entries per page
@@ -593,6 +629,13 @@ components:
       required:
       - name
       - uuid
+    SortDirection:
+      type: string
+      default: asc
+      description: Direction of the ordering
+      enum:
+      - asc
+      - desc
     CommentResponseDto:
       type: object
       properties:

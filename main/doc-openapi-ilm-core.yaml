@@ -2260,6 +2260,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "400":
           description: Bad Request
           content:
@@ -2295,6 +2307,18 @@ paths:
               $ref: "#/components/schemas/TokenInstanceRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Token Instance Updated
           content:
@@ -2302,7 +2326,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -2384,6 +2408,18 @@ paths:
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Token Instance Status Reloaded from Connector
           content:
@@ -2460,18 +2496,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
     put:
       tags:
       - Token Profile Management
@@ -2497,14 +2521,14 @@ paths:
               $ref: "#/components/schemas/EditTokenProfileRequestDto"
         required: true
       responses:
-        "204":
+        "200":
           description: Token Profile updated
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/TokenProfileDetailDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -2516,6 +2540,18 @@ paths:
               - Error Message 2
         "404":
           description: Token Profile or Token instance not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
           content:
             application/json:
               schema:
@@ -2536,18 +2572,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
     delete:
       tags:
       - Token Profile Management
@@ -2591,18 +2615,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/usages:
     put:
       tags:
@@ -2653,18 +2665,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/tokens/{tokenInstanceUuid}/keys/{uuid}/usages:
     put:
       tags:
@@ -2750,18 +2750,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/timeQualityConfigurations/{uuid}:
     get:
       tags:
@@ -2983,6 +2971,18 @@ paths:
               $ref: "#/components/schemas/SigningProfileRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Signing Profile updated
           content:
@@ -4946,6 +4946,18 @@ paths:
               $ref: "#/components/schemas/EditKeyRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Key updated
           content:
@@ -5012,6 +5024,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key deleted
         "404":
@@ -5538,7 +5562,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/LocationDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -11306,6 +11330,18 @@ paths:
               $ref: "#/components/schemas/TokenInstanceRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "201":
           description: Token Instance Created Successfully
           content:
@@ -11313,7 +11349,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -11371,8 +11407,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TokenProfileDetailDto"
+        "409":
+          description: Already Exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -11384,6 +11426,18 @@ paths:
               - Error Message 2
         "404":
           description: Token Instance not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
           content:
             application/json:
               schema:
@@ -11404,18 +11458,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{type}:
     post:
       tags:
@@ -11448,8 +11490,102 @@ paths:
               $ref: "#/components/schemas/KeyRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "201":
           description: Cryptographic Key Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyDetailDto"
+        "404":
+          description: Token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{type}/import:
+    post:
+      tags:
+      - Cryptographic Key Management
+      summary: Import a key
+      description: |
+        Import a key from an uploaded file into the token profile.
+
+        The file travels base64-encoded in `file`, like every upload in the platform, and is held in memory rather
+        than written anywhere; it is never echoed in an error, since it carries key material. `inputPassphrase`
+        opens the uploaded file and is absent for a file that carries no protection of its own; the platform
+        re-protects the material before it reaches the provider, so neither the file nor that passphrase is ever
+        forwarded.
+
+        Certificates found alongside a key are not imported here. Use the certificate import operation for a file
+        that carries both.
+      operationId: importKey
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: UUID of the Token Instance
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: UUID of the Token Profile
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: Type of the key to be imported
+        required: true
+        schema:
+          $ref: "#/components/schemas/KeyRequestType"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyImportRequestDto"
+        required: true
+      responses:
+        "201":
+          description: Key imported
           content:
             application/json:
               schema:
@@ -11807,6 +11943,18 @@ paths:
               $ref: "#/components/schemas/SigningProfileRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "201":
           description: New Signing Profile added
           content:
@@ -12669,6 +12817,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/sign:
     post:
       tags:
@@ -12742,6 +12902,18 @@ paths:
           description: Internal Server Error
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
           content:
             application/json:
               schema:
@@ -12823,6 +12995,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/decrypt:
     post:
       tags:
@@ -12900,6 +13084,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/operations/tokens/{tokenInstanceUuid}/random:
     post:
       tags:
@@ -12955,6 +13151,18 @@ paths:
           description: Internal Server Error
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
           content:
             application/json:
               schema:
@@ -13548,6 +13756,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys deleted
         "400":
@@ -13562,6 +13782,106 @@ paths:
           description: Forbidden
           content:
             application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/keys/{uuid}/items/{keyItemUuid}/export:
+    post:
+      tags:
+      - Cryptographic Key Management
+      summary: Export a key
+      description: |
+        Export a key item as a protected PKCS#8 file in PEM form.
+
+        This is a POST because the passphrase travels in the body: a URL is recorded by proxies, browser history
+        and access logs, so a passphrase must never appear in one. The response is not cacheable and carries a
+        sanitized download filename.
+
+        Only a key created or imported as exportable can be exported.
+      operationId: exportKey
+      parameters:
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyExportRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Key exported
+          headers:
+            Cache-Control:
+              description: "`no-store, no-cache`, so the file is not written to any\
+                \ cache"
+              required: true
+              style: simple
+              schema:
+                type: string
+            X-Content-Type-Options:
+              description: '`nosniff`'
+              required: true
+              style: simple
+              schema:
+                type: string
+            Content-Disposition:
+              description: "Attachment with a sanitized filename, as RFC 6266 describes"
+              required: true
+              style: simple
+              schema:
+                type: string
+            Pragma:
+              description: "`no-cache`, for caches that predate `Cache-Control`"
+              required: true
+              style: simple
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Key item not found
+          content:
+            application/octet-stream:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/octet-stream:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/octet-stream:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/octet-stream:
               schema:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
@@ -14402,7 +14722,7 @@ paths:
         "200":
           description: Credentials deleted
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -15133,7 +15453,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -15507,8 +15827,12 @@ paths:
       tags:
       - Comments
       summary: List comment threads for an object
-      description: Pages over thread roots; each root carries its reply count. Replies
-        are paged separately.
+      description: "Pages over thread roots in creation order, oldest first unless\
+        \ the direction says otherwise; each root carries its reply count. Replies\
+        \ are paged separately. Pass anchorUuid, a thread root, to open the page holding\
+        \ that thread in the requested direction, in place of the requested page;\
+        \ an anchor that no longer exists or is not a root of this object leaves the\
+        \ requested page unchanged. A reply is anchored on the replies listing."
       operationId: listComments
       parameters:
       - name: resource
@@ -15524,6 +15848,20 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: anchorUuid
+        in: query
+        description: Thread root whose page replaces the requested one; ignored when
+          it no longer exists or is not a root of this object
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: sortDirection
+        in: query
+        description: Direction of the ordering
+        required: false
+        schema:
+          $ref: "#/components/schemas/SortDirection"
       - name: itemsPerPage
         in: query
         description: Number of entries per page
@@ -15852,6 +16190,102 @@ paths:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: No Content
+  /v1/certificates/{uuid}/keystore:
+    post:
+      tags:
+      - Certificate Inventory
+      summary: Download a certificate with its private key
+      description: |
+        Download a certificate, its chain and its private key as one PKCS#12 file.
+
+        This is a POST because the passphrase travels in the body: a URL is recorded by proxies, browser history
+        and access logs, so a passphrase must never appear in one. The response is not cacheable and carries a
+        sanitized download filename.
+
+        It is a separate operation from the certificate content download, which serves certificates only. Only a
+        key created or imported as exportable can be included.
+      operationId: downloadKeystore
+      parameters:
+      - name: uuid
+        in: path
+        description: Certificate UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateKeystoreRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Keystore downloaded
+          headers:
+            Cache-Control:
+              description: "`no-store, no-cache`, so the file is not written to any\
+                \ cache"
+              required: true
+              style: simple
+              schema:
+                type: string
+            X-Content-Type-Options:
+              description: '`nosniff`'
+              required: true
+              style: simple
+              schema:
+                type: string
+            Content-Disposition:
+              description: "Attachment with a sanitized filename, as RFC 6266 describes"
+              required: true
+              style: simple
+              schema:
+                type: string
+            Pragma:
+              description: "`no-cache`, for caches that predate `Cache-Control`"
+              required: true
+              style: simple
+              schema:
+                type: string
+          content:
+            application/x-pkcs12:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Not Found
+          content:
+            application/x-pkcs12:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/x-pkcs12:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/x-pkcs12:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/x-pkcs12:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/certificates/upload:
     post:
       tags:
@@ -15934,6 +16368,82 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/certificates/import:
+    post:
+      tags:
+      - Certificate Inventory
+      summary: Import certificates and keys from an uploaded file
+      description: |
+        Import named entries from an uploaded file.
+
+        The file travels base64-encoded in `file`, like every upload in the platform, and is held in memory rather
+        than written anywhere; it is never echoed in an error, since it may carry key material. Every entry to
+        import is named, and nothing else in the file is touched: an import never takes in material the caller did
+        not ask for.
+
+        An entry reference is derived from the entry's own content — a certificate fingerprint, a public key
+        fingerprint, or a digest of the protected key — so naming one selects that content, not a position in a
+        file. A caller showing a user what is inside reads the file first with `POST /v1/inspections` and names
+        what the user chose. A caller that already knows what it is importing computes the reference itself and
+        imports in one call.
+
+        Each entry says where its own key material goes, because a file can hold entries of different key types
+        and each key type has its own provider attribute schema.
+
+        Entries succeed or fail on their own and the response reports the outcome of each. Each entry carries its
+        own `importId`, so repeating a request returns what already succeeded and retries only what did not: a
+        caller recovering from a lost or partial response resends the same body and needs to work out nothing.
+      operationId: importCertificates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateImportRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Selected entries imported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateImportResponseDto"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "409":
+          description: '`RESOURCE_ALREADY_EXISTS` — an entry''s `importId` was reused
+            for an import of something else'
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "422":
+          description: |
+            - `VALIDATION_FAILED` — the body is readable but breaks a field rule, such as a named entry the
+              file does not carry, key material with nowhere to go, or two entries sharing an `importId`.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/certificates/delete:
     post:
       tags:
@@ -16001,6 +16511,18 @@ paths:
               $ref: "#/components/schemas/ClientCertificateRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: "Certificate request submit, certificate created and ready\
             \ to be issued"
@@ -16449,7 +16971,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -18156,6 +18678,18 @@ paths:
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Token Instance Deactivated
         "404":
@@ -18202,6 +18736,18 @@ paths:
                 $ref: "#/components/schemas/RequestAttribute"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Token Instance Activated
         "404":
@@ -18270,18 +18816,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{uuid}/disable:
     patch:
       tags:
@@ -18326,18 +18860,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/tokens/{tokenInstanceUuid}/sync:
     patch:
       tags:
@@ -18352,6 +18874,18 @@ paths:
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key sync completed
         "404":
@@ -18528,6 +19062,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys destroyed
         "404":
@@ -18644,18 +19190,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/tokenProfiles/disable:
     patch:
       tags:
@@ -18693,18 +19227,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/signingProfiles/{uuid}/protocols/tsp/deactivate:
     patch:
       tags:
@@ -20019,6 +20541,61 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/keys/{uuid}/items/{keyItemUuid}/export/disable:
+    patch:
+      tags:
+      - Cryptographic Key Management
+      summary: Disable export for a key item
+      description: |
+        Make a key item non-exportable, by setting its `exportable` flag to false.
+
+        There is no operation for the other direction. A key created or imported as non-exportable carries the
+        guarantee that its material never leaves, and an operation lifting the flag would void that guarantee for
+        every key that already exists. The technologies behind the providers set extractability once, at creation,
+        for the same reason. A key that has to be exportable is created or imported as exportable.
+      operationId: disableKeyExport
+      parameters:
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Key item is no longer exportable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyItemDetailDto"
+        "404":
+          description: Key item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/keys/{uuid}/enable:
     patch:
       tags:
@@ -20151,6 +20728,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys destroyed
         "404":
@@ -20315,6 +20904,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys Items destroyed
         "400":
@@ -20459,6 +21060,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys destroyed
         "404":
@@ -21912,7 +22525,7 @@ paths:
         "204":
           description: SCEP deactivated
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -25096,22 +25709,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
-  /v1/tokens/{uuid}/tokenProfiles/attributes:
+  /v1/tokens/{uuid}/activate/attributes:
     get:
       tags:
       - Token Instance Management
-      summary: List Token Profile Attributes
-      operationId: listTokenProfileAttributes
+      summary: List Token activation Attributes
+      operationId: listTokenInstanceActivationAttributes
       parameters:
       - name: uuid
         in: path
-        description: Token instance UUID
+        description: Token Instance UUID
         required: true
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
-          description: Token Profile Attributes retrieved
+          description: Token activation Attributes retrieved
           content:
             application/json:
               schema:
@@ -25140,22 +25765,39 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-  /v1/tokens/{uuid}/activate/attributes:
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{type}/import/attributes:
     get:
       tags:
-      - Token Instance Management
-      summary: List Token activation Attributes
-      operationId: listTokenInstanceActivationAttributes
+      - Cryptographic Key Management
+      summary: List key import attributes
+      description: |
+        Attributes the provider behind this token profile requires to import a key of the given type.
+
+        Present so a caller can render the import form before it uploads anything. The result is the provider's own
+        schema and never contains resolved credentials or secret values.
+      operationId: listImportKeyAttributes
       parameters:
-      - name: uuid
+      - name: tokenInstanceUuid
         in: path
-        description: Token Instance UUID
+        description: UUID of the Token Instance
         required: true
         schema:
           type: string
+      - name: tokenProfileUuid
+        in: path
+        description: UUID of the Token Profile
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: Type of the key to be imported
+        required: true
+        schema:
+          $ref: "#/components/schemas/KeyRequestType"
       responses:
         "200":
-          description: Token activation Attributes retrieved
+          description: Import attribute schema retrieved
           content:
             application/json:
               schema:
@@ -25163,7 +25805,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BaseAttributeDto"
         "404":
-          description: Token Instance not found
+          description: Token profile not found
           content:
             application/json:
               schema:
@@ -25210,6 +25852,18 @@ paths:
         schema:
           $ref: "#/components/schemas/KeyRequestType"
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: List of Attributes retrieved
           content:
@@ -25220,6 +25874,119 @@ paths:
                   $ref: "#/components/schemas/BaseAttributeDto"
         "404":
           description: Token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/keyUsages:
+    get:
+      tags:
+      - Token Profile Management
+      summary: List supported token profile key usages
+      description: Returns the key usages supported for the specified token instance
+      operationId: listSupportedTokenProfileKeyUsages
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Supported key usages retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyUsage"
+        "404":
+          description: Token Instance not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/attributes:
+    get:
+      tags:
+      - Token Profile Management
+      summary: List Token Profile Attributes
+      operationId: listTokenProfileAttributes
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token instance UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Token Profile Attributes retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: Token Instance not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
           content:
             application/json:
               schema:
@@ -25322,6 +26089,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key deleted
         "404":
@@ -25459,6 +26238,71 @@ paths:
         "500":
           description: Internal Server Error
       deprecated: true
+  /v1/tokens/{connectorUuid}/attributes:
+    get:
+      tags:
+      - Token Instance Management
+      summary: List available token attributes for the specified connector
+      operationId: listTokenAttributes
+      parameters:
+      - name: connectorUuid
+        in: path
+        description: Connector UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: kind
+        in: query
+        description: Connector kind. Required for connectors based on version 1 of
+          the connector framework; omit for connectors based on version 2 (NG) of
+          the connector framework.
+        required: false
+        schema:
+          type: string
+      responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "200":
+          description: Attribute information retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: Connector not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/tokenProfiles:
     get:
       tags:
@@ -25496,18 +26340,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
     delete:
       tags:
       - Token Profile Management
@@ -25529,7 +26361,7 @@ paths:
         "204":
           description: Token Profiles deleted
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -25555,18 +26387,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/timeQualityConfigurations/{uuid}/signingProfiles:
     get:
       tags:
@@ -26069,6 +26889,18 @@ paths:
           type: string
           format: uuid
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Formatting attribute descriptors retrieved
           content:
@@ -26089,6 +26921,102 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/signingProfiles/signatureFormattingConnectors/{connectorUuid}/contentSigningFormattingAttributes:
+    get:
+      tags:
+      - Signing Profile Management
+      summary: Get content signing formatting attribute descriptors from a Signature
+        Formatting Provider
+      description: |-
+        Returns the formatting attribute descriptors a content signing Signing Profile can reach,
+        merged by name into one flat set carrying the connector's default values.
+        family and maxLevel together name the workflow the Signing Profile will run, and the connector
+        must be able to serve it; the descriptor set follows from maxLevel,
+        so family does not narrow the returned descriptors.
+        The signingProfileUuid parameter is used for authorization only and does not affect the
+        returned descriptors.
+      operationId: listContentSigningFormattingConnectorAttributes
+      parameters:
+      - name: connectorUuid
+        in: path
+        description: Signature Formatting Provider UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: family
+        in: query
+        description: Signature family the Signing Profile produces
+        required: true
+        schema:
+          $ref: "#/components/schemas/SignatureFamily"
+      - name: maxLevel
+        in: query
+        description: Highest signature level the Signing Profile may reach
+        required: true
+        schema:
+          $ref: "#/components/schemas/SignatureLevel"
+      - name: signingProfileUuid
+        in: query
+        description: Signing Profile UUID — used for authorization purposes only
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "200":
+          description: Formatting attribute descriptors retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "401":
           description: Unauthorized
         "403":
@@ -26770,7 +27698,7 @@ paths:
         "204":
           description: RA Profiles deleted
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -27027,6 +27955,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   ? /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/cipher/{algorithm}/attributes
   : get:
       tags:
@@ -27095,6 +28035,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/operations/tokens/{tokenInstanceUuid}/random/attributes:
     get:
       tags:
@@ -27135,6 +28087,18 @@ paths:
           description: Internal Server Error
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
           content:
             application/json:
               schema:
@@ -27363,6 +28327,61 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/keys/{uuid}/items/{keyItemUuid}/export/attributes:
+    get:
+      tags:
+      - Cryptographic Key Management
+      summary: List key export attributes
+      description: |
+        Attributes the provider holding this key requires to export it.
+
+        Present so a caller can render the export form before it asks for the key. The result is the provider's own
+        schema and never contains resolved credentials or secret values.
+      operationId: listExportKeyAttributes
+      parameters:
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Export attribute schema retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: Key item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/keys/search:
     get:
       tags:
@@ -27506,6 +28525,50 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "500":
+          description: Internal Server Error
+  /v1/groups/{uuid}/users:
+    get:
+      tags:
+      - Group management
+      summary: Get Group Users
+      operationId: getGroupUsers
+      parameters:
+      - name: uuid
+        in: path
+        description: Group UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Group users retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NameAndUuidDto"
+        "404":
+          description: Group not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
   /v1/enums:
@@ -29035,7 +30098,11 @@ paths:
       tags:
       - Comments
       summary: List replies of a comment thread
-      description: Pages over the thread root's replies in creation order.
+      description: "Pages over the thread root's replies in creation order, oldest\
+        \ first unless the direction says otherwise. Pass anchorUuid to open the page\
+        \ holding a particular reply in the requested direction, in place of the requested\
+        \ page; an anchor that no longer exists or is not a reply of this thread leaves\
+        \ the requested page unchanged."
       operationId: listReplies
       parameters:
       - name: uuid
@@ -29045,6 +30112,20 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: anchorUuid
+        in: query
+        description: Reply whose page replaces the requested one; ignored when it
+          no longer exists or is not a reply of this thread
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: sortDirection
+        in: query
+        description: Direction of the ordering
+        required: false
+        schema:
+          $ref: "#/components/schemas/SortDirection"
       - name: itemsPerPage
         in: query
         description: Number of entries per page
@@ -29605,6 +30686,18 @@ paths:
           type: string
           format: uuid
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: CSR Generation attributes retrieved
           content:
@@ -29624,18 +30717,6 @@ paths:
               example:
               - Error Message 1
               - Error Message 2
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
         "400":
           description: Bad Request
           content:
@@ -31411,18 +32492,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/scepProfiles/delete:
     delete:
       tags:
@@ -31539,6 +32608,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key Items deleted
         "400":
@@ -31585,7 +32666,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -31653,7 +32734,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -31870,7 +32951,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -31985,7 +33066,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -33640,6 +34721,8 @@ components:
       - stateless
       - openMetrics
       - asynchronous
+      - keyImport
+      - keyExport
       - secretVersioning
       - secretRotation
       - contentSigning
@@ -34152,14 +35235,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -35799,7 +36882,9 @@ components:
           description: UUID of the Connector
         kind:
           type: string
-          description: Connector Kind
+          description: Connector kind. Required for connectors based on version 1
+            of the connector framework; omitted for connectors based on version 2
+            (NG) of the connector framework.
         customAttributes:
           type: array
           description: Custom Attributes
@@ -35814,8 +36899,24 @@ components:
       - attributes
       - connectorUuid
       - customAttributes
-      - kind
       - name
+    KeyTransferAvailabilityDto:
+      type: object
+      description: Whether key import and export are available
+      properties:
+        importAvailable:
+          type: boolean
+          default: false
+          description: Whether key material can be imported into the token or token
+            profile this belongs to
+        exportAvailable:
+          type: boolean
+          default: false
+          description: Whether key material can be exported from the token or token
+            profile this belongs to
+      required:
+      - exportAvailable
+      - importAvailable
     MetadataResponseDto:
       type: object
       description: Metadata response attributes with their source connector
@@ -35971,7 +37072,9 @@ components:
           description: Connector UUID
         kind:
           type: string
-          description: Connector Kind
+          description: Connector kind. Required for connectors based on version 1
+            of the connector framework; omitted for connectors based on version 2
+            (NG) of the connector framework.
         status:
           $ref: "#/components/schemas/TokenInstanceStatusDetailDto"
           description: Status Of the Token Instance
@@ -35994,9 +37097,13 @@ components:
           description: Custom Attributes for the Token Instance
           items:
             $ref: "#/components/schemas/ResponseAttribute"
+        keyTransfer:
+          $ref: "#/components/schemas/KeyTransferAvailabilityDto"
+          description: "Whether key material can be imported into or exported from\
+            \ this token, meaning it is available on at least one of its token profiles.\
+            \ The key types each profile accepts are reported on that profile."
       required:
       - attributes
-      - kind
       - name
       - status
       - tokenProfiles
@@ -36070,6 +37177,54 @@ components:
       - decrypt
       - wrap
       - unwrap
+    KeyAlgorithm:
+      type: string
+      enum:
+      - RSA
+      - ECDSA
+      - FALCON
+      - ML-DSA
+      - SLH-DSA
+      - ML-KEM
+      - CRYSTALS-Dilithium
+      - SPHINCS+
+      - Unknown
+    KeyTransferCapabilityDto:
+      type: object
+      description: "Availability of key import and export for a token profile, and\
+        \ the key types each supports"
+      properties:
+        importAvailable:
+          type: boolean
+          default: false
+          description: Whether key material can be imported into the token or token
+            profile this belongs to
+        exportAvailable:
+          type: boolean
+          default: false
+          description: Whether key material can be exported from the token or token
+            profile this belongs to
+        importableKeyTypes:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/KeyAlgorithm"
+            uniqueItems: true
+          description: "Algorithms that can be imported, keyed by key type code. Empty\
+            \ when import is not available."
+        exportableKeyTypes:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/KeyAlgorithm"
+            uniqueItems: true
+          description: "Algorithms that can be exported, keyed by key type code. Empty\
+            \ when export is not available."
+      required:
+      - exportAvailable
+      - importAvailable
     TokenProfileDetailDto:
       type: object
       properties:
@@ -36113,6 +37268,10 @@ components:
           description: Usages for the Keys assoiated to the profile
           items:
             $ref: "#/components/schemas/KeyUsage"
+        keyTransfer:
+          $ref: "#/components/schemas/KeyTransferCapabilityDto"
+          description: "Whether key material can be imported into or exported from\
+            \ this token profile, and for which key types"
       required:
       - attributes
       - enabled
@@ -37305,12 +38464,6 @@ components:
           description: "Secondary brand color, used as an accent"
           examples:
           - "#00A3E0"
-          pattern: "^#[0-9a-fA-F]{6}$"
-        tertiaryColor:
-          type: string
-          description: "Tertiary brand color, used as an additional accent"
-          examples:
-          - "#7B61FF"
           pattern: "^#[0-9a-fA-F]{6}$"
         backgroundColor:
           type: string
@@ -38853,18 +40006,6 @@ components:
       required:
       - description
       - name
-    KeyAlgorithm:
-      type: string
-      enum:
-      - RSA
-      - ECDSA
-      - FALCON
-      - ML-DSA
-      - SLH-DSA
-      - ML-KEM
-      - CRYSTALS-Dilithium
-      - SPHINCS+
-      - Unknown
     KeyAssociationDto:
       type: object
       properties:
@@ -39028,9 +40169,15 @@ components:
         complianceStatus:
           $ref: "#/components/schemas/ComplianceStatus"
           description: Key compliance status
+        exportable:
+          type: boolean
+          default: false
+          description: Whether this key may be exported. Set when the key is created
+            or imported and never raised afterwards; it can only be lowered to false.
       required:
       - complianceStatus
       - enabled
+      - exportable
       - format
       - keyAlgorithm
       - length
@@ -42497,9 +43644,70 @@ components:
           type: boolean
           default: false
           description: "Enabled status of created key. True = Enabled, False = Disabled"
+        exportable:
+          type: boolean
+          default: false
+          description: |
+            Whether the created key may later be exported. Defaults to false, and false is final: a key created
+            non-exportable can never become exportable. It can only be requested where the token profile reports key
+            export as available for the key type.
       required:
       - attributes
       - description
+      - name
+    KeyImportRequestDto:
+      type: object
+      description: |
+        The key file to import and the metadata of the key it becomes. The key type is taken from the request path.
+      properties:
+        file:
+          type: string
+          format: byte
+          description: |
+            Content of the uploaded file, base64-encoded: a container such as PKCS#12 or PEM, a standalone key, or a
+            certificate. At most 5 MiB decoded. The platform holds it in memory only, never writes it anywhere and
+            never echoes it in an error, since the file may carry key material.
+          maxLength: 6990508
+          writeOnly: true
+        name:
+          type: string
+          description: Name of the imported key
+          minLength: 1
+        description:
+          type: string
+          description: Description of the imported key
+        inputPassphrase:
+          type: string
+          format: password
+          description: |
+            Passphrase that opens the uploaded file. Absent for a file that carries no protection of its own, such as
+            an unencrypted PEM private key. It opens only the uploaded file: the platform re-protects the material
+            before it reaches a provider, so this value never leaves the platform.
+          writeOnly: true
+        exportable:
+          type: boolean
+          default: false
+          description: |
+            Whether the imported key may later be exported. Defaults to false, and false is final. It can only be
+            requested where the token profile reports key export as available for the key type.
+        importAttributes:
+          type: array
+          description: "Attributes required by the provider to import a key, from\
+            \ the import attribute schema"
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        customAttributes:
+          type: array
+          description: Custom attributes for the imported key
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        groupUuids:
+          type: array
+          description: UUIDs of the groups to associate with the imported key
+          items:
+            type: string
+      required:
+      - file
       - name
     PaginationResponseDtoTimeQualityConfigurationListDto:
       type: object
@@ -43483,6 +44691,26 @@ components:
       - pageNumber
       - totalItems
       - totalPages
+    KeyExportRequestDto:
+      type: object
+      description: Passphrase and provider options for exporting a key
+      properties:
+        passphrase:
+          type: string
+          format: password
+          description: "Passphrase that will protect the file. At least 12 characters,\
+            \ counted as code points, in Unicode normalization form C: the file leaves\
+            \ the platform and its protection is only as good as this value."
+          minLength: 12
+          writeOnly: true
+        exportAttributes:
+          type: array
+          description: "Attributes required by the provider to export a key, from\
+            \ the export attribute schema"
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - passphrase
     EntityInstanceRequestDto:
       type: object
       properties:
@@ -44225,6 +45453,27 @@ components:
       - pageNumber
       - totalItems
       - totalPages
+    CertificateKeystoreRequestDto:
+      type: object
+      description: Passphrase and provider options for downloading a certificate with
+        its private key
+      properties:
+        passphrase:
+          type: string
+          format: password
+          description: "Passphrase that will protect the file. At least 12 characters,\
+            \ counted as code points, in Unicode normalization form C: the file leaves\
+            \ the platform and its protection is only as good as this value."
+          minLength: 12
+          writeOnly: true
+        exportAttributes:
+          type: array
+          description: "Attributes required by the provider to export a key, from\
+            \ the export attribute schema"
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - passphrase
     UploadCertificateRequestDto:
       type: object
       properties:
@@ -44248,6 +45497,262 @@ components:
           description: Fingerprint of the certificate
       required:
       - fingerprint
+    CertificateEntryKeyDestinationDto:
+      type: object
+      description: Token profile and naming for key material imported with a certificate
+      properties:
+        tokenProfileUuid:
+          type: string
+          description: Token profile that will hold the imported key material
+          minLength: 1
+        keyName:
+          type: string
+          description: Name for the imported key. The platform derives one from the
+            certificate when this is absent.
+        exportable:
+          type: boolean
+          default: false
+          description: |
+            Whether the imported key may later be exported. Defaults to false, and false is final. It can only be
+            requested where the token profile reports key export as available for the key type.
+        importAttributes:
+          type: array
+          description: "Attributes required by the provider to import a key, from\
+            \ the import attribute schema"
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        customAttributes:
+          type: array
+          description: Custom attributes for the imported key. A key that arrives
+            inside a container carries the same custom attributes as one imported
+            on its own.
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - tokenProfileUuid
+    CertificateImportEntryDto:
+      type: object
+      description: An entry to import and the destination of its key material
+      properties:
+        entryReference:
+          type: string
+          description: "Reference of the entry to import, derived from the entry's\
+            \ own content. Read the file first to learn it, or compute it from content\
+            \ already held."
+          minLength: 1
+        importId:
+          type: string
+          description: |
+            Identifier of this entry's import, so a retry cannot import the same entry twice.
+
+            A replay is the same import only when this entry's reference and destination match the first submission,
+            and the file carries the same content for it. A replay returns what that entry produced the first time;
+            reuse with anything else changed is refused.
+
+            The identifier is per entry rather than per request because entries succeed and fail on their own.
+            Repeating a request whose entries partly failed returns what already succeeded and retries only what did
+            not, without the caller having to work out which is which.
+          maxLength: 256
+          minLength: 1
+        keyDestination:
+          $ref: "#/components/schemas/CertificateEntryKeyDestinationDto"
+          description: "Where this entry's key material is stored. Required when the\
+            \ entry carries key material, and refused for an entry that carries only\
+            \ a certificate."
+      required:
+      - entryReference
+      - importId
+    CertificateImportRequestDto:
+      type: object
+      description: "The file to import from, the entries to import, and where their\
+        \ key material goes"
+      properties:
+        file:
+          type: string
+          format: byte
+          description: |
+            Content of the uploaded file, base64-encoded: a container such as PKCS#12 or PEM, a standalone key, or a
+            certificate. At most 5 MiB decoded. The platform holds it in memory only, never writes it anywhere and
+            never echoes it in an error, since the file may carry key material.
+          maxLength: 6990508
+          writeOnly: true
+        passphrase:
+          type: string
+          format: password
+          description: Passphrase that opens the uploaded file. Absent for a file
+            that carries no protection of its own.
+          writeOnly: true
+        entries:
+          type: array
+          description: |
+            Entries to import. Nothing else in the file is touched, so an import can never take in material the caller
+            did not ask for.
+
+            An entry is named by the reference the inspection reported, which is derived from the entry's own content:
+            a certificate fingerprint, a public key fingerprint, or a digest of the protected key. A caller that
+            already knows what it is importing can compute the reference itself and never read the file first.
+          items:
+            $ref: "#/components/schemas/CertificateImportEntryDto"
+          minItems: 1
+        customAttributes:
+          type: array
+          description: Custom attributes for the imported certificates
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - entries
+      - file
+    ErrorCode:
+      type: string
+      enum:
+      - VALIDATION_FAILED
+      - RESOURCE_NOT_FOUND
+      - RESOURCE_ALREADY_EXISTS
+      - REQUEST_TIMEOUT
+      - OPERATION_NOT_SUPPORTED
+      - ATTRIBUTES_ERROR
+      - SERVICE_UNAVAILABLE
+      - INTERNAL_SERVER_ERROR
+      - BAD_REQUEST
+      - UNAUTHORIZED
+      - FORBIDDEN
+      - RATE_LIMIT_EXCEEDED
+      - GATEWAY_TIMEOUT
+      - UPSTREAM_ERROR
+      - CREDENTIAL_INVALID
+      - POLICY_VIOLATION
+      - OPERATION_PAST_POINT_OF_NO_RETURN
+      - OPERATION_NOT_TRACKED
+      - ATTRIBUTE_DEFINITION_NOT_FOUND
+      - DOCUMENT_MALFORMED
+      - DOCUMENT_TOO_LARGE
+      - SIGNATURE_NOT_FOUND
+      - PARAMETER_UNSUPPORTED
+      - CONTEXT_MISMATCH
+      - CSR_MALFORMED
+      - REVOCATION_NOT_ALLOWED
+      - REGISTRATION_NOT_FOUND
+      - RENEWAL_SOURCE_NOT_FOUND
+      - CSR_SUBJECT_MISMATCH
+      - CERTIFICATE_MISMATCH
+      - CHECKPOINT_LOST
+      - KEY_TYPE_NOT_IMPORTABLE
+      - KEY_TYPE_NOT_EXPORTABLE
+      - KEY_MATERIAL_MISMATCH
+      - KEY_DECRYPTION_FAILED
+      - EXPORTABLE_NOT_SUPPORTED
+      - KEY_NOT_EXPORTABLE
+    ProblemDetailExtended:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+          description: RFC 9457 type URI identifying the problem type
+          example: https://docs.otilm.com/problems/common/validation-failed
+        title:
+          type: string
+          description: Short human-readable summary of the problem type
+          example: Validation failed
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code (MUST match the actual response code)
+          example: 422
+          maximum: 599
+          minimum: 100
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          example: One or more fields failed validation.
+        instance:
+          type: string
+          format: uri
+          description: "URI reference identifying the occurrence (e.g., request path\
+            \ or operation ID)."
+          example: https://api.example.org/foo/bar/123
+        properties:
+          type: object
+          additionalProperties: {}
+          description: Generic map of properties that are not known ahead of time
+        errorCode:
+          $ref: "#/components/schemas/ErrorCode"
+          description: Application specific error code
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of when the error occurred (RFC 3339 format)
+          examples:
+          - 2026-01-22T15:10:20.123Z
+          - 2026-01-22T15:10:20.123+02:00
+        correlationId:
+          type: string
+          description: Correlation ID for tracking the request. Trace value from X-Request-Id
+            or W3C Trace Context.
+        retryable:
+          type: boolean
+          description: Indicates if the operation that caused the error can be retried
+            safely
+        retryAfterSeconds:
+          type: integer
+          format: int32
+          description: "Backoff hint, number of seconds after which the client can\
+            \ retry the operation. Aligns with Retry-After header."
+      required:
+      - errorCode
+      - retryable
+      - status
+      - timestamp
+      - type
+    CertificateImportResponseDto:
+      type: object
+      description: Outcome of importing the selected entries
+      properties:
+        results:
+          type: array
+          description: "One outcome per selected entry, in the order they were selected"
+          items:
+            $ref: "#/components/schemas/CertificateImportResultDto"
+      required:
+      - results
+    CertificateImportResultDto:
+      type: object
+      description: Outcome of importing one entry
+      properties:
+        entryReference:
+          type: string
+          description: Reference of the entry this outcome belongs to
+        kind:
+          $ref: "#/components/schemas/InspectedEntryKind"
+          description: What the entry turned out to be
+        imported:
+          type: boolean
+          description: Whether this entry was imported
+        certificateUuid:
+          type: string
+          description: "UUID of the certificate the entry produced, when it carried\
+            \ one"
+        keyUuid:
+          type: string
+          description: "UUID of the key the entry produced, when it carried key material"
+        message:
+          type: string
+          description: "Why this entry was not imported, when it was not"
+      required:
+      - entryReference
+      - imported
+      - kind
+    InspectedEntryKind:
+      type: string
+      description: "What one entry of an uploaded file turned out to be. The kind\
+        \ decides what can be done with the entry: only a key needs somewhere to be\
+        \ stored, and only a certificate can go straight into the inventory."
+      enum:
+      - keyPairWithChain
+      - certificate
+      - privateKey
+      - secretKey
+      - signingRequest
     RemoveCertificateDto:
       type: object
       properties:
@@ -44753,6 +46258,7 @@ components:
       - sync
       - compromise
       - destroy
+      - listKeyUsages
       - updateKeyUsage
       - encrypt
       - decrypt
@@ -46206,9 +47712,10 @@ components:
           description: Connector UUID
         kind:
           type: string
-          description: Connector Kind
+          description: Connector kind. Required for connectors based on version 1
+            of the connector framework; omitted for connectors based on version 2
+            (NG) of the connector framework.
       required:
-      - kind
       - name
       - status
       - tokenProfiles
@@ -46234,6 +47741,9 @@ components:
           description: Event type
           enum:
           - Create Key
+          - Import Key
+          - Export Key
+          - Disable Key Export
           - Compromised Key
           - Destroy Key
           - Update Key Usages
@@ -46483,13 +47993,15 @@ components:
         countLast24h:
           type: integer
           format: int64
-          description: Signing records whose signing time falls within the last 24
-            hours
+          description: "Signings performed in the last 24 hours, including those whose\
+            \ records have since been deleted. History is kept per hour, so the window\
+            \ opens at the start of the hour rather than 24 hours to the second."
         countLast7d:
           type: integer
           format: int64
-          description: Signing records whose signing time falls within the last 7
-            days
+          description: "Signings performed in the last 7 days, including those whose\
+            \ records have since been deleted. History is kept per hour, so the window\
+            \ opens at the start of the hour rather than 7 days to the second."
         activeProfileCount:
           type: integer
           format: int64
@@ -46506,10 +48018,11 @@ components:
           additionalProperties:
             type: integer
             format: int64
-          description: "Signing volume over the requested period. Ordered map of bucket\
-            \ start to count, keyed by ISO-8601 UTC instant (hourly buckets for the\
-            \ 24h period, daily otherwise). Buckets are dense: every bucket in the\
-            \ window is present, with 0 for buckets that had no signings."
+          description: "Signing volume over the requested period, including signings\
+            \ whose records have since been deleted. Ordered map of bucket start to\
+            \ count, keyed by ISO-8601 UTC instant (hourly buckets for the 24h period,\
+            \ daily otherwise). Buckets are dense: every bucket in the window is present,\
+            \ with 0 for buckets that had no signings."
         statByProfile:
           type: object
           additionalProperties:
@@ -46701,11 +48214,6 @@ components:
           description: "Secondary brand color, used as an accent"
           examples:
           - "#00A3E0"
-        tertiaryColor:
-          type: string
-          description: "Tertiary brand color, used as an additional accent"
-          examples:
-          - "#7B61FF"
         backgroundColor:
           type: string
           description: Page background color of the branded theme
@@ -47252,6 +48760,20 @@ components:
           description: Target object identification (UUID)
           items:
             type: string
+        subjectObjectType:
+          $ref: "#/components/schemas/Resource"
+          description: "Type of the object within the target that the notification\
+            \ is about, when it is not the target itself - a comment on the object,\
+            \ for instance"
+        subjectObjectIdentification:
+          type: string
+          description: Identification (UUID) of the object within the target that
+            the notification is about
+        subjectParentIdentification:
+          type: string
+          description: "Identification (UUID) of the object the subject is nested\
+            \ in, when the subject is not top-level within the target - the thread\
+            \ root of a comment reply, for instance"
       required:
       - message
       - sentAt
@@ -48716,13 +50238,6 @@ components:
           description: "Secondary brand color, used as an accent"
           examples:
           - "#00A3E0"
-        tertiaryColor:
-          type:
-          - string
-          - "null"
-          description: "Tertiary brand color, used as an additional accent"
-          examples:
-          - "#7B61FF"
         backgroundColor:
           type:
           - string
@@ -48762,7 +50277,6 @@ components:
       - lightLogo
       - primaryColor
       - secondaryColor
-      - tertiaryColor
       - textColor
     NameAndIdDto:
       type: object
@@ -48891,6 +50405,60 @@ components:
       - name
       - objectAccess
       - uuid
+    ResourceAction:
+      type: string
+      enum:
+      - NONE
+      - ANY
+      - members
+      - list
+      - detail
+      - create
+      - update
+      - delete
+      - comment
+      - enable
+      - activate
+      - stop
+      - resume
+      - cancel
+      - approve
+      - connect
+      - register
+      - issue
+      - renew
+      - rekey
+      - revoke
+      - archive
+      - export
+      - checkCompliance
+      - encrypt
+      - decrypt
+      - verify
+      - sign
+      - getProxyInstallation
+      - importKey
+      - exportKey
+      - getSecretContent
+      - updateSourceVaultProfile
+      - timestamp
+      - updateBranding
+    ResourceActionsDto:
+      type: object
+      description: |
+        Reported so a client can gate a control on the action that actually guards the endpoint, rather than inferring it from listing access. The authorization service remains the only gate; this is a hint that keeps a control the caller cannot use off the screen.
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+          description: Resource the actions are granted on
+        actions:
+          type: array
+          description: Actions the user is permitted to perform on the resource
+          items:
+            $ref: "#/components/schemas/ResourceAction"
+      required:
+      - actions
+      - resource
     UserProfileDetailDto:
       type: object
       properties:
@@ -48959,7 +50527,18 @@ components:
           description: Allowed resource listings
           items:
             $ref: "#/components/schemas/Resource"
+        allowedActions:
+          type: array
+          description: |
+            Actions the user is permitted to perform on a resource as a whole, per resource. Use this, not allowedListings, to decide whether to offer a control for anything other than a listing.
+
+            Reports resource-level grants only. Object-scoped grants are excluded, including the implicit access an owner or a group member has, because an action held on one object says nothing about the next: a control scoped to a single object must still be decided by the server. Resources on which the caller holds no action are omitted rather than reported with an empty list, and actions the authorization service will not grant at all are never reported.
+
+            This is not derivable from allowedListings and does not supersede it. That field applies a broader rule to the list action alone, unioning object-scoped grants and adding the listings every user gets by default, so neither field can be computed from the other.
+          items:
+            $ref: "#/components/schemas/ResourceActionsDto"
       required:
+      - allowedActions
       - allowedListings
     AttributeDefinitionDto:
       type: object

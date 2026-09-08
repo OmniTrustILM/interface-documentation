@@ -145,6 +145,18 @@ paths:
               $ref: "#/components/schemas/EditKeyRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Key updated
           content:
@@ -215,6 +227,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key deleted
         "404":
@@ -399,8 +423,106 @@ paths:
               $ref: "#/components/schemas/KeyRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "201":
           description: Cryptographic Key Created Successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyDetailDto"
+        "404":
+          description: Token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{type}/import:
+    post:
+      tags:
+      - Cryptographic Key Management
+      summary: Import a key
+      description: |
+        Import a key from an uploaded file into the token profile.
+
+        The file travels base64-encoded in `file`, like every upload in the platform, and is held in memory rather
+        than written anywhere; it is never echoed in an error, since it carries key material. `inputPassphrase`
+        opens the uploaded file and is absent for a file that carries no protection of its own; the platform
+        re-protects the material before it reaches the provider, so neither the file nor that passphrase is ever
+        forwarded.
+
+        Certificates found alongside a key are not imported here. Use the certificate import operation for a file
+        that carries both.
+      operationId: importKey
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: UUID of the Token Instance
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: UUID of the Token Profile
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: Type of the key to be imported
+        required: true
+        schema:
+          $ref: "#/components/schemas/KeyRequestType"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyImportRequestDto"
+        required: true
+      responses:
+        "201":
+          description: Key imported
           content:
             application/json:
               schema:
@@ -536,6 +658,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys deleted
         "400":
@@ -558,6 +692,110 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/keys/{uuid}/items/{keyItemUuid}/export:
+    post:
+      tags:
+      - Cryptographic Key Management
+      summary: Export a key
+      description: |
+        Export a key item as a protected PKCS#8 file in PEM form.
+
+        This is a POST because the passphrase travels in the body: a URL is recorded by proxies, browser history
+        and access logs, so a passphrase must never appear in one. The response is not cacheable and carries a
+        sanitized download filename.
+
+        Only a key created or imported as exportable can be exported.
+      operationId: exportKey
+      parameters:
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyExportRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Key exported
+          headers:
+            Cache-Control:
+              description: "`no-store, no-cache`, so the file is not written to any\
+                \ cache"
+              required: true
+              style: simple
+              schema:
+                type: string
+            X-Content-Type-Options:
+              description: '`nosniff`'
+              required: true
+              style: simple
+              schema:
+                type: string
+            Content-Disposition:
+              description: "Attachment with a sanitized filename, as RFC 6266 describes"
+              required: true
+              style: simple
+              schema:
+                type: string
+            Pragma:
+              description: "`no-cache`, for caches that predate `Cache-Control`"
+              required: true
+              style: simple
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Key item not found
+          content:
+            application/octet-stream:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/octet-stream:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/octet-stream:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/octet-stream:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/tokens/{tokenInstanceUuid}/sync:
     patch:
       tags:
@@ -572,6 +810,18 @@ paths:
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key sync completed
         "404":
@@ -760,6 +1010,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys destroyed
         "404":
@@ -967,6 +1229,65 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/keys/{uuid}/items/{keyItemUuid}/export/disable:
+    patch:
+      tags:
+      - Cryptographic Key Management
+      summary: Disable export for a key item
+      description: |
+        Make a key item non-exportable, by setting its `exportable` flag to false.
+
+        There is no operation for the other direction. A key created or imported as non-exportable carries the
+        guarantee that its material never leaves, and an operation lifting the flag would void that guarantee for
+        every key that already exists. The technologies behind the providers set extractability once, at creation,
+        for the same reason. A key that has to be exportable is created or imported as exportable.
+      operationId: disableKeyExport
+      parameters:
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Key item is no longer exportable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyItemDetailDto"
+        "404":
+          description: Key item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/keys/{uuid}/enable:
     patch:
       tags:
@@ -1107,6 +1428,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys destroyed
         "404":
@@ -1287,6 +1620,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys Items destroyed
         "400":
@@ -1447,6 +1792,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Keys destroyed
         "404":
@@ -1513,6 +1870,71 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{type}/import/attributes:
+    get:
+      tags:
+      - Cryptographic Key Management
+      summary: List key import attributes
+      description: |
+        Attributes the provider behind this token profile requires to import a key of the given type.
+
+        Present so a caller can render the import form before it uploads anything. The result is the provider's own
+        schema and never contains resolved credentials or secret values.
+      operationId: listImportKeyAttributes
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: UUID of the Token Instance
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: UUID of the Token Profile
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        description: Type of the key to be imported
+        required: true
+        schema:
+          $ref: "#/components/schemas/KeyRequestType"
+      responses:
+        "200":
+          description: Import attribute schema retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: Token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{type}/attributes:
     get:
       tags:
@@ -1539,6 +1961,18 @@ paths:
         schema:
           $ref: "#/components/schemas/KeyRequestType"
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: List of Attributes retrieved
           content:
@@ -1659,6 +2093,18 @@ paths:
             - c2f685d4-6a3e-11ec-90d6-0242ac120003
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key deleted
         "404":
@@ -1862,6 +2308,65 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/keys/{uuid}/items/{keyItemUuid}/export/attributes:
+    get:
+      tags:
+      - Cryptographic Key Management
+      summary: List key export attributes
+      description: |
+        Attributes the provider holding this key requires to export it.
+
+        Present so a caller can render the export form before it asks for the key. The result is the provider's own
+        schema and never contains resolved credentials or secret values.
+      operationId: listExportKeyAttributes
+      parameters:
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Export attribute schema retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: Key item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/keys/search:
     get:
       tags:
@@ -1963,6 +2468,18 @@ paths:
             - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Key Items deleted
         "400":
@@ -3628,9 +4145,15 @@ components:
         complianceStatus:
           $ref: "#/components/schemas/ComplianceStatus"
           description: Key compliance status
+        exportable:
+          type: boolean
+          default: false
+          description: Whether this key may be exported. Set when the key is created
+            or imported and never raised afterwards; it can only be lowered to false.
       required:
       - complianceStatus
       - enabled
+      - exportable
       - format
       - keyAlgorithm
       - length
@@ -3941,9 +4464,70 @@ components:
           type: boolean
           default: false
           description: "Enabled status of created key. True = Enabled, False = Disabled"
+        exportable:
+          type: boolean
+          default: false
+          description: |
+            Whether the created key may later be exported. Defaults to false, and false is final: a key created
+            non-exportable can never become exportable. It can only be requested where the token profile reports key
+            export as available for the key type.
       required:
       - attributes
       - description
+      - name
+    KeyImportRequestDto:
+      type: object
+      description: |
+        The key file to import and the metadata of the key it becomes. The key type is taken from the request path.
+      properties:
+        file:
+          type: string
+          format: byte
+          description: |
+            Content of the uploaded file, base64-encoded: a container such as PKCS#12 or PEM, a standalone key, or a
+            certificate. At most 5 MiB decoded. The platform holds it in memory only, never writes it anywhere and
+            never echoes it in an error, since the file may carry key material.
+          maxLength: 6990508
+          writeOnly: true
+        name:
+          type: string
+          description: Name of the imported key
+          minLength: 1
+        description:
+          type: string
+          description: Description of the imported key
+        inputPassphrase:
+          type: string
+          format: password
+          description: |
+            Passphrase that opens the uploaded file. Absent for a file that carries no protection of its own, such as
+            an unencrypted PEM private key. It opens only the uploaded file: the platform re-protects the material
+            before it reaches a provider, so this value never leaves the platform.
+          writeOnly: true
+        exportable:
+          type: boolean
+          default: false
+          description: |
+            Whether the imported key may later be exported. Defaults to false, and false is final. It can only be
+            requested where the token profile reports key export as available for the key type.
+        importAttributes:
+          type: array
+          description: "Attributes required by the provider to import a key, from\
+            \ the import attribute schema"
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        customAttributes:
+          type: array
+          description: Custom attributes for the imported key
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        groupUuids:
+          type: array
+          description: UUIDs of the groups to associate with the imported key
+          items:
+            type: string
+      required:
+      - file
       - name
     FilterConditionOperator:
       type: string
@@ -4218,6 +4802,26 @@ components:
       - state
       - type
       - uuid
+    KeyExportRequestDto:
+      type: object
+      description: Passphrase and provider options for exporting a key
+      properties:
+        passphrase:
+          type: string
+          format: password
+          description: "Passphrase that will protect the file. At least 12 characters,\
+            \ counted as code points, in Unicode normalization form C: the file leaves\
+            \ the platform and its protection is only as good as this value."
+          minLength: 12
+          writeOnly: true
+        exportAttributes:
+          type: array
+          description: "Attributes required by the provider to export a key, from\
+            \ the export attribute schema"
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - passphrase
     CompromiseKeyRequestDto:
       type: object
       properties:
@@ -4285,14 +4889,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -5078,6 +5682,9 @@ components:
           description: Event type
           enum:
           - Create Key
+          - Import Key
+          - Export Key
+          - Disable Key Export
           - Compromised Key
           - Destroy Key
           - Update Key Usages

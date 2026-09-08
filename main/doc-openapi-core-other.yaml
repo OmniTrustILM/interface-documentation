@@ -2263,14 +2263,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -4231,12 +4231,6 @@ components:
           examples:
           - "#00A3E0"
           pattern: "^#[0-9a-fA-F]{6}$"
-        tertiaryColor:
-          type: string
-          description: "Tertiary brand color, used as an additional accent"
-          examples:
-          - "#7B61FF"
-          pattern: "^#[0-9a-fA-F]{6}$"
         backgroundColor:
           type: string
           description: Page background color of the branded theme
@@ -5393,6 +5387,7 @@ components:
       - sync
       - compromise
       - destroy
+      - listKeyUsages
       - updateKeyUsage
       - encrypt
       - decrypt
@@ -5677,13 +5672,15 @@ components:
         countLast24h:
           type: integer
           format: int64
-          description: Signing records whose signing time falls within the last 24
-            hours
+          description: "Signings performed in the last 24 hours, including those whose\
+            \ records have since been deleted. History is kept per hour, so the window\
+            \ opens at the start of the hour rather than 24 hours to the second."
         countLast7d:
           type: integer
           format: int64
-          description: Signing records whose signing time falls within the last 7
-            days
+          description: "Signings performed in the last 7 days, including those whose\
+            \ records have since been deleted. History is kept per hour, so the window\
+            \ opens at the start of the hour rather than 7 days to the second."
         activeProfileCount:
           type: integer
           format: int64
@@ -5700,10 +5697,11 @@ components:
           additionalProperties:
             type: integer
             format: int64
-          description: "Signing volume over the requested period. Ordered map of bucket\
-            \ start to count, keyed by ISO-8601 UTC instant (hourly buckets for the\
-            \ 24h period, daily otherwise). Buckets are dense: every bucket in the\
-            \ window is present, with 0 for buckets that had no signings."
+          description: "Signing volume over the requested period, including signings\
+            \ whose records have since been deleted. Ordered map of bucket start to\
+            \ count, keyed by ISO-8601 UTC instant (hourly buckets for the 24h period,\
+            \ daily otherwise). Buckets are dense: every bucket in the window is present,\
+            \ with 0 for buckets that had no signings."
         statByProfile:
           type: object
           additionalProperties:
@@ -5821,11 +5819,6 @@ components:
           description: "Secondary brand color, used as an accent"
           examples:
           - "#00A3E0"
-        tertiaryColor:
-          type: string
-          description: "Tertiary brand color, used as an additional accent"
-          examples:
-          - "#7B61FF"
         backgroundColor:
           type: string
           description: Page background color of the branded theme
@@ -6440,13 +6433,6 @@ components:
           description: "Secondary brand color, used as an accent"
           examples:
           - "#00A3E0"
-        tertiaryColor:
-          type:
-          - string
-          - "null"
-          description: "Tertiary brand color, used as an additional accent"
-          examples:
-          - "#7B61FF"
         backgroundColor:
           type:
           - string
@@ -6486,7 +6472,6 @@ components:
       - lightLogo
       - primaryColor
       - secondaryColor
-      - tertiaryColor
       - textColor
     BulkActionMessageDto:
       type: object

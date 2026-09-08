@@ -48,6 +48,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "400":
           description: Bad Request
           content:
@@ -87,6 +99,18 @@ paths:
               $ref: "#/components/schemas/TokenInstanceRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Token Instance Updated
           content:
@@ -94,7 +118,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -184,6 +208,18 @@ paths:
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Token Instance Status Reloaded from Connector
           content:
@@ -263,6 +299,18 @@ paths:
               $ref: "#/components/schemas/TokenInstanceRequestDto"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "201":
           description: Token Instance Created Successfully
           content:
@@ -270,7 +318,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessible Entity
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -320,6 +368,18 @@ paths:
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Token Instance Deactivated
         "404":
@@ -370,56 +430,20 @@ paths:
                 $ref: "#/components/schemas/RequestAttribute"
         required: true
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "204":
           description: Token Instance Activated
-        "404":
-          description: Token Instance not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
-      security:
-      - SessionAuth: []
-      - CertificateAuth: []
-      - BearerJWTAuth: []
-  /v1/tokens/{uuid}/tokenProfiles/attributes:
-    get:
-      tags:
-      - Token Instance Management
-      summary: List Token Profile Attributes
-      operationId: listTokenProfileAttributes
-      parameters:
-      - name: uuid
-        in: path
-        description: Token instance UUID
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Token Profile Attributes retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BaseAttributeDto"
         "404":
           description: Token Instance not found
           content:
@@ -460,6 +484,18 @@ paths:
         schema:
           type: string
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Token activation Attributes retrieved
           content:
@@ -470,6 +506,75 @@ paths:
                   $ref: "#/components/schemas/BaseAttributeDto"
         "404":
           description: Token Instance not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/tokens/{connectorUuid}/attributes:
+    get:
+      tags:
+      - Token Instance Management
+      summary: List available token attributes for the specified connector
+      operationId: listTokenAttributes
+      parameters:
+      - name: connectorUuid
+        in: path
+        description: Connector UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: kind
+        in: query
+        description: Connector kind. Required for connectors based on version 1 of
+          the connector framework; omit for connectors based on version 2 (NG) of
+          the connector framework.
+        required: false
+        schema:
+          type: string
+      responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "200":
+          description: Attribute information retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: Connector not found
           content:
             application/json:
               schema:
@@ -1907,7 +2012,9 @@ components:
           description: UUID of the Connector
         kind:
           type: string
-          description: Connector Kind
+          description: Connector kind. Required for connectors based on version 1
+            of the connector framework; omitted for connectors based on version 2
+            (NG) of the connector framework.
         customAttributes:
           type: array
           description: Custom Attributes
@@ -1922,7 +2029,6 @@ components:
       - attributes
       - connectorUuid
       - customAttributes
-      - kind
       - name
     ErrorMessageDto:
       type: object
@@ -1951,6 +2057,23 @@ components:
       - code
       - message
       - statusCode
+    KeyTransferAvailabilityDto:
+      type: object
+      description: Whether key import and export are available
+      properties:
+        importAvailable:
+          type: boolean
+          default: false
+          description: Whether key material can be imported into the token or token
+            profile this belongs to
+        exportAvailable:
+          type: boolean
+          default: false
+          description: Whether key material can be exported from the token or token
+            profile this belongs to
+      required:
+      - exportAvailable
+      - importAvailable
     MetadataResponseDto:
       type: object
       description: Metadata response attributes with their source connector
@@ -2192,7 +2315,9 @@ components:
           description: Connector UUID
         kind:
           type: string
-          description: Connector Kind
+          description: Connector kind. Required for connectors based on version 1
+            of the connector framework; omitted for connectors based on version 2
+            (NG) of the connector framework.
         status:
           $ref: "#/components/schemas/TokenInstanceStatusDetailDto"
           description: Status Of the Token Instance
@@ -2215,9 +2340,13 @@ components:
           description: Custom Attributes for the Token Instance
           items:
             $ref: "#/components/schemas/ResponseAttribute"
+        keyTransfer:
+          $ref: "#/components/schemas/KeyTransferAvailabilityDto"
+          description: "Whether key material can be imported into or exported from\
+            \ this token, meaning it is available on at least one of its token profiles.\
+            \ The key types each profile accepts are reported on that profile."
       required:
       - attributes
-      - kind
       - name
       - status
       - tokenProfiles
@@ -2284,9 +2413,10 @@ components:
           description: Connector UUID
         kind:
           type: string
-          description: Connector Kind
+          description: Connector kind. Required for connectors based on version 1
+            of the connector framework; omitted for connectors based on version 2
+            (NG) of the connector framework.
       required:
-      - kind
       - name
       - status
       - tokenProfiles
@@ -2306,14 +2436,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type

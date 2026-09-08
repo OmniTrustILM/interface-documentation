@@ -13,7 +13,6 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
     histograms:
       http_server_latency_buckets_seconds:
       - 0.005
@@ -39,32 +38,32 @@ info:
       - 5.0
       - 10.0
     required:
-    - name: app_build_info
-      unit: "1"
+    - unit: "1"
       labels:
       - version
       - commit
       - runtime
       type: gauge
-    - name: process_start_time_seconds
-      unit: seconds
+      name: app_build_info
+    - unit: seconds
       labels: []
       type: gauge
-    - name: process_cpu_seconds_total
-      unit: seconds
+      name: process_start_time_seconds
+    - unit: seconds
       labels: []
       type: counter
-    - name: process_resident_memory_bytes
-      unit: bytes
+      name: process_cpu_seconds_total
+    - unit: bytes
       labels: []
       type: gauge
-    - name: http_requests_total
-      unit: requests
+      name: process_resident_memory_bytes
+    - unit: requests
       labels:
       - method
       - route
       - status
       type: counter
+      name: http_requests_total
     - name: http_request_duration_seconds
       unit: seconds
       type: histogram
@@ -72,18 +71,18 @@ info:
       - method
       - route
       buckets_ref: http_server_latency_buckets_seconds
-    - name: http_server_in_flight_requests
-      unit: requests
+    - unit: requests
       labels:
       - route
       type: gauge
-    - name: http_client_requests_total
-      unit: requests
+      name: http_server_in_flight_requests
+    - unit: requests
       labels:
       - method
       - target
       - status
       type: counter
+      name: http_client_requests_total
     - name: http_client_request_duration_seconds
       unit: seconds
       type: histogram
@@ -91,12 +90,13 @@ info:
       - method
       - target
       buckets_ref: http_client_latency_buckets_seconds
-    - name: connector_events_total
-      unit: events
+    - unit: events
       labels:
       - event
       - outcome
       type: counter
+      name: connector_events_total
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -2147,6 +2147,12 @@ components:
       - CSR_SUBJECT_MISMATCH
       - CERTIFICATE_MISMATCH
       - CHECKPOINT_LOST
+      - KEY_TYPE_NOT_IMPORTABLE
+      - KEY_TYPE_NOT_EXPORTABLE
+      - KEY_MATERIAL_MISMATCH
+      - KEY_DECRYPTION_FAILED
+      - EXPORTABLE_NOT_SUPPORTED
+      - KEY_NOT_EXPORTABLE
     ProblemDetailExtended:
       type: object
       properties:
@@ -2245,14 +2251,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -3338,6 +3344,8 @@ components:
       - stateless
       - openMetrics
       - asynchronous
+      - keyImport
+      - keyExport
       - secretVersioning
       - secretRotation
       - contentSigning
