@@ -739,8 +739,8 @@ groups:
 common:
   version: ${api.version}
   license:
-    name: MIT License
-    url: https://github.com/OmniTrustILM/ilm/blob/main/LICENSE.md
+    name: Apache License, Version 2.0
+    url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
   contact:
     name: ILM
     url: https://www.otilm.com
