@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.otilm</groupId>
         <artifactId>dependencies</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
 
     <groupId>com.otilm</groupId>
@@ -28,9 +28,13 @@
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
 
         <!-- Dependency versions -->
-        <springdoc-openapi.version>2.8.17</springdoc-openapi.version>
+        <springdoc-openapi.version>2.9.1</springdoc-openapi.version>
         <snakeyaml.version>2.7</snakeyaml.version>
-        <junit.jupiter.version>5.14.4</junit.jupiter.version>
+        <!-- Override Spring Boot's managed junit-jupiter.version (5.12.2) so the whole
+             junit-bom moves coherently; junit.jupiter.version stays as an alias for the
+             module poms that reference it. -->
+        <junit-jupiter.version>5.14.4</junit-jupiter.version>
+        <junit.jupiter.version>${junit-jupiter.version}</junit.jupiter.version>
     </properties>
 
     <repositories>
