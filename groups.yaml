@@ -315,6 +315,15 @@ groups:
     interfaces:
       - com.otilm.api.interfaces.core.web.AuthorityInstanceController
 
+  - id: doc-openapi-core-cbom
+    groupName: core-cbom
+    title: CBOM API
+    indexCategory: core
+    description: REST API for managing CBOM (Cryptographic Bill of Materials) documents and their cryptographic assets in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.CbomController
+      - com.otilm.api.interfaces.core.web.CryptographicAssetController
+
   - id: doc-openapi-core-certificate
     groupName: core-certificate
     title: Certificate API
@@ -475,7 +484,6 @@ groups:
     interfaces:
       - com.otilm.api.interfaces.core.web.AuditLogController
       - com.otilm.api.interfaces.core.web.BrandingController
-      - com.otilm.api.interfaces.core.web.CbomController
       - com.otilm.api.interfaces.core.web.CustomOidEntryController
       - com.otilm.api.interfaces.core.web.EnumController
       - com.otilm.api.interfaces.core.web.InfoController
@@ -636,6 +644,7 @@ groups:
       - com.otilm.api.interfaces.core.web.ConnectorAuthController
       - com.otilm.api.interfaces.core.web.ConnectorController
       - com.otilm.api.interfaces.core.web.CredentialController
+      - com.otilm.api.interfaces.core.web.CryptographicAssetController
       - com.otilm.api.interfaces.core.web.CryptographicKeyController
       - com.otilm.api.interfaces.core.web.CryptographicOperationsController
       - com.otilm.api.interfaces.core.web.CustomAttributeController
