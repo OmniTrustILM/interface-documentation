@@ -3,9 +3,6 @@ package com.otilm.openapi.collector;
 import com.otilm.openapi.config.loader.GroupsConfigLoader;
 import com.otilm.openapi.config.model.GroupConfiguration;
 import com.otilm.openapi.config.model.GroupsConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -15,15 +12,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Downloads OpenAPI YAML specs from a running Spring Boot application for all groups
- * defined in groups.yaml and saves them to the output directory.
+ * Downloads OpenAPI YAML specs from a running Spring Boot application for all groups defined in groups.yaml and saves
+ * them to the output directory.
  * <p>
- * Arguments:
- * args[0] - Path to groups.yaml
- * args[1] - Server port
- * args[2] - Output directory
+ * Arguments: args[0] - Path to groups.yaml args[1] - Server port args[2] - Output directory
  */
 public class OpenApiDocsCollector {
     private static final Logger log = LoggerFactory.getLogger(OpenApiDocsCollector.class);
@@ -59,10 +55,7 @@ public class OpenApiDocsCollector {
 
                 log.info("Generating {} from {} ...", group.getId(), url);
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 

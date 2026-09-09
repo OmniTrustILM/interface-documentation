@@ -1,5 +1,6 @@
 package com.otilm.openapi.e2e;
 
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,23 +10,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * End-to-end integration test for the OpenAPI generation pipeline.
  *
- * <p>Spins up a full Spring Boot context (via {@code @SpringBootTest}) using the test interfaces and groups.yaml
- * defined in this module. Then queries the running springdoc endpoint and asserts on the content of the generated YAML documents.
+ * <p>
+ * Spins up a full Spring Boot context (via {@code @SpringBootTest}) using the test interfaces and groups.yaml defined
+ * in this module. Then queries the running springdoc endpoint and asserts on the content of the generated YAML
+ * documents.
  *
- * <p>No dependency on {@code com.otilm:interfaces} is required — the pipeline is exercised entirely with
- * the self-contained test interfaces in this module.
+ * <p>
+ * No dependency on {@code com.otilm:interfaces} is required — the pipeline is exercised entirely with the
+ * self-contained test interfaces in this module.
  */
-@SpringBootTest(
-        classes = TestApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = TestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class EndToEndIT {
 
     @LocalServerPort
@@ -35,14 +37,13 @@ class EndToEndIT {
     TestRestTemplate restTemplate;
 
     // -------------------------------------------------------------------------
-    // Widgets group  (TestWidgetController → TestAuthProtectedController)
+    // Widgets group (TestWidgetController → TestAuthProtectedController)
     // -------------------------------------------------------------------------
 
     @Test
     void widgetsGroup_returnsHttp200() {
         ResponseEntity<String> response = fetchGroupYaml("e2e-widgets");
-        assertEquals(HttpStatus.OK, response.getStatusCode(),
-                "Expected HTTP 200 for e2e-widgets group");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected HTTP 200 for e2e-widgets group");
     }
 
     @Test
@@ -55,8 +56,7 @@ class EndToEndIT {
     @Test
     void widgetsGroup_containsPostWidgetsPath() {
         String yaml = fetchGroupYamlBody("e2e-widgets");
-        assertTrue(yaml.contains("/v1/test/widgets"),
-                "Expected path /v1/test/widgets in e2e-widgets OpenAPI");
+        assertTrue(yaml.contains("/v1/test/widgets"), "Expected path /v1/test/widgets in e2e-widgets OpenAPI");
     }
 
     @Test
@@ -101,14 +101,13 @@ class EndToEndIT {
     }
 
     // -------------------------------------------------------------------------
-    // Status group  (TestStatusController → TestNoAuthController)
+    // Status group (TestStatusController → TestNoAuthController)
     // -------------------------------------------------------------------------
 
     @Test
     void statusGroup_returnsHttp200() {
         ResponseEntity<String> response = fetchGroupYaml("e2e-status");
-        assertEquals(HttpStatus.OK, response.getStatusCode(),
-                "Expected HTTP 200 for e2e-status group");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected HTTP 200 for e2e-status group");
     }
 
     @Test
@@ -116,8 +115,7 @@ class EndToEndIT {
         Map<String, Object> doc = parseYaml(fetchGroupYamlBody("e2e-status"));
         Map<?, ?> paths = (Map<?, ?>) doc.get("paths");
         assertNotNull(paths, "paths section must be present");
-        assertTrue(paths.containsKey("/v1/test/status"),
-                "path /v1/test/status must exist in e2e-status group");
+        assertTrue(paths.containsKey("/v1/test/status"), "path /v1/test/status must exist in e2e-status group");
 
         Map<?, ?> statusOps = (Map<?, ?>) paths.get("/v1/test/status");
         assertTrue(statusOps.containsKey("get"), "GET /v1/test/status must be present");
@@ -137,15 +135,13 @@ class EndToEndIT {
     @Test
     void statusGroup_doesNotContainWidgetsPath() {
         String yaml = fetchGroupYamlBody("e2e-status");
-        assertFalse(yaml.contains("/v1/test/widgets"),
-                "e2e-status group must not contain widget paths");
+        assertFalse(yaml.contains("/v1/test/widgets"), "e2e-status group must not contain widget paths");
     }
 
     @Test
     void widgetsGroup_doesNotContainStatusPath() {
         String yaml = fetchGroupYamlBody("e2e-widgets");
-        assertFalse(yaml.contains("/v1/test/status"),
-                "e2e-widgets group must not contain status path");
+        assertFalse(yaml.contains("/v1/test/status"), "e2e-widgets group must not contain status path");
     }
 
     // -------------------------------------------------------------------------

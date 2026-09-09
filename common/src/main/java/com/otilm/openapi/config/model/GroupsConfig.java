@@ -1,9 +1,8 @@
 package com.otilm.openapi.config.model;
 
-import lombok.Getter;
-
 import java.util.Collections;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Unified model for the entire groups.yaml configuration
@@ -12,7 +11,8 @@ import java.util.List;
 public class GroupsConfig {
     private CommonConfiguration common = new CommonConfiguration();
     private List<GroupConfiguration> groups = Collections.emptyList();
-    private SecurityConfiguration security = new SecurityConfiguration(Collections.emptyList(), Collections.emptyList());
+    private SecurityConfiguration security = new SecurityConfiguration(Collections.emptyList(),
+            Collections.emptyList());
 
     public void setCommon(CommonConfiguration common) {
         if (common != null) {
