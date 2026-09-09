@@ -13,78 +13,8 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    required:
-    - labels:
-      - version
-      - commit
-      - runtime
-      type: gauge
-      name: app_build_info
-      unit: "1"
-    - labels: []
-      type: gauge
-      name: process_start_time_seconds
-      unit: seconds
-    - labels: []
-      type: counter
-      name: process_cpu_seconds_total
-      unit: seconds
-    - labels: []
-      type: gauge
-      name: process_resident_memory_bytes
-      unit: bytes
-    - labels:
-      - method
-      - route
-      - status
-      type: counter
-      name: http_requests_total
-      unit: requests
-    - type: histogram
-      labels:
-      - method
-      - route
-      buckets_ref: http_server_latency_buckets_seconds
-      name: http_request_duration_seconds
-      unit: seconds
-    - labels:
-      - route
-      type: gauge
-      name: http_server_in_flight_requests
-      unit: requests
-    - labels:
-      - method
-      - target
-      - status
-      type: counter
-      name: http_client_requests_total
-      unit: requests
-    - type: histogram
-      labels:
-      - method
-      - target
-      buckets_ref: http_client_latency_buckets_seconds
-      name: http_client_request_duration_seconds
-      unit: seconds
-    - labels:
-      - event
-      - outcome
-      type: counter
-      name: connector_events_total
-      unit: events
     version: 1
     histograms:
-      http_client_latency_buckets_seconds:
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
       http_server_latency_buckets_seconds:
       - 0.005
       - 0.01
@@ -97,6 +27,76 @@ info:
       - 2.5
       - 5.0
       - 10.0
+      http_client_latency_buckets_seconds:
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
+    required:
+    - type: gauge
+      name: app_build_info
+      unit: "1"
+      labels:
+      - version
+      - commit
+      - runtime
+    - type: gauge
+      name: process_start_time_seconds
+      unit: seconds
+      labels: []
+    - type: counter
+      name: process_cpu_seconds_total
+      unit: seconds
+      labels: []
+    - type: gauge
+      name: process_resident_memory_bytes
+      unit: bytes
+      labels: []
+    - type: counter
+      name: http_requests_total
+      unit: requests
+      labels:
+      - method
+      - route
+      - status
+    - buckets_ref: http_server_latency_buckets_seconds
+      name: http_request_duration_seconds
+      unit: seconds
+      type: histogram
+      labels:
+      - method
+      - route
+    - type: gauge
+      name: http_server_in_flight_requests
+      unit: requests
+      labels:
+      - route
+    - type: counter
+      name: http_client_requests_total
+      unit: requests
+      labels:
+      - method
+      - target
+      - status
+    - buckets_ref: http_client_latency_buckets_seconds
+      name: http_client_request_duration_seconds
+      unit: seconds
+      type: histogram
+      labels:
+      - method
+      - target
+    - type: counter
+      name: connector_events_total
+      unit: events
+      labels:
+      - event
+      - outcome
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -2549,14 +2549,14 @@ components:
       - contentType
       - data
     DiscoveredCertificateDto:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveredItemPayload"
-      - type: object
-        properties:
-          certificateData:
-            type: string
-            description: Base64-encoded certificate data (DER)
-            minLength: 1
+      type: object
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+        certificateData:
+          type: string
+          description: Base64-encoded certificate data (DER)
+          minLength: 1
       required:
       - certificateData
       - resource
@@ -2607,63 +2607,59 @@ components:
       oneOf:
       - $ref: "#/components/schemas/DiscoveredCertificateDto"
       - $ref: "#/components/schemas/DiscoveredKeyDto"
-      properties:
-        resource:
-          $ref: "#/components/schemas/Resource"
+      required:
+      - resource
     DiscoveredKeyDto:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveredItemPayload"
-      - type: object
-        properties:
-          type:
-            $ref: "#/components/schemas/KeyType"
-            description: "Key type: whether this is a public, private, secret, or\
-              \ split key"
-          algorithm:
-            $ref: "#/components/schemas/KeyAlgorithm"
-            description: Cryptographic algorithm of the key
-          length:
-            type: integer
-            format: int32
-            description: Key length in bits
-          fingerprint:
-            type: string
-            description: "Intrinsic key fingerprint; correlates the same key across\
-              \ runs, connectors, and certificates without exposing key material"
-          publicKeyFormat:
-            $ref: "#/components/schemas/KeyFormat"
-            description: Format of publicKey when present (typically SubjectPublicKeyInfo);
-              absent when publicKey is absent
-          publicKey:
-            type: string
-            description: "Base64-encoded public key material. Absent for PRIVATE_KEY,\
-              \ SECRET_KEY or SPLIT_KEY discoveries, where only existence and intrinsic\
-              \ metadata are ever reported"
+      type: object
       description: "A connector reports a key's existence, intrinsic metadata, and\
         \ at most its public part; private, secret and split key material must never\
         \ be sent. A PRIVATE_KEY, SECRET_KEY or SPLIT_KEY report MUST omit publicKey\
         \ and publicKeyFormat entirely."
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+        type:
+          $ref: "#/components/schemas/KeyType"
+          description: "Key type: whether this is a public, private, secret, or split\
+            \ key"
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+          description: Cryptographic algorithm of the key
+        length:
+          type: integer
+          format: int32
+          description: Key length in bits
+        fingerprint:
+          type: string
+          description: "Intrinsic key fingerprint; correlates the same key across\
+            \ runs, connectors, and certificates without exposing key material"
+        publicKeyFormat:
+          $ref: "#/components/schemas/KeyFormat"
+          description: Format of publicKey when present (typically SubjectPublicKeyInfo);
+            absent when publicKey is absent
+        publicKey:
+          type: string
+          description: "Base64-encoded public key material. Absent for PRIVATE_KEY,\
+            \ SECRET_KEY or SPLIT_KEY discoveries, where only existence and intrinsic\
+            \ metadata are ever reported"
       required:
       - algorithm
       - resource
       - type
     DiscoveryErrorEvent:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveryEvent"
-      - type: object
-        properties:
-          type:
-            $ref: "#/components/schemas/DiscoveryEventType"
-            description: Event type; this event's own discriminator field
-          code:
-            type: string
-            description: Connector-defined error code
-            maxLength: 64
-            minLength: 0
-          message:
-            type: string
-            description: Human-readable error message — curated message text (no raw
-              exception messages)
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/DiscoveryEventType"
+        code:
+          type: string
+          description: Connector-defined error code
+          maxLength: 64
+          minLength: 0
+        message:
+          type: string
+          description: Human-readable error message — curated message text (no raw
+            exception messages)
       required:
       - code
       - message
@@ -2686,9 +2682,8 @@ components:
       - $ref: "#/components/schemas/DiscoveryStateChangedEvent"
       - $ref: "#/components/schemas/DiscoveryHeartbeatEvent"
       - $ref: "#/components/schemas/DiscoveryErrorEvent"
-      properties:
-        type:
-          $ref: "#/components/schemas/DiscoveryEventType"
+      required:
+      - type
     DiscoveryEventType:
       type: string
       enum:
@@ -2698,48 +2693,42 @@ components:
       - heartbeat
       - error
     DiscoveryHeartbeatEvent:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveryEvent"
-      - type: object
-        properties:
-          type:
-            $ref: "#/components/schemas/DiscoveryEventType"
-            description: Event type; this event's own discriminator field
-          sentAt:
-            type: string
-            format: date-time
-            description: Timestamp at which the connector sent this heartbeat
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/DiscoveryEventType"
+        sentAt:
+          type: string
+          format: date-time
+          description: Timestamp at which the connector sent this heartbeat
       required:
       - sentAt
       - type
     DiscoveryProgressEvent:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveryEvent"
-      - type: object
-        properties:
-          processed:
-            type: integer
-            format: int64
-            description: Number of items processed so far; omitted when the connector
-              cannot report it
-          totalEstimate:
-            type: integer
-            format: int64
-            description: Estimated total number of items for the run; omitted when
-              the connector cannot produce an estimate
-          phase:
-            type: string
-            description: "Connector-defined free-text phase label (e.g. \"scanning\"\
-              , \"enumerating\"); omitted when the connector has no phase concept"
-          byResource:
-            type: object
-            additionalProperties:
-              $ref: "#/components/schemas/DiscoveryResourceProgressDto"
-            propertyNames:
-              $ref: "#/components/schemas/Resource"
-          type:
-            $ref: "#/components/schemas/DiscoveryEventType"
-            description: Event type; this event's own discriminator field
+      type: object
+      properties:
+        processed:
+          type: integer
+          format: int64
+          description: Number of items processed so far; omitted when the connector
+            cannot report it
+        totalEstimate:
+          type: integer
+          format: int64
+          description: Estimated total number of items for the run; omitted when the
+            connector cannot produce an estimate
+        phase:
+          type: string
+          description: "Connector-defined free-text phase label (e.g. \"scanning\"\
+            , \"enumerating\"); omitted when the connector has no phase concept"
+        byResource:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/DiscoveryResourceProgressDto"
+          propertyNames:
+            $ref: "#/components/schemas/Resource"
+        type:
+          $ref: "#/components/schemas/DiscoveryEventType"
       required:
       - type
     DiscoveryResourceProgressDto:
@@ -2763,21 +2752,18 @@ components:
           description: "Connector-defined free-text phase label (e.g. \"scanning\"\
             , \"enumerating\"); omitted when the connector has no phase concept"
     DiscoveryResultBatchEvent:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveryEvent"
-      - type: object
-        properties:
-          type:
-            $ref: "#/components/schemas/DiscoveryEventType"
-            description: Event type; this event's own discriminator field
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/DiscoveryEventType"
+        items:
+          type: array
+          description: "Discovered items in this batch, each carrying its own per-run\
+            \ sequence. A producer that means \"this batch has no items\" MUST send\
+            \ an explicit empty array; omitting the field is rejected rather than\
+            \ read as \"no discoveries\"."
           items:
-            type: array
-            description: "Discovered items in this batch, each carrying its own per-run\
-              \ sequence. A producer that means \"this batch has no items\" MUST send\
-              \ an explicit empty array; omitting the field is rejected rather than\
-              \ read as \"no discoveries\"."
-            items:
-              $ref: "#/components/schemas/DiscoveredItemDto"
+            $ref: "#/components/schemas/DiscoveredItemDto"
       required:
       - items
       - type
@@ -2790,16 +2776,13 @@ components:
       - failed
       - cancelled
     DiscoveryStateChangedEvent:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveryEvent"
-      - type: object
-        properties:
-          type:
-            $ref: "#/components/schemas/DiscoveryEventType"
-            description: Event type; this event's own discriminator field
-          state:
-            $ref: "#/components/schemas/DiscoveryRunState"
-            description: "Run state the connector is reporting; advisory, not authoritative"
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/DiscoveryEventType"
+        state:
+          $ref: "#/components/schemas/DiscoveryRunState"
+          description: "Run state the connector is reporting; advisory, not authoritative"
       required:
       - state
       - type

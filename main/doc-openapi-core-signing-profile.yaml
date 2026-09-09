@@ -1992,17 +1992,21 @@ components:
       - contentType
       - data
     InternalTimestampSourceRequestDto:
-      allOf:
-      - $ref: "#/components/schemas/TimestampSourceRequestDto"
-      - type: object
-        properties:
-          signingProfileUuid:
-            type: string
-            format: uuid
-            description: UUID of the Timestamping Signing Profile that issues the
-              timestamps. ILM rejects a UUID that is not a Timestamping profile.
+      type: object
       description: "Timestamp source referencing a Timestamping Signing Profile on\
         \ this platform by UUID, as supplied on create and update"
+      properties:
+        signingProfileUuid:
+          type: string
+          format: uuid
+          description: UUID of the Timestamping Signing Profile that issues the timestamps.
+            ILM rejects a UUID that is not a Timestamping profile.
+        type:
+          $ref: "#/components/schemas/TimestampSourceType"
+          description: "Kind of timestamp source, and the discriminator selecting\
+            \ the fields that accompany it"
+          examples:
+          - internal
       required:
       - signingProfileUuid
       - type
@@ -2911,13 +2915,6 @@ components:
           internal: "#/components/schemas/InternalTimestampSourceRequestDto"
       oneOf:
       - $ref: "#/components/schemas/InternalTimestampSourceRequestDto"
-      properties:
-        type:
-          $ref: "#/components/schemas/TimestampSourceType"
-          description: "Kind of timestamp source, and the discriminator selecting\
-            \ the fields that accompany it"
-          examples:
-          - internal
       required:
       - type
     TimestampSourceType:
@@ -3194,15 +3191,19 @@ components:
       - connector
       - signingScheme
     InternalTimestampSourceDto:
-      allOf:
-      - $ref: "#/components/schemas/TimestampSourceDto"
-      - type: object
-        properties:
-          signingProfile:
-            $ref: "#/components/schemas/NameAndUuidDto"
-            description: Timestamping Signing Profile that issues the timestamps
+      type: object
       description: Timestamp source referencing the Timestamping Signing Profile on
         this platform that issues the timestamps
+      properties:
+        signingProfile:
+          $ref: "#/components/schemas/NameAndUuidDto"
+          description: Timestamping Signing Profile that issues the timestamps
+        type:
+          $ref: "#/components/schemas/TimestampSourceType"
+          description: "Kind of timestamp source, and the discriminator selecting\
+            \ the fields that accompany it"
+          examples:
+          - internal
       required:
       - signingProfile
       - type
@@ -3498,13 +3499,6 @@ components:
           internal: "#/components/schemas/InternalTimestampSourceDto"
       oneOf:
       - $ref: "#/components/schemas/InternalTimestampSourceDto"
-      properties:
-        type:
-          $ref: "#/components/schemas/TimestampSourceType"
-          description: "Kind of timestamp source, and the discriminator selecting\
-            \ the fields that accompany it"
-          examples:
-          - internal
       required:
       - type
     TimestampingWorkflowDto:

@@ -3340,14 +3340,14 @@ components:
       - totalItems
       - totalPages
     DiscoveredCertificateDto:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveredItemPayload"
-      - type: object
-        properties:
-          certificateData:
-            type: string
-            description: Base64-encoded certificate data (DER)
-            minLength: 1
+      type: object
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+        certificateData:
+          type: string
+          description: Base64-encoded certificate data (DER)
+          minLength: 1
       required:
       - certificateData
       - resource
@@ -3365,42 +3365,41 @@ components:
       oneOf:
       - $ref: "#/components/schemas/DiscoveredCertificateDto"
       - $ref: "#/components/schemas/DiscoveredKeyDto"
-      properties:
-        resource:
-          $ref: "#/components/schemas/Resource"
+      required:
+      - resource
     DiscoveredKeyDto:
-      allOf:
-      - $ref: "#/components/schemas/DiscoveredItemPayload"
-      - type: object
-        properties:
-          type:
-            $ref: "#/components/schemas/KeyType"
-            description: "Key type: whether this is a public, private, secret, or\
-              \ split key"
-          algorithm:
-            $ref: "#/components/schemas/KeyAlgorithm"
-            description: Cryptographic algorithm of the key
-          length:
-            type: integer
-            format: int32
-            description: Key length in bits
-          fingerprint:
-            type: string
-            description: "Intrinsic key fingerprint; correlates the same key across\
-              \ runs, connectors, and certificates without exposing key material"
-          publicKeyFormat:
-            $ref: "#/components/schemas/KeyFormat"
-            description: Format of publicKey when present (typically SubjectPublicKeyInfo);
-              absent when publicKey is absent
-          publicKey:
-            type: string
-            description: "Base64-encoded public key material. Absent for PRIVATE_KEY,\
-              \ SECRET_KEY or SPLIT_KEY discoveries, where only existence and intrinsic\
-              \ metadata are ever reported"
+      type: object
       description: "A connector reports a key's existence, intrinsic metadata, and\
         \ at most its public part; private, secret and split key material must never\
         \ be sent. A PRIVATE_KEY, SECRET_KEY or SPLIT_KEY report MUST omit publicKey\
         \ and publicKeyFormat entirely."
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+        type:
+          $ref: "#/components/schemas/KeyType"
+          description: "Key type: whether this is a public, private, secret, or split\
+            \ key"
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+          description: Cryptographic algorithm of the key
+        length:
+          type: integer
+          format: int32
+          description: Key length in bits
+        fingerprint:
+          type: string
+          description: "Intrinsic key fingerprint; correlates the same key across\
+            \ runs, connectors, and certificates without exposing key material"
+        publicKeyFormat:
+          $ref: "#/components/schemas/KeyFormat"
+          description: Format of publicKey when present (typically SubjectPublicKeyInfo);
+            absent when publicKey is absent
+        publicKey:
+          type: string
+          description: "Base64-encoded public key material. Absent for PRIVATE_KEY,\
+            \ SECRET_KEY or SPLIT_KEY discoveries, where only existence and intrinsic\
+            \ metadata are ever reported"
       required:
       - algorithm
       - resource
