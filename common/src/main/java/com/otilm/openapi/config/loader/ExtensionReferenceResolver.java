@@ -15,8 +15,12 @@ public class ExtensionReferenceResolver {
     /**
      * Resolves a single top-level extension value.
      * <p>
-     * Rules: - only whole-string backtick values are treated as references - non-reference values are returned
-     * unchanged - references must point to public static fields with Map/List values
+     * Rules:
+     * <ul>
+     * <li>only whole-string backtick values are treated as references</li>
+     * <li>non-reference values are returned unchanged</li>
+     * <li>references must point to public static fields with {@code Map}/{@code List} values</li>
+     * </ul>
      */
     public Object resolveTopLevelValue(Object value, String extensionKey, String contextLabel) {
         if (!(value instanceof String stringValue)) {

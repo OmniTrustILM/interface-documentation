@@ -5,9 +5,12 @@ package com.otilm.openapi.config.util;
  * prefixes to ensure interfaces with the same simple name from different packages generate unique implementation class
  * names.
  * <p>
- * For example: - com.otilm.api.interfaces.core.web.CertificateController -> CoreWebCertificateControllerDummyImpl -
- * com.otilm.api.interfaces.connector.CertificateController -> ConnectorCertificateControllerDummyImpl -
- * com.otilm.api.interfaces.connector.v2.CertificateController -> ConnectorV2CertificateControllerDummyImpl
+ * For example:
+ * <ul>
+ * <li>com.otilm.api.interfaces.core.web.CertificateController -> CoreWebCertificateControllerDummyImpl</li>
+ * <li>com.otilm.api.interfaces.connector.CertificateController -> ConnectorCertificateControllerDummyImpl</li>
+ * <li>com.otilm.api.interfaces.connector.v2.CertificateController -> ConnectorV2CertificateControllerDummyImpl</li>
+ * </ul>
  */
 public class ClassNameResolver {
 
