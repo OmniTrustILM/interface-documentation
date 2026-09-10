@@ -6,9 +6,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Generates Java source code for dummy controller implementations.
- * Creates method implementations that return null or default values for primitive types.
- * Also annotates controllers with @SecuritySchemeCategory metadata.
+ * Generates Java source code for dummy controller implementations. Creates method implementations that return null or
+ * default values for primitive types. Also annotates controllers with @SecuritySchemeCategory metadata.
  */
 public class CodeGenerator {
 
@@ -18,8 +17,8 @@ public class CodeGenerator {
     private final String baseSecurityClass;
     private final List<String> securitySchemes;
 
-    public CodeGenerator(TypeResolver typeResolver, String packageName, String implClassName,
-                         String baseSecurityClass, List<String> securitySchemes) {
+    public CodeGenerator(TypeResolver typeResolver, String packageName, String implClassName, String baseSecurityClass,
+            List<String> securitySchemes) {
         this.typeResolver = typeResolver;
         this.packageName = packageName;
         this.implClassName = implClassName;
@@ -167,15 +166,12 @@ public class CodeGenerator {
     }
 
     /**
-     * Returns the default value for a given return type.
-     * Primitives get their default values, objects get null.
+     * Returns the default value for a given return type. Primitives get their default values, objects get null.
      */
     private String getDefaultValue(Class<?> returnType) {
         if (returnType.equals(boolean.class)) {
             return "false";
-        } else if (returnType.equals(byte.class) ||
-                returnType.equals(short.class) ||
-                returnType.equals(int.class)) {
+        } else if (returnType.equals(byte.class) || returnType.equals(short.class) || returnType.equals(int.class)) {
             return "0";
         } else if (returnType.equals(long.class)) {
             return "0L";

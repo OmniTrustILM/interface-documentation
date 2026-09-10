@@ -9,22 +9,31 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GroupedOpenApiBuilderTest {
@@ -42,12 +51,8 @@ class GroupedOpenApiBuilderTest {
 
     @BeforeEach
     void setUp() {
-        builder = new GroupedOpenApiBuilder(
-                infoBuilder,
-                securitySchemeMetadataReader,
-                openApiSecuritySanitizer,
-                "1.0.0"
-        );
+        builder = new GroupedOpenApiBuilder(infoBuilder, securitySchemeMetadataReader, openApiSecuritySanitizer,
+                "1.0.0");
     }
 
     @Test
@@ -66,19 +71,22 @@ class GroupedOpenApiBuilderTest {
         // Create OpenAPI with operation-level security
         OpenAPI openApi = new OpenAPI()
                 .paths(new Paths()
-                        .addPathItem("/v1/test", new PathItem()
-                                .get(new Operation()
-                                        .addSecurityItem(new SecurityRequirement().addList("BearerJWTAuth")))));
+                        .addPathItem("/v1/test",
+                                new PathItem()
+                                        .get(new Operation()
+                                                .addSecurityItem(new SecurityRequirement().addList("BearerJWTAuth")))));
 
         // Mock behavior
-        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any())).thenReturn(new io.swagger.v3.oas.models.info.Info());
+        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any()))
+                .thenReturn(new io.swagger.v3.oas.models.info.Info());
         doNothing().when(infoBuilder).addCommonElements(any(), any(), any());
 
         // When: We call the customizer (simulate what happens during group building)
         // Access the customizer through reflection since it's private
         try {
-            var customizerMethod = GroupedOpenApiBuilder.class.getDeclaredMethod(
-                    "customizeOpenApi", OpenAPI.class, GroupConfiguration.class, CommonConfiguration.class);
+            var customizerMethod = GroupedOpenApiBuilder.class
+                    .getDeclaredMethod("customizeOpenApi", OpenAPI.class, GroupConfiguration.class,
+                            CommonConfiguration.class);
             customizerMethod.setAccessible(true);
             customizerMethod.invoke(builder, openApi, groupConfig, commonConfig);
         } catch (Exception e) {
@@ -101,8 +109,8 @@ class GroupedOpenApiBuilderTest {
     void shouldStripSecuritySchemeComponentsWhenEmptySecurityConfigured() {
         // End-to-end with real sanitizer: security: [] removes orphan scheme definitions
         // AND preserves root security: [] (required by the security-defined lint rule).
-        GroupedOpenApiBuilder realSanitizerBuilder = new GroupedOpenApiBuilder(
-                infoBuilder, securitySchemeMetadataReader, new OpenApiSecuritySanitizer(), "1.0.0");
+        GroupedOpenApiBuilder realSanitizerBuilder = new GroupedOpenApiBuilder(infoBuilder,
+                securitySchemeMetadataReader, new OpenApiSecuritySanitizer(), "1.0.0");
 
         GroupConfiguration groupConfig = new GroupConfiguration();
         groupConfig.setId("test-group");
@@ -117,16 +125,19 @@ class GroupedOpenApiBuilderTest {
                         .addSecuritySchemes("BearerJWTAuth", new io.swagger.v3.oas.models.security.SecurityScheme())
                         .addSecuritySchemes("SessionAuth", new io.swagger.v3.oas.models.security.SecurityScheme()))
                 .paths(new Paths()
-                        .addPathItem("/v1/test", new PathItem()
-                                .get(new Operation()
-                                        .addSecurityItem(new SecurityRequirement().addList("BearerJWTAuth")))));
+                        .addPathItem("/v1/test",
+                                new PathItem()
+                                        .get(new Operation()
+                                                .addSecurityItem(new SecurityRequirement().addList("BearerJWTAuth")))));
 
-        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any())).thenReturn(new io.swagger.v3.oas.models.info.Info());
+        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any()))
+                .thenReturn(new io.swagger.v3.oas.models.info.Info());
         doNothing().when(infoBuilder).addCommonElements(any(), any(), any());
 
         try {
-            var m = GroupedOpenApiBuilder.class.getDeclaredMethod(
-                    "customizeOpenApi", OpenAPI.class, GroupConfiguration.class, CommonConfiguration.class);
+            var m = GroupedOpenApiBuilder.class
+                    .getDeclaredMethod("customizeOpenApi", OpenAPI.class, GroupConfiguration.class,
+                            CommonConfiguration.class);
             m.setAccessible(true);
             m.invoke(realSanitizerBuilder, openApi, groupConfig, new CommonConfiguration());
         } catch (Exception e) {
@@ -161,13 +172,15 @@ class GroupedOpenApiBuilderTest {
         OpenAPI openApi = new OpenAPI();
 
         // Mock behavior
-        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any())).thenReturn(new io.swagger.v3.oas.models.info.Info());
+        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any()))
+                .thenReturn(new io.swagger.v3.oas.models.info.Info());
         doNothing().when(infoBuilder).addCommonElements(any(), any(), any());
 
         // When: Customize OpenAPI
         try {
-            var customizerMethod = GroupedOpenApiBuilder.class.getDeclaredMethod(
-                    "customizeOpenApi", OpenAPI.class, GroupConfiguration.class, CommonConfiguration.class);
+            var customizerMethod = GroupedOpenApiBuilder.class
+                    .getDeclaredMethod("customizeOpenApi", OpenAPI.class, GroupConfiguration.class,
+                            CommonConfiguration.class);
             customizerMethod.setAccessible(true);
             customizerMethod.invoke(builder, openApi, groupConfig, commonConfig);
         } catch (Exception e) {
@@ -198,14 +211,16 @@ class GroupedOpenApiBuilderTest {
         OpenAPI openApi = new OpenAPI();
 
         // Mock behavior
-        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any())).thenReturn(new io.swagger.v3.oas.models.info.Info());
+        when(infoBuilder.buildInfo(anyString(), anyString(), anyString(), any()))
+                .thenReturn(new io.swagger.v3.oas.models.info.Info());
         doNothing().when(infoBuilder).addCommonElements(any(), any(), any());
         doNothing().when(openApiSecuritySanitizer).sanitizeSecuritySchemes(any(), any());
 
         // When: Customize OpenAPI
         try {
-            var customizerMethod = GroupedOpenApiBuilder.class.getDeclaredMethod(
-                    "customizeOpenApi", OpenAPI.class, GroupConfiguration.class, CommonConfiguration.class);
+            var customizerMethod = GroupedOpenApiBuilder.class
+                    .getDeclaredMethod("customizeOpenApi", OpenAPI.class, GroupConfiguration.class,
+                            CommonConfiguration.class);
             customizerMethod.setAccessible(true);
             customizerMethod.invoke(builder, openApi, groupConfig, commonConfig);
         } catch (Exception e) {

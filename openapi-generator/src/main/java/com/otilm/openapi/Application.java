@@ -5,10 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
-@SpringBootApplication(scanBasePackages = {
-    "com.otilm.openapi.config",
-    "com.otilm.openapi.generated"
-})
+@SpringBootApplication(scanBasePackages = {"com.otilm.openapi.config", "com.otilm.openapi.generated"})
 public class Application extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
