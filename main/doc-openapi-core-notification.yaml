@@ -938,6 +938,7 @@ components:
           type: integer
           format: int32
           description: Maximum number of repetitions of same notification
+          exclusiveMinimum: 0
         eventDataCategories:
           type: array
           description: "Notification data categories included in external notifications\
@@ -2254,6 +2255,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid
@@ -2522,6 +2527,7 @@ components:
           type: integer
           format: int32
           description: Maximum number of repetitions of same notification
+          exclusiveMinimum: 0
         eventDataCategories:
           type: array
           description: "Notification data categories included in external notifications\

@@ -1785,6 +1785,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid

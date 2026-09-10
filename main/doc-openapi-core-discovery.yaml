@@ -2429,6 +2429,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid
@@ -2811,11 +2815,15 @@ components:
         status:
           $ref: "#/components/schemas/DiscoveryStatus"
         startTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery started
         endTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery finished
         totalCertificatesDiscovered:
@@ -2930,11 +2938,15 @@ components:
           examples:
           - Failed due to network connectivity issues
         startTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery started
         endTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery finished
         totalCertificatesDiscovered:
@@ -3005,6 +3017,7 @@ components:
       - connectorUuid
       - kind
       - name
+      - resources
       - runMessageCount
       - status
       - stoppable
@@ -4125,6 +4138,7 @@ components:
           description: List of all different types of attributes
           items:
             $ref: "#/components/schemas/BaseAttributeDtoV2"
+            description: Base Attribute definition
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute

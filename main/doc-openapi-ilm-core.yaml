@@ -26259,7 +26259,9 @@ paths:
           the connector framework.
         required: false
         schema:
-          type: string
+          type:
+          - string
+          - "null"
       responses:
         "502":
           description: Connector Error
@@ -34291,6 +34293,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid
@@ -35658,6 +35664,7 @@ components:
           description: List of all different types of attributes
           items:
             $ref: "#/components/schemas/BaseAttributeDtoV2"
+            description: Base Attribute definition
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
@@ -37358,6 +37365,7 @@ components:
           default: 3
           description: Number of NTP samples to take per server during each check
           example: 3
+          exclusiveMinimum: 0
         ntpCheckTimeout:
           type: string
           description: "Timeout for the entire NTP check cycle, in ISO 8601 duration\
@@ -37369,6 +37377,7 @@ components:
           default: 1
           description: Minimum number of NTP servers that must be reachable
           example: 1
+          exclusiveMinimum: 0
         maxClockDrift:
           type: string
           description: "Maximum allowed clock drift from NTP reference time, in ISO\
@@ -37508,6 +37517,7 @@ components:
             \ when an ILM-managed signing request arrives. When omitted, no profile-level\
             \ cap applies."
           example: 5242880
+          exclusiveMinimum: 0
         requireNonRepudiation:
           type: boolean
           description: "Demand the nonRepudiation key-usage bit specifically, for\
@@ -39667,6 +39677,7 @@ components:
           type: integer
           format: int32
           description: Maximum number of repetitions of same notification
+          exclusiveMinimum: 0
         eventDataCategories:
           type: array
           description: "Notification data categories included in external notifications\
@@ -40823,6 +40834,7 @@ components:
           $ref: "#/components/schemas/NameAndUuidDto"
           description: Connector (Authority provider) this instance belongs to
         connectorInterface:
+          type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
           description: "Connector Interface this Authority instance is bound to; null\
             \ for legacy v1 connectors, which are identified by kind instead"
@@ -40837,7 +40849,9 @@ components:
           description: "Name of Authority provider; deprecated, use connector.name\
             \ instead"
         kind:
-          type: string
+          type:
+          - string
+          - "null"
           description: "Authority instance kind; present for legacy v1 connectors,\
             \ null for v2/v3 authorities which are identified by connectorInterface"
           examples:
@@ -44536,6 +44550,7 @@ components:
           type: integer
           format: int32
           description: Maximum number of repetitions of same notification
+          exclusiveMinimum: 0
         eventDataCategories:
           type: array
           description: "Notification data categories included in external notifications\
@@ -44912,11 +44927,15 @@ components:
         status:
           $ref: "#/components/schemas/DiscoveryStatus"
         startTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery started
         endTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery finished
         totalCertificatesDiscovered:
@@ -45645,7 +45664,9 @@ components:
           description: RFC 9457 type URI identifying the problem type
           example: https://docs.otilm.com/problems/common/validation-failed
         title:
-          type: string
+          type:
+          - string
+          - "null"
           description: Short human-readable summary of the problem type
           example: Validation failed
         status:
@@ -45656,17 +45677,23 @@ components:
           maximum: 599
           minimum: 100
         detail:
-          type: string
+          type:
+          - string
+          - "null"
           description: Human-readable explanation specific to this occurrence
           example: One or more fields failed validation.
         instance:
-          type: string
+          type:
+          - string
+          - "null"
           format: uri
           description: "URI reference identifying the occurrence (e.g., request path\
             \ or operation ID)."
           example: https://api.example.org/foo/bar/123
         properties:
-          type: object
+          type:
+          - object
+          - "null"
           additionalProperties: {}
           description: Generic map of properties that are not known ahead of time
         errorCode:
@@ -49004,11 +49031,15 @@ components:
           examples:
           - Failed due to network connectivity issues
         startTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery started
         endTime:
-          type: string
+          type:
+          - string
+          - "null"
           format: date-time
           description: Date and time when Discovery finished
         totalCertificatesDiscovered:
@@ -49079,6 +49110,7 @@ components:
       - connectorUuid
       - kind
       - name
+      - resources
       - runMessageCount
       - status
       - stoppable

@@ -1611,6 +1611,7 @@ components:
           description: List of all different types of attributes
           items:
             $ref: "#/components/schemas/BaseAttributeDtoV2"
+            description: Base Attribute definition
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute

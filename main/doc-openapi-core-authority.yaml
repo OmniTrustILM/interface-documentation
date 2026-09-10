@@ -2055,6 +2055,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid
@@ -2304,6 +2308,7 @@ components:
           $ref: "#/components/schemas/NameAndUuidDto"
           description: Connector (Authority provider) this instance belongs to
         connectorInterface:
+          type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
           description: "Connector Interface this Authority instance is bound to; null\
             \ for legacy v1 connectors, which are identified by kind instead"
@@ -2318,7 +2323,9 @@ components:
           description: "Name of Authority provider; deprecated, use connector.name\
             \ instead"
         kind:
-          type: string
+          type:
+          - string
+          - "null"
           description: "Authority instance kind; present for legacy v1 connectors,\
             \ null for v2/v3 authorities which are identified by connectorInterface"
           examples:
@@ -2853,6 +2860,7 @@ components:
           description: List of all different types of attributes
           items:
             $ref: "#/components/schemas/BaseAttributeDtoV2"
+            description: Base Attribute definition
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute

@@ -1574,6 +1574,7 @@ components:
             \ when an ILM-managed signing request arrives. When omitted, no profile-level\
             \ cap applies."
           example: 5242880
+          exclusiveMinimum: 0
         requireNonRepudiation:
           type: boolean
           description: "Demand the nonRepudiation key-usage bit specifically, for\
@@ -2564,6 +2565,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid
@@ -4502,6 +4507,7 @@ components:
           description: List of all different types of attributes
           items:
             $ref: "#/components/schemas/BaseAttributeDtoV2"
+            description: Base Attribute definition
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute

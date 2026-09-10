@@ -13,18 +13,8 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
+    version: 1
     histograms:
-      http_client_latency_buckets_seconds:
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
       http_server_latency_buckets_seconds:
       - 0.005
       - 0.01
@@ -37,66 +27,76 @@ info:
       - 2.5
       - 5.0
       - 10.0
+      http_client_latency_buckets_seconds:
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
     required:
-    - labels:
+    - type: gauge
+      name: app_build_info
+      unit: "1"
+      labels:
       - version
       - commit
       - runtime
-      type: gauge
-      name: app_build_info
-      unit: "1"
-    - labels: []
-      type: gauge
+    - type: gauge
       name: process_start_time_seconds
       unit: seconds
-    - labels: []
-      type: counter
+      labels: []
+    - type: counter
       name: process_cpu_seconds_total
       unit: seconds
-    - labels: []
-      type: gauge
+      labels: []
+    - type: gauge
       name: process_resident_memory_bytes
       unit: bytes
-    - labels:
+      labels: []
+    - type: counter
+      name: http_requests_total
+      unit: requests
+      labels:
       - method
       - route
       - status
-      type: counter
-      name: http_requests_total
-      unit: requests
-    - unit: seconds
-      type: histogram
-      labels:
+    - labels:
       - method
       - route
       buckets_ref: http_server_latency_buckets_seconds
       name: http_request_duration_seconds
-    - labels:
-      - route
-      type: gauge
+      unit: seconds
+      type: histogram
+    - type: gauge
       name: http_server_in_flight_requests
       unit: requests
-    - labels:
+      labels:
+      - route
+    - type: counter
+      name: http_client_requests_total
+      unit: requests
+      labels:
       - method
       - target
       - status
-      type: counter
-      name: http_client_requests_total
-      unit: requests
-    - unit: seconds
-      type: histogram
-      labels:
+    - labels:
       - method
       - target
       buckets_ref: http_client_latency_buckets_seconds
       name: http_client_request_duration_seconds
-    - labels:
-      - event
-      - outcome
-      type: counter
+      unit: seconds
+      type: histogram
+    - type: counter
       name: connector_events_total
       unit: events
-    version: 1
+      labels:
+      - event
+      - outcome
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -3635,6 +3635,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid
@@ -3888,7 +3892,9 @@ components:
           description: RFC 9457 type URI identifying the problem type
           example: https://docs.otilm.com/problems/common/validation-failed
         title:
-          type: string
+          type:
+          - string
+          - "null"
           description: Short human-readable summary of the problem type
           example: Validation failed
         status:
@@ -3899,17 +3905,23 @@ components:
           maximum: 599
           minimum: 100
         detail:
-          type: string
+          type:
+          - string
+          - "null"
           description: Human-readable explanation specific to this occurrence
           example: One or more fields failed validation.
         instance:
-          type: string
+          type:
+          - string
+          - "null"
           format: uri
           description: "URI reference identifying the occurrence (e.g., request path\
             \ or operation ID)."
           example: https://api.example.org/foo/bar/123
         properties:
-          type: object
+          type:
+          - object
+          - "null"
           additionalProperties: {}
           description: Generic map of properties that are not known ahead of time
         errorCode:
@@ -4331,6 +4343,7 @@ components:
           description: List of all different types of attributes
           items:
             $ref: "#/components/schemas/BaseAttributeDtoV2"
+            description: Base Attribute definition
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
@@ -5648,10 +5661,10 @@ components:
       - $ref: "#/components/schemas/SecretKeyOperationStatusResponseV2Dto"
       - $ref: "#/components/schemas/KeyPairOperationStatusResponseV2Dto"
       properties:
-        reason:
-          type: string
         result:
           $ref: "#/components/schemas/KeyCreationResponse"
+        reason:
+          type: string
         status:
           $ref: "#/components/schemas/OperationStatus"
         keyRequestType:

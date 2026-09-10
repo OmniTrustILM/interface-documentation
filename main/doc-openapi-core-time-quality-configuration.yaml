@@ -1612,6 +1612,10 @@ components:
     ResponseAttributeV3:
       type: object
       properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
         uuid:
           type: string
           format: uuid
@@ -1837,6 +1841,7 @@ components:
           default: 3
           description: Number of NTP samples to take per server during each check
           example: 3
+          exclusiveMinimum: 0
         ntpCheckTimeout:
           type: string
           description: "Timeout for the entire NTP check cycle, in ISO 8601 duration\
@@ -1848,6 +1853,7 @@ components:
           default: 1
           description: Minimum number of NTP servers that must be reachable
           example: 1
+          exclusiveMinimum: 0
         maxClockDrift:
           type: string
           description: "Maximum allowed clock drift from NTP reference time, in ISO\

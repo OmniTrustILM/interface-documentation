@@ -3577,7 +3577,9 @@ components:
           description: RFC 9457 type URI identifying the problem type
           example: https://docs.otilm.com/problems/common/validation-failed
         title:
-          type: string
+          type:
+          - string
+          - "null"
           description: Short human-readable summary of the problem type
           example: Validation failed
         status:
@@ -3588,17 +3590,23 @@ components:
           maximum: 599
           minimum: 100
         detail:
-          type: string
+          type:
+          - string
+          - "null"
           description: Human-readable explanation specific to this occurrence
           example: One or more fields failed validation.
         instance:
-          type: string
+          type:
+          - string
+          - "null"
           format: uri
           description: "URI reference identifying the occurrence (e.g., request path\
             \ or operation ID)."
           example: https://api.example.org/foo/bar/123
         properties:
-          type: object
+          type:
+          - object
+          - "null"
           additionalProperties: {}
           description: Generic map of properties that are not known ahead of time
         errorCode:
@@ -5766,6 +5774,7 @@ components:
           description: List of all different types of attributes
           items:
             $ref: "#/components/schemas/BaseAttributeDtoV2"
+            description: Base Attribute definition
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
