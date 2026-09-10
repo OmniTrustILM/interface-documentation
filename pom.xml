@@ -28,7 +28,7 @@
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
 
         <!-- Dependency versions -->
-        <springdoc-openapi.version>2.9.1</springdoc-openapi.version>
+        <springdoc-openapi.version>3.1.1</springdoc-openapi.version>
         <snakeyaml.version>2.7</snakeyaml.version>
         <!-- Override Spring Boot's managed junit-jupiter.version (5.12.2) so the whole
              junit-bom moves coherently; junit.jupiter.version stays as an alias for the
