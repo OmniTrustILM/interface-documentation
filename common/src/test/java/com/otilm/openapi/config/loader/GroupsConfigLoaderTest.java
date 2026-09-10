@@ -1,14 +1,16 @@
 package com.otilm.openapi.config.loader;
 
 import com.otilm.openapi.config.model.GroupsConfig;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GroupsConfigLoaderTest {
 
@@ -67,7 +69,7 @@ class GroupsConfigLoaderTest {
 
         assertNotNull(config.getSecurity());
         assertEquals(1, config.getSecurity().baseSecurityInterfaces().size());
-        assertEquals("com.czertainly.openapi.BaseInterface", config.getSecurity().baseSecurityInterfaces().getFirst());
+        assertEquals("com.otilm.openapi.BaseInterface", config.getSecurity().baseSecurityInterfaces().getFirst());
         assertEquals(1, config.getSecurity().legacyControllers().size());
         assertEquals("com.example.LegacyController", config.getSecurity().legacyControllers().getFirst());
     }

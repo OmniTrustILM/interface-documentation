@@ -1,25 +1,28 @@
 package com.otilm.openapi.config.util;
 
 /**
- * Utility class for generating unique, collision-free class names for dummy implementations.
- * Uses package-based prefixes to ensure interfaces with the same simple name from different
- * packages generate unique implementation class names.
+ * Utility class for generating unique, collision-free class names for dummy implementations. Uses package-based
+ * prefixes to ensure interfaces with the same simple name from different packages generate unique implementation class
+ * names.
  * <p>
  * For example:
- * - com.czertainly.api.interfaces.core.web.CertificateController -> CoreWebCertificateControllerDummyImpl
- * - com.czertainly.api.interfaces.connector.CertificateController -> ConnectorCertificateControllerDummyImpl
- * - com.czertainly.api.interfaces.connector.v2.CertificateController -> ConnectorV2CertificateControllerDummyImpl
+ * <ul>
+ * <li>com.otilm.api.interfaces.core.web.CertificateController -> CoreWebCertificateControllerDummyImpl</li>
+ * <li>com.otilm.api.interfaces.connector.CertificateController -> ConnectorCertificateControllerDummyImpl</li>
+ * <li>com.otilm.api.interfaces.connector.v2.CertificateController -> ConnectorV2CertificateControllerDummyImpl</li>
+ * </ul>
  */
 public class ClassNameResolver {
 
-    private static final String BASE_PACKAGE = "com.czertainly.api.interfaces.";
+    private static final String BASE_PACKAGE = "com.otilm.api.interfaces.";
     public static final String DUMMY_IMPL = "DummyImpl";
 
-    private ClassNameResolver() {}
+    private ClassNameResolver() {
+    }
 
     /**
-     * Generates a unique implementation class name for the given interface.
-     * Uses package-based prefixes to prevent naming collisions.
+     * Generates a unique implementation class name for the given interface. Uses package-based prefixes to prevent
+     * naming collisions.
      *
      * @param interfaceClass the interface class
      * @return unique implementation class name (e.g., "CoreWebCertificateControllerDummyImpl")
@@ -31,8 +34,8 @@ public class ClassNameResolver {
     }
 
     /**
-     * Generates a unique implementation class name from a fully qualified interface name.
-     * This is useful when the interface class is not available for reflection.
+     * Generates a unique implementation class name from a fully qualified interface name. This is useful when the
+     * interface class is not available for reflection.
      *
      * @param interfaceFqn fully qualified interface name
      * @return unique implementation class name
@@ -51,13 +54,10 @@ public class ClassNameResolver {
     }
 
     /**
-     * Extracts a package prefix from the package name by removing the base package
-     * and capitalizing each segment.
+     * Extracts a package prefix from the package name by removing the base package and capitalizing each segment.
      * <p>
-     * Examples:
-     * - "com.czertainly.api.interfaces.core.web" -> "CoreWeb"
-     * - "com.czertainly.api.interfaces.connector.v2" -> "ConnectorV2"
-     * - "com.czertainly.api.interfaces.connector.common.v2" -> "ConnectorCommonV2"
+     * Examples: - "com.otilm.api.interfaces.core.web" -> "CoreWeb" - "com.otilm.api.interfaces.connector.v2" ->
+     * "ConnectorV2" - "com.otilm.api.interfaces.connector.common.v2" -> "ConnectorCommonV2"
      *
      * @param packageName the full package name
      * @return capitalized package prefix
@@ -71,9 +71,7 @@ public class ClassNameResolver {
         // If no relative path, use the last segment of the package
         if (relativePath.isEmpty()) {
             int lastDotIndex = packageName.lastIndexOf('.');
-            relativePath = lastDotIndex >= 0
-                    ? packageName.substring(lastDotIndex + 1)
-                    : packageName;
+            relativePath = lastDotIndex >= 0 ? packageName.substring(lastDotIndex + 1) : packageName;
         }
 
         // Split into segments and capitalize each
@@ -83,8 +81,7 @@ public class ClassNameResolver {
         for (String segment : segments) {
             if (!segment.isEmpty()) {
                 // Capitalize first letter, keep rest as-is (to preserve v2, v3, etc.)
-                prefix.append(Character.toUpperCase(segment.charAt(0)))
-                      .append(segment.substring(1));
+                prefix.append(Character.toUpperCase(segment.charAt(0))).append(segment.substring(1));
             }
         }
 

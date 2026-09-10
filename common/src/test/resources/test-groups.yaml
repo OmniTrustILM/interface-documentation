@@ -23,6 +23,6 @@ groups:
 
 security:
   baseSecurityInterfaces:
-    - "com.czertainly.openapi.BaseInterface"
+    - "com.otilm.openapi.BaseInterface"
   legacyControllers:
     - "com.example.LegacyController"

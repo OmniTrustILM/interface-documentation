@@ -6,3 +6,13 @@ openapi/doc-openapi-core-auth.yaml:
 openapi/doc-openapi-ilm-core.yaml:
   operation-2xx-response:
     - '#/paths/~1v2~1oauth2~1providers~1{provider}~1login/get/responses'
+openapi/doc-openapi-protocol-cmp.yaml:
+  operation-4xx-response:
+    - '#/paths/~1v1~1protocols~1cmp~1{cmpProfileName}/get/responses'
+    - '#/paths/~1v1~1protocols~1cmp~1{cmpProfileName}/post/responses'
+    - '#/paths/~1v1~1protocols~1cmp~1raProfile~1{raProfileName}/get/responses'
+    - '#/paths/~1v1~1protocols~1cmp~1raProfile~1{raProfileName}/post/responses'
+openapi/doc-openapi-protocol-tsp.yaml:
+  operation-4xx-response:
+    - '#/paths/~1v1~1protocols~1tsp~1{tspProfileName}/post/responses'
+    - '#/paths/~1v1~1protocols~1tsp~1signingProfiles~1{signingProfileName}/post/responses'

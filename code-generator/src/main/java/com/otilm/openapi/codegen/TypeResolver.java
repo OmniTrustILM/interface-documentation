@@ -1,12 +1,20 @@
 package com.otilm.openapi.codegen;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Handles type resolution and import management for generated code.
- * Detects naming conflicts when multiple classes share the same simple name
- * and determines when to use fully qualified names.
+ * Handles type resolution and import management for generated code. Detects naming conflicts when multiple classes
+ * share the same simple name and determines when to use fully qualified names.
  */
 public class TypeResolver {
 
@@ -20,8 +28,8 @@ public class TypeResolver {
     }
 
     /**
-     * Returns the set of import statements (fully qualified names) needed for the generated class.
-     * Excludes imports for conflicting names (which will use FQN inline).
+     * Returns the set of import statements (fully qualified names) needed for the generated class. Excludes imports for
+     * conflicting names (which will use FQN inline).
      */
     public Set<String> getNonConflictingImports() {
         Set<String> result = new LinkedHashSet<>();
@@ -35,8 +43,8 @@ public class TypeResolver {
     }
 
     /**
-     * Gets the appropriate type name to use in generated code.
-     * Returns a simple name for non-conflicting types, fully qualified name for conflicting types.
+     * Gets the appropriate type name to use in generated code. Returns a simple name for non-conflicting types, fully
+     * qualified name for conflicting types.
      */
     public String getTypeName(Class<?> type) {
         return getTypeName((Type) type);
@@ -115,8 +123,8 @@ public class TypeResolver {
     }
 
     /**
-     * Builds a map from simple class names to their fully qualified Class objects
-     * for all types used in the interface methods.
+     * Builds a map from simple class names to their fully qualified Class objects for all types used in the interface
+     * methods.
      */
     private Map<String, Set<Class<?>>> buildSimpleNameMap(Class<?> interfaceClass) {
         Map<String, Set<Class<?>>> map = new HashMap<>();
@@ -199,8 +207,8 @@ public class TypeResolver {
     }
 
     /**
-     * Detects class names that have multiple different fully qualified names.
-     * Returns a set of simple names that have conflicts.
+     * Detects class names that have multiple different fully qualified names. Returns a set of simple names that have
+     * conflicts.
      */
     private Set<String> detectConflicts(Map<String, Set<Class<?>>> simpleNameToClass) {
         Set<String> conflicts = new HashSet<>();

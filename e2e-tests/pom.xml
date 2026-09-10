@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.otilm</groupId>
-        <artifactId>doc-interface</artifactId>
+        <artifactId>interface-documentation</artifactId>
         <version>${revision}</version>
     </parent>
 
@@ -15,7 +15,7 @@
 
     <description>
         End-to-end tests for the OpenAPI generation pipeline.
-        Uses a small set of self-contained test interfaces (no dependency on com.czertainly:interfaces) to verify
+        Uses a small set of self-contained test interfaces (no dependency on com.otilm:interfaces) to verify
         hat code-generator, Spring Boot startup, and springdoc all produce correct OpenAPI output.
     </description>
 

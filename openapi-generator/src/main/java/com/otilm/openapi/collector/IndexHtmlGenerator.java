@@ -3,9 +3,6 @@ package com.otilm.openapi.collector;
 import com.otilm.openapi.config.loader.GroupsConfigLoader;
 import com.otilm.openapi.config.model.GroupConfiguration;
 import com.otilm.openapi.config.model.GroupsConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,28 +15,31 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Generates index.html from an index.html.template file, injecting the API list
- * arrays (coreApis, connectorApis, protocolApis) derived from groups.yaml in place
- * of the {@code // placeholder for the list of APIS} marker line.
+ * Generates index.html from an index.html.template file, injecting the API list arrays (coreApis, connectorApis,
+ * messagingApis, protocolApis) derived from groups.yaml in place of the {@code // placeholder for the list of APIS}
+ * marker line.
  * <p>
- * Each group with an {@code indexCategory} field ({@code core}, {@code connector},
- * or {@code protocol}) is included in the corresponding JavaScript array. Groups
- * without the field (e.g. cert-manager, ilm-core, legacy variants) are ignored.
+ * Each group with an {@code indexCategory} field ({@code core}, {@code connector}, {@code messaging}, or
+ * {@code protocol}) is included in the corresponding JavaScript array. Groups without the field (e.g. cert-manager,
+ * ilm-core, legacy variants) are ignored. Groups with an unrecognized {@code indexCategory} value cause the generator
+ * to fail.
  * <p>
  * The display name for each entry is resolved in the following order:
  * <ol>
- *   <li>{@code navLabel} – when present, used verbatim</li>
- *   <li>{@code title} – used after stripping a trailing {@code " API"} suffix</li>
- *   <li>{@code id} – fallback when title is also absent</li>
+ * <li>{@code navLabel} – when present, used verbatim</li>
+ * <li>{@code title} – used after stripping a trailing {@code " API"} suffix</li>
+ * <li>{@code id} – fallback when title is also absent</li>
  * </ol>
  * <p>
  * Arguments:
  * <ul>
- *   <li>args[0] – Path to groups.yaml</li>
- *   <li>args[1] – Path to index.html.template (read-only input)</li>
- *   <li>args[2] – Path to index.html (written as output)</li>
+ * <li>args[0] – Path to groups.yaml</li>
+ * <li>args[1] – Path to index.html.template (read-only input)</li>
+ * <li>args[2] – Path to index.html (written as output)</li>
  * </ul>
  */
 public class IndexHtmlGenerator {
@@ -48,24 +48,20 @@ public class IndexHtmlGenerator {
     /**
      * Category names in the order they appear in the JS block.
      */
-    private static final List<String> CATEGORY_ORDER = List.of("core", "connector", "protocol");
+    private static final List<String> CATEGORY_ORDER = List.of("core", "connector", "messaging", "protocol");
 
     /**
      * Maps indexCategory value → JS variable name.
      */
-    private static final Map<String, String> VAR_NAMES = Map.of(
-            "core", "coreApis",
-            "connector", "connectorApis",
-            "protocol", "protocolApis"
-    );
+    private static final Map<String, String> VAR_NAMES = Map
+            .of("core", "coreApis", "connector", "connectorApis", "messaging", "messagingApis", "protocol",
+                    "protocolApis");
 
     /**
-     * Matches the single placeholder line {@code // placeholder for the list of APIS},
-     * including any leading whitespace, which marks the insertion point for the
-     * generated arrays block.
+     * Matches the single placeholder line {@code // placeholder for the list of APIS}, including any leading
+     * whitespace, which marks the insertion point for the generated arrays block.
      */
-    private static final Pattern ARRAYS_PATTERN = Pattern.compile(
-            "([ \\t]*)// placeholder for the list of APIS");
+    private static final Pattern ARRAYS_PATTERN = Pattern.compile("([ \\t]*)// placeholder for the list of APIS");
 
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
@@ -112,8 +108,8 @@ public class IndexHtmlGenerator {
     }
 
     /**
-     * Groups the given list by {@code indexCategory}, preserving {@link #CATEGORY_ORDER}
-     * and sorting each bucket alphabetically by title.
+     * Groups the given list by {@code indexCategory}, preserving {@link #CATEGORY_ORDER} and sorting each bucket
+     * alphabetically by title.
      */
     private static Map<String, List<GroupConfiguration>> bucketByCategory(List<GroupConfiguration> groups) {
         Map<String, List<GroupConfiguration>> buckets = new LinkedHashMap<>();
@@ -122,12 +118,20 @@ public class IndexHtmlGenerator {
         }
         for (GroupConfiguration group : groups) {
             String cat = group.getIndexCategory();
-            if (cat != null && buckets.containsKey(cat)) {
-                buckets.get(cat).add(group);
+            if (cat == null) {
+                continue;
             }
+            if (!buckets.containsKey(cat)) {
+                log
+                        .error("Error: group '{}' has unknown indexCategory '{}'. Allowed values: {}", group.getId(),
+                                cat, CATEGORY_ORDER);
+                System.exit(1);
+            }
+            buckets.get(cat).add(group);
         }
-        buckets.values().forEach(list -> list.sort(
-                Comparator.comparing(g -> g.getTitle() != null ? g.getTitle() : g.getId())));
+        buckets
+                .values()
+                .forEach(list -> list.sort(Comparator.comparing(g -> g.getTitle() != null ? g.getTitle() : g.getId())));
         return buckets;
     }
 
@@ -141,8 +145,12 @@ public class IndexHtmlGenerator {
             js.append("    var ").append(VAR_NAMES.get(cat)).append(" = [\n");
             for (GroupConfiguration g : buckets.get(cat)) {
                 String name = resolveNavName(g);
-                js.append("      {\"name\": ").append(jsonString(name))
-                        .append(", \"url\": ").append(jsonString(g.getId() + ".html")).append("},\n");
+                js
+                        .append("      {\"name\": ")
+                        .append(jsonString(name))
+                        .append(", \"url\": ")
+                        .append(jsonString(g.getId() + ".html"))
+                        .append("},\n");
             }
             js.append("    ];\n\n");
         }
@@ -158,9 +166,8 @@ public class IndexHtmlGenerator {
     }
 
     /**
-     * Reads {@code templateHtmlPath}, replaces the placeholder line with {@code newBlock},
-     * and writes the result to {@code indexHtmlPath}.
-     * The original indentation of the placeholder line is preserved.
+     * Reads {@code templateHtmlPath}, replaces the placeholder line with {@code newBlock}, and writes the result to
+     * {@code indexHtmlPath}. The original indentation of the placeholder line is preserved.
      */
     private static void updateIndexHtml(Path templateHtmlPath, Path indexHtmlPath, String newBlock) throws IOException {
         String html = Files.readString(templateHtmlPath);
@@ -170,7 +177,8 @@ public class IndexHtmlGenerator {
             System.exit(1);
         }
         String indent = m.group(1);
-        String indented = newBlock.lines()
+        String indented = newBlock
+                .lines()
                 .map(line -> line.isBlank() ? line : indent + line)
                 .collect(Collectors.joining("\n"));
         Files.writeString(indexHtmlPath, html.substring(0, m.start()) + indented + html.substring(m.end()));

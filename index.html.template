@@ -39,6 +39,11 @@
         </ul>
       </li>
       <li class="active">
+        <a href="#messagingApiSubmenu" data-toggle="collapse" aria-expanded="false">Messaging APIs</a>
+        <ul class="collapse list-unstyled" id="messagingApiSubmenu">
+        </ul>
+      </li>
+      <li class="active">
         <a href="#protocolApiSubmenu" data-toggle="collapse" aria-expanded="false">Protocol APIs</a>
         <ul class="collapse list-unstyled" id="protocolApiSubmenu">
         </ul>
@@ -99,6 +104,20 @@
 
     var $list = document.getElementById("connectorApiSubmenu");
     connectorApis.forEach(function (api) {
+      var $listitem = document.createElement("li");
+      $listitem.setAttribute("data-link", api.url);
+      $listitem.setAttribute("class", "dropdown-item");
+      //$listitem.innerText = api.name;
+      $listitem.addEventListener("click", onClick);
+      var $lista = document.createElement("a");
+      $lista.setAttribute("href", "#");
+      $lista.innerText = api.name;
+      $listitem.appendChild($lista);
+      $list.appendChild($listitem);
+    });
+
+    var $list = document.getElementById("messagingApiSubmenu");
+    messagingApis.forEach(function (api) {
       var $listitem = document.createElement("li");
       $listitem.setAttribute("data-link", api.url);
       $listitem.setAttribute("class", "dropdown-item");

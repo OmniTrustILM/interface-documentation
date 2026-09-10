@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.otilm</groupId>
-        <artifactId>doc-interface</artifactId>
+        <artifactId>interface-documentation</artifactId>
         <version>${revision}</version>
     </parent>
 
@@ -20,7 +20,7 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>com.czertainly</groupId>
+            <groupId>com.otilm</groupId>
             <artifactId>interfaces</artifactId>
             <version>${apiVersion}</version>
         </dependency>

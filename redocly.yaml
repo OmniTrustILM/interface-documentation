@@ -3,3 +3,8 @@ extends:
 
 rules:
   no-ambiguous-paths: warn
+  # Attribute content schemas such as BaseAttributeContentDtoV2 use a bare `oneOf`
+  # whose branches all share `reference` and `data`, so none excludes the others.
+  # V3 solves this with a required `contentType` discriminator; V2 cannot gain one
+  # without breaking existing clients, so warn here until V2 sunsets.
+  no-illogical-composition-keywords: warn

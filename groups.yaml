@@ -21,13 +21,14 @@
 # ---------------------------------------------------------------------------
 security:
   baseSecurityInterfaces:
-    - com.czertainly.api.interfaces.AuthProtectedController
-    - com.czertainly.api.interfaces.AuthProtectedConnectorController
-    - com.czertainly.api.interfaces.connector.common.v2.AuthProtectedConnectorController
-    - com.czertainly.api.interfaces.NoAuthController
-    - com.czertainly.api.interfaces.connector.common.v2.NoAuthConnectorController
+    - com.otilm.api.interfaces.AuthProtectedController
+    - com.otilm.api.interfaces.AuthProtectedConnectorController
+    - com.otilm.api.interfaces.NoAuthController
+    - com.otilm.api.interfaces.InBandResponseController
+    - com.otilm.api.interfaces.connector.common.v2.AuthProtectedConnectorController
+    - com.otilm.api.interfaces.connector.common.v2.NoAuthConnectorController
   legacyControllers:
-    - com.czertainly.api.interfaces.core.web.InfoController
+    - com.otilm.api.interfaces.core.web.InfoController
 
 # ---------------------------------------------------------------------------
 # groups
@@ -42,6 +43,7 @@ security:
 #   indexCategory  Portal navigation category. Recognized values:
 #                    connector  – connector-side APIs
 #                    core       – platform core APIs
+#                    messaging  – messaging APIs
 #                    protocol   – protocol gateway APIs
 #                  Groups without this field are not included in the portal navigation page.
 #   navLabel       Optional override for the display name used in the generated portal navigation entry.
@@ -64,143 +66,208 @@ groups:
     title: Cert Manager
     description: REST API for implementations of cert-manager issuer
     interfaces:
-      - com.czertainly.api.interfaces.core.client.v2.ClientOperationController
-      - com.czertainly.api.interfaces.core.web.ApprovalController
-      - com.czertainly.api.interfaces.core.web.AuthController
-      - com.czertainly.api.interfaces.core.web.CertificateController
-      - com.czertainly.api.interfaces.core.web.InfoController
-      - com.czertainly.api.interfaces.core.web.RAProfileManagementController
+      - com.otilm.api.interfaces.core.client.v2.ClientOperationController
+      - com.otilm.api.interfaces.core.web.ApprovalController
+      - com.otilm.api.interfaces.core.web.AuthController
+      - com.otilm.api.interfaces.core.web.CertificateController
+      - com.otilm.api.interfaces.core.web.InfoController
+      - com.otilm.api.interfaces.core.web.RAProfileManagementController
 
   - id: doc-openapi-connector-authority-provider-legacy
     groupName: connector-authority-provider-legacy
     title: Authority Provider Legacy API
     indexCategory: connector
     description: REST API for implementations of custom Legacy Authority Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.AuthorityInstanceController
-      - com.czertainly.api.interfaces.connector.CertificateController
-      - com.czertainly.api.interfaces.connector.EndEntityController
-      - com.czertainly.api.interfaces.connector.EndEntityProfilesController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.AuthorityInstanceController
+      - com.otilm.api.interfaces.connector.CertificateController
+      - com.otilm.api.interfaces.connector.EndEntityController
+      - com.otilm.api.interfaces.connector.EndEntityProfilesController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
 
   - id: doc-openapi-connector-authority-provider-v2
     groupName: connector-authority-provider-v2
     title: Authority Provider v2 API
     indexCategory: connector
     description: REST API for implementations of custom v2 Authority Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.AuthorityInstanceController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
-      - com.czertainly.api.interfaces.connector.v2.CertificateController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.AuthorityInstanceController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.v2.CertificateController
+
+  - id: doc-openapi-connector-authority-provider-v3
+    groupName: connector-authority-provider-v3
+    title: Authority Provider v3 API
+    indexCategory: connector
+    description: REST API for implementations of custom v3 Authority Provider
+    serverUrl: https://demo.otilm.com
+    extensions:
+      x-metrics-profile: "`com.otilm.api.interfaces.connector.common.v2.MetricsController.METRICS_CONFIG`"
+    interfaces:
+      - com.otilm.api.interfaces.connector.common.v2.AttributesController
+      - com.otilm.api.interfaces.connector.common.v2.HealthController
+      - com.otilm.api.interfaces.connector.common.v2.InfoController
+      - com.otilm.api.interfaces.connector.common.v2.MetricsController
+      - com.otilm.api.interfaces.connector.v3.AuthorityController
+      - com.otilm.api.interfaces.connector.v3.CertificateController
 
   - id: doc-openapi-connector-compliance-provider
     groupName: connector-compliance-provider
     title: Compliance Provider API
     indexCategory: connector
     description: REST API for implementations of custom Compliance Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.ComplianceController
-      - com.czertainly.api.interfaces.connector.ComplianceRulesController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.ComplianceController
+      - com.otilm.api.interfaces.connector.ComplianceRulesController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
 
   - id: doc-openapi-connector-compliance-provider-v2
     groupName: connector-compliance-provider-v2
     title: Compliance Provider v2 API
     indexCategory: connector
     description: REST API for implementations of custom v2 Compliance Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
-      - com.czertainly.api.interfaces.connector.v2.ComplianceController
-      - com.czertainly.api.interfaces.connector.v2.ComplianceRuleController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.v2.ComplianceController
+      - com.otilm.api.interfaces.connector.v2.ComplianceRuleController
 
   - id: doc-openapi-connector-credential-provider
     groupName: connector-credential-provider
     title: Credential Provider API
     indexCategory: connector
     description: REST API for implementations of custom Credential Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
 
   - id: doc-openapi-connector-cryptography-provider
     groupName: connector-cryptography-provider
     title: Cryptography Provider API
     indexCategory: connector
     description: REST API for implementations of custom Cryptography Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
-      - com.czertainly.api.interfaces.connector.cryptography.CryptographicOperationsController
-      - com.czertainly.api.interfaces.connector.cryptography.KeyManagementController
-      - com.czertainly.api.interfaces.connector.cryptography.TokenInstanceController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.cryptography.CryptographicOperationsController
+      - com.otilm.api.interfaces.connector.cryptography.KeyManagementController
+      - com.otilm.api.interfaces.connector.cryptography.TokenInstanceController
+
+  - id: doc-openapi-connector-cryptography-provider-v2
+    groupName: connector-cryptography-provider-v2
+    title: Cryptography Provider v2 API
+    indexCategory: connector
+    description: REST API for implementations of custom v2 Cryptography Provider
+    serverUrl: https://demo.otilm.com
+    extensions:
+      x-metrics-profile: "`com.otilm.api.interfaces.connector.common.v2.MetricsController.METRICS_CONFIG`"
+    interfaces:
+      - com.otilm.api.interfaces.connector.common.v2.AttributesController
+      - com.otilm.api.interfaces.connector.common.v2.HealthController
+      - com.otilm.api.interfaces.connector.common.v2.InfoController
+      - com.otilm.api.interfaces.connector.common.v2.MetricsController
+      - com.otilm.api.interfaces.connector.cryptography.v2.CryptographicOperationsController
+      - com.otilm.api.interfaces.connector.cryptography.v2.KeyController
+      - com.otilm.api.interfaces.connector.cryptography.v2.TokenController
 
   - id: doc-openapi-connector-discovery-provider
     groupName: connector-discovery-provider
     title: Discovery Provider API
     indexCategory: connector
     description: REST API for implementations of custom Discovery Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.DiscoveryController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.DiscoveryController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
+
+  - id: doc-openapi-connector-discovery-provider-v2
+    groupName: connector-discovery-provider-v2
+    title: Discovery Provider v2 API
+    indexCategory: connector
+    description: REST API for implementations of custom v2 Discovery Provider
+    serverUrl: https://demo.otilm.com
+    extensions:
+      x-metrics-profile: "`com.otilm.api.interfaces.connector.common.v2.MetricsController.METRICS_CONFIG`"
+    interfaces:
+      - com.otilm.api.interfaces.connector.common.v2.AttributesController
+      - com.otilm.api.interfaces.connector.common.v2.HealthController
+      - com.otilm.api.interfaces.connector.common.v2.InfoController
+      - com.otilm.api.interfaces.connector.common.v2.MetricsController
+      - com.otilm.api.interfaces.connector.discovery.v2.DiscoveryMetadataController
+      - com.otilm.api.interfaces.connector.discovery.v2.DiscoveryOperationController
 
   - id: doc-openapi-connector-entity-provider
     groupName: connector-entity-provider
     title: Entity Provider API
     indexCategory: connector
     description: REST API for implementations of custom Entity Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
-      - com.czertainly.api.interfaces.connector.entity.EntityController
-      - com.czertainly.api.interfaces.connector.entity.LocationController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.entity.EntityController
+      - com.otilm.api.interfaces.connector.entity.LocationController
 
   - id: doc-openapi-connector-notification-provider
     groupName: connector-notification-provider
     title: Notification Provider API
     indexCategory: connector
     description: REST API for implementations of custom Notification Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     interfaces:
-      - com.czertainly.api.interfaces.connector.AttributesController
-      - com.czertainly.api.interfaces.connector.HealthController
-      - com.czertainly.api.interfaces.connector.InfoController
-      - com.czertainly.api.interfaces.connector.NotificationInstanceController
+      - com.otilm.api.interfaces.connector.AttributesController
+      - com.otilm.api.interfaces.connector.HealthController
+      - com.otilm.api.interfaces.connector.InfoController
+      - com.otilm.api.interfaces.connector.NotificationInstanceController
 
   - id: doc-openapi-connector-secret-provider
     groupName: connector-secret-provider
     title: Secret Provider API
     indexCategory: connector
     description: REST API for implementations of custom Secret Provider
-    serverUrl: https://demo.czertainly.online
+    serverUrl: https://demo.otilm.com
     extensions:
-      x-metrics-profile: "`com.czertainly.api.interfaces.connector.common.v2.MetricsController.METRICS_CONFIG`"
+      x-metrics-profile: "`com.otilm.api.interfaces.connector.common.v2.MetricsController.METRICS_CONFIG`"
     interfaces:
-      - com.czertainly.api.interfaces.connector.common.v2.HealthController
-      - com.czertainly.api.interfaces.connector.common.v2.InfoController
-      - com.czertainly.api.interfaces.connector.common.v2.MetricsController
-      - com.czertainly.api.interfaces.connector.secrets.SecretController
-      - com.czertainly.api.interfaces.connector.secrets.VaultController
+      - com.otilm.api.interfaces.connector.common.v2.AttributesController
+      - com.otilm.api.interfaces.connector.common.v2.HealthController
+      - com.otilm.api.interfaces.connector.common.v2.InfoController
+      - com.otilm.api.interfaces.connector.common.v2.MetricsController
+      - com.otilm.api.interfaces.connector.secrets.SecretController
+      - com.otilm.api.interfaces.connector.secrets.VaultController
+
+  - id: doc-openapi-connector-signature-formatting-provider
+    groupName: connector-signature-formatting-provider
+    title: Signature Formatting Provider API
+    indexCategory: connector
+    description: REST API for implementations of custom Signature Formatting Provider
+    serverUrl: https://demo.otilm.com
+    extensions:
+      x-metrics-profile: "`com.otilm.api.interfaces.connector.common.v2.MetricsController.METRICS_CONFIG`"
+    interfaces:
+      - com.otilm.api.interfaces.connector.common.v2.AttributesController
+      - com.otilm.api.interfaces.connector.common.v2.HealthController
+      - com.otilm.api.interfaces.connector.common.v2.InfoController
+      - com.otilm.api.interfaces.connector.common.v2.MetricsController
+      - com.otilm.api.interfaces.connector.signing.SignatureFormattingController
 
   - id: doc-openapi-core-acme
     groupName: core-acme
@@ -208,8 +275,8 @@ groups:
     indexCategory: core
     description: REST API for managing ACME Profiles and ACME Accounts in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.AcmeAccountController
-      - com.czertainly.api.interfaces.core.web.AcmeProfileController
+      - com.otilm.api.interfaces.core.web.AcmeAccountController
+      - com.otilm.api.interfaces.core.web.AcmeProfileController
 
   - id: doc-openapi-core-approval
     groupName: core-approval
@@ -217,8 +284,8 @@ groups:
     indexCategory: core
     description: REST API for approvals in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.ApprovalController
-      - com.czertainly.api.interfaces.core.web.ApprovalProfileController
+      - com.otilm.api.interfaces.core.web.ApprovalController
+      - com.otilm.api.interfaces.core.web.ApprovalProfileController
 
   - id: doc-openapi-core-attribute
     groupName: core-attribute
@@ -226,8 +293,8 @@ groups:
     indexCategory: core
     description: REST API for managing Custom attributes and global metadata in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.CustomAttributeController
-      - com.czertainly.api.interfaces.core.web.GlobalMetadataController
+      - com.otilm.api.interfaces.core.web.CustomAttributeController
+      - com.otilm.api.interfaces.core.web.GlobalMetadataController
 
   - id: doc-openapi-core-auth
     groupName: core-auth
@@ -235,10 +302,10 @@ groups:
     indexCategory: core
     description: REST API for managing users, roles, permissions and OAuth2 provider logins in the platform.
     interfaces:
-      - com.czertainly.api.interfaces.core.web.AuthController
-      - com.czertainly.api.interfaces.core.web.RoleManagementController
-      - com.czertainly.api.interfaces.core.web.UserManagementController
-      - com.czertainly.api.interfaces.core.web.v2.OAuth2LoginController
+      - com.otilm.api.interfaces.core.web.AuthController
+      - com.otilm.api.interfaces.core.web.RoleManagementController
+      - com.otilm.api.interfaces.core.web.UserManagementController
+      - com.otilm.api.interfaces.core.web.v2.OAuth2LoginController
 
   - id: doc-openapi-core-authority
     groupName: core-authority
@@ -246,7 +313,7 @@ groups:
     indexCategory: core
     description: REST API for managing Authorities in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.AuthorityInstanceController
+      - com.otilm.api.interfaces.core.web.AuthorityInstanceController
 
   - id: doc-openapi-core-certificate
     groupName: core-certificate
@@ -254,7 +321,7 @@ groups:
     indexCategory: core
     description: REST API for managing Certificates in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.CertificateController
+      - com.otilm.api.interfaces.core.web.CertificateController
 
   - id: doc-openapi-core-client-operations
     groupName: core-client-operations
@@ -262,22 +329,22 @@ groups:
     indexCategory: core
     description: REST API for Client Operations
     interfaces:
-      - com.czertainly.api.interfaces.core.client.ClientOperationController
-      - com.czertainly.api.interfaces.core.client.v2.ClientOperationController
+      - com.otilm.api.interfaces.core.client.ClientOperationController
+      - com.otilm.api.interfaces.core.client.v2.ClientOperationController
 
   - id: doc-openapi-core-client-operations-legacy
     groupName: core-client-operations-legacy
     title: Legacy Client Operations API
     description: REST API for Legacy Client Operations
     interfaces:
-      - com.czertainly.api.interfaces.core.client.ClientOperationController
+      - com.otilm.api.interfaces.core.client.ClientOperationController
 
   - id: doc-openapi-core-client-operations-v2
     groupName: core-client-operations-v2
     title: Client Operations v2 API
     description: REST API for v2 Client Operations
     interfaces:
-      - com.czertainly.api.interfaces.core.client.v2.ClientOperationController
+      - com.otilm.api.interfaces.core.client.v2.ClientOperationController
 
   - id: doc-openapi-core-cmp
     groupName: core-cmp
@@ -285,7 +352,15 @@ groups:
     indexCategory: core
     description: REST API for managing CMP Profiles in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.CmpProfileController
+      - com.otilm.api.interfaces.core.web.CmpProfileController
+
+  - id: doc-openapi-core-comment
+    groupName: core-comment
+    title: Comments API
+    indexCategory: core
+    description: REST API for managing comments on objects in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.CommentController
 
   - id: doc-openapi-core-compliance-profile
     groupName: core-compliance-profile
@@ -293,7 +368,7 @@ groups:
     indexCategory: core
     description: REST API for managing Compliance Profiles in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.ComplianceProfileController
+      - com.otilm.api.interfaces.core.web.ComplianceProfileController
 
   - id: doc-openapi-core-compliance-v2
     groupName: core-compliance-v2
@@ -301,8 +376,8 @@ groups:
     indexCategory: core
     description: REST API for managing Compliance Profiles v2 and check compliance v2
     interfaces:
-      - com.czertainly.api.interfaces.core.web.v2.ComplianceController
-      - com.czertainly.api.interfaces.core.web.v2.ComplianceProfileController
+      - com.otilm.api.interfaces.core.web.v2.ComplianceController
+      - com.otilm.api.interfaces.core.web.v2.ComplianceProfileController
 
   - id: doc-openapi-core-connector
     groupName: core-connector
@@ -310,11 +385,11 @@ groups:
     indexCategory: core
     description: REST API for managing Connectors in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.connector.ConnectorRegistrationController
-      - com.czertainly.api.interfaces.core.web.CallbackController
-      - com.czertainly.api.interfaces.core.web.ConnectorAuthController
-      - com.czertainly.api.interfaces.core.web.ConnectorController
-      - com.czertainly.api.interfaces.core.web.v2.ConnectorController
+      - com.otilm.api.interfaces.core.connector.ConnectorRegistrationController
+      - com.otilm.api.interfaces.core.web.CallbackController
+      - com.otilm.api.interfaces.core.web.ConnectorAuthController
+      - com.otilm.api.interfaces.core.web.ConnectorController
+      - com.otilm.api.interfaces.core.web.v2.ConnectorController
 
   - id: doc-openapi-core-credential
     groupName: core-credential
@@ -322,7 +397,7 @@ groups:
     indexCategory: core
     description: REST API for managing Credentials in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.CredentialController
+      - com.otilm.api.interfaces.core.web.CredentialController
 
   - id: doc-openapi-core-cryptographic-key
     groupName: core-cryptographic-key
@@ -331,7 +406,7 @@ groups:
     navLabel: Key
     description: REST API for managing keys in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.CryptographicKeyController
+      - com.otilm.api.interfaces.core.web.CryptographicKeyController
 
   - id: doc-openapi-core-cryptographic-operations
     groupName: core-cryptographic-operations
@@ -339,7 +414,7 @@ groups:
     indexCategory: core
     description: REST API for Cryptographic Operations
     interfaces:
-      - com.czertainly.api.interfaces.core.web.CryptographicOperationsController
+      - com.otilm.api.interfaces.core.web.CryptographicOperationsController
 
   - id: doc-openapi-core-discovery
     groupName: core-discovery
@@ -347,7 +422,7 @@ groups:
     indexCategory: core
     description: REST API for managing Discoveries in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.DiscoveryController
+      - com.otilm.api.interfaces.core.web.DiscoveryController
 
   - id: doc-openapi-core-entity
     groupName: core-entity
@@ -355,7 +430,7 @@ groups:
     indexCategory: core
     description: REST API for managing Entities in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.EntityInstanceController
+      - com.otilm.api.interfaces.core.web.EntityInstanceController
 
   - id: doc-openapi-core-group
     groupName: core-group
@@ -363,7 +438,7 @@ groups:
     indexCategory: core
     description: REST API for managing Group in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.GroupController
+      - com.otilm.api.interfaces.core.web.GroupController
 
   - id: doc-openapi-core-local
     groupName: core-local
@@ -371,7 +446,7 @@ groups:
     indexCategory: core
     description: REST API for local administration operations without authentication
     interfaces:
-      - com.czertainly.api.interfaces.core.local.LocalController
+      - com.otilm.api.interfaces.core.local.LocalController
 
   - id: doc-openapi-core-location
     groupName: core-location
@@ -379,7 +454,7 @@ groups:
     indexCategory: core
     description: REST API for managing Locations in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.LocationManagementController
+      - com.otilm.api.interfaces.core.web.LocationManagementController
 
   - id: doc-openapi-core-notification
     groupName: core-notification
@@ -387,9 +462,9 @@ groups:
     indexCategory: core
     description: REST API for notifications in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.NotificationController
-      - com.czertainly.api.interfaces.core.web.NotificationInstanceController
-      - com.czertainly.api.interfaces.core.web.NotificationProfileController
+      - com.otilm.api.interfaces.core.web.NotificationController
+      - com.otilm.api.interfaces.core.web.NotificationInstanceController
+      - com.otilm.api.interfaces.core.web.NotificationProfileController
 
   - id: doc-openapi-core-other
     groupName: core-other
@@ -398,14 +473,24 @@ groups:
     navLabel: Other
     description: Various uncategorized REST APIs of the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.AuditLogController
-      - com.czertainly.api.interfaces.core.web.CbomController
-      - com.czertainly.api.interfaces.core.web.CustomOidEntryController
-      - com.czertainly.api.interfaces.core.web.EnumController
-      - com.czertainly.api.interfaces.core.web.InfoController
-      - com.czertainly.api.interfaces.core.web.ResourceController
-      - com.czertainly.api.interfaces.core.web.SettingController
-      - com.czertainly.api.interfaces.core.web.StatisticsController
+      - com.otilm.api.interfaces.core.web.AuditLogController
+      - com.otilm.api.interfaces.core.web.BrandingController
+      - com.otilm.api.interfaces.core.web.CbomController
+      - com.otilm.api.interfaces.core.web.CustomOidEntryController
+      - com.otilm.api.interfaces.core.web.EnumController
+      - com.otilm.api.interfaces.core.web.InfoController
+      - com.otilm.api.interfaces.core.web.ListViewController
+      - com.otilm.api.interfaces.core.web.ResourceController
+      - com.otilm.api.interfaces.core.web.SettingController
+      - com.otilm.api.interfaces.core.web.StatisticsController
+
+  - id: doc-openapi-core-proxy
+    groupName: core-proxy
+    title: Proxy API
+    indexCategory: core
+    description: REST API for managing Proxies in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.ProxyController
 
   - id: doc-openapi-core-ra-profile
     groupName: core-ra-profile
@@ -413,7 +498,7 @@ groups:
     indexCategory: core
     description: REST API for managing RA Profiles in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.RAProfileManagementController
+      - com.otilm.api.interfaces.core.web.RAProfileManagementController
 
   - id: doc-openapi-core-scep
     groupName: core-scep
@@ -421,7 +506,7 @@ groups:
     indexCategory: core
     description: REST API for managing SCEP Profiles in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.ScepProfileController
+      - com.otilm.api.interfaces.core.web.ScepProfileController
 
   - id: doc-openapi-core-scheduler
     groupName: core-scheduler
@@ -429,7 +514,7 @@ groups:
     indexCategory: core
     description: REST API for managing Scheduler and its jobs in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.SchedulerController
+      - com.otilm.api.interfaces.core.web.SchedulerController
 
   - id: doc-openapi-core-secret
     groupName: core-secret
@@ -437,7 +522,31 @@ groups:
     indexCategory: core
     description: REST API for managing secrets in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.SecretManagementController
+      - com.otilm.api.interfaces.core.web.SecretManagementController
+
+  - id: doc-openapi-core-signing-profile
+    groupName: core-signing-profile
+    title: Signing Profile API
+    indexCategory: core
+    description: REST API for managing Signing Profiles in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.SigningProfileController
+
+  - id: doc-openapi-core-signing-record
+    groupName: core-signing-record
+    title: Signing Record API
+    indexCategory: core
+    description: REST API for managing Signing Records in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.SigningRecordController
+
+  - id: doc-openapi-core-time-quality-configuration
+    groupName: core-time-quality-configuration
+    title: Time Quality Configuration API
+    indexCategory: core
+    description: REST API for managing Time Quality Configurations in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.TimeQualityConfigurationController
 
   - id: doc-openapi-core-token
     groupName: core-token
@@ -446,7 +555,7 @@ groups:
     navLabel: Token
     description: REST API for managing tokens in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.TokenInstanceController
+      - com.otilm.api.interfaces.core.web.TokenInstanceController
 
   - id: doc-openapi-core-token-profile
     groupName: core-token-profile
@@ -454,7 +563,24 @@ groups:
     indexCategory: core
     description: REST API for managing Token Profiles in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.TokenProfileController
+      - com.otilm.api.interfaces.core.web.TokenProfileController
+
+  - id: doc-openapi-core-trusted-certificate
+    groupName: core-trusted-certificate
+    title: Trusted Certificate API
+    indexCategory: core
+    description: REST API for managing Trusted Certificates in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.TrustedCertificateController
+
+  - id: doc-openapi-core-tsp-profile
+    groupName: core-tsp-profile
+    title: TSP Profile API
+    indexCategory: core
+    description: REST API for managing TSP (Timestamping Protocol) Profiles in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.TspProfileBasicCredentialController
+      - com.otilm.api.interfaces.core.web.TspProfileController
 
   - id: doc-openapi-core-vault
     groupName: core-vault
@@ -462,7 +588,7 @@ groups:
     indexCategory: core
     description: REST API for managing Vaults in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.VaultInstanceController
+      - com.otilm.api.interfaces.core.web.VaultInstanceController
 
   - id: doc-openapi-core-vault-profile
     groupName: core-vault-profile
@@ -470,7 +596,7 @@ groups:
     indexCategory: core
     description: REST API for managing Vault Profiles in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.VaultProfileController
+      - com.otilm.api.interfaces.core.web.VaultProfileController
 
   - id: doc-openapi-core-workflows
     groupName: core-workflows
@@ -478,68 +604,88 @@ groups:
     indexCategory: core
     description: REST API for managing workflows resources in the platform
     interfaces:
-      - com.czertainly.api.interfaces.core.web.ActionController
-      - com.czertainly.api.interfaces.core.web.RuleController
-      - com.czertainly.api.interfaces.core.web.TriggerController
+      - com.otilm.api.interfaces.core.web.ActionController
+      - com.otilm.api.interfaces.core.web.RuleController
+      - com.otilm.api.interfaces.core.web.TriggerController
+      - com.otilm.api.interfaces.core.web.EventController
 
   - id: doc-openapi-ilm-core
-    groupName: czertainly-core
+    groupName: ilm-core
     title: Core API
-    description: REST API for CZERTAINLY Core
+    description: REST API for ILM Core
     security: []
     interfaces:
-      - com.czertainly.api.interfaces.core.client.v2.ClientOperationController
-      - com.czertainly.api.interfaces.core.connector.ConnectorRegistrationController
-      - com.czertainly.api.interfaces.core.local.LocalController
-      - com.czertainly.api.interfaces.core.web.AcmeAccountController
-      - com.czertainly.api.interfaces.core.web.AcmeProfileController
-      - com.czertainly.api.interfaces.core.web.ActionController
-      - com.czertainly.api.interfaces.core.web.ApprovalController
-      - com.czertainly.api.interfaces.core.web.ApprovalProfileController
-      - com.czertainly.api.interfaces.core.web.AuditLogController
-      - com.czertainly.api.interfaces.core.web.AuthController
-      - com.czertainly.api.interfaces.core.web.AuthorityInstanceController
-      - com.czertainly.api.interfaces.core.web.CallbackController
-      - com.czertainly.api.interfaces.core.web.CbomController
-      - com.czertainly.api.interfaces.core.web.CertificateController
-      - com.czertainly.api.interfaces.core.web.CmpProfileController
-      - com.czertainly.api.interfaces.core.web.ComplianceProfileController
-      - com.czertainly.api.interfaces.core.web.ConnectorAuthController
-      - com.czertainly.api.interfaces.core.web.ConnectorController
-      - com.czertainly.api.interfaces.core.web.CredentialController
-      - com.czertainly.api.interfaces.core.web.CryptographicKeyController
-      - com.czertainly.api.interfaces.core.web.CryptographicOperationsController
-      - com.czertainly.api.interfaces.core.web.CustomAttributeController
-      - com.czertainly.api.interfaces.core.web.CustomOidEntryController
-      - com.czertainly.api.interfaces.core.web.DiscoveryController
-      - com.czertainly.api.interfaces.core.web.EntityInstanceController
-      - com.czertainly.api.interfaces.core.web.EnumController
-      - com.czertainly.api.interfaces.core.web.GlobalMetadataController
-      - com.czertainly.api.interfaces.core.web.GroupController
-      - com.czertainly.api.interfaces.core.web.InfoController
-      - com.czertainly.api.interfaces.core.web.LocationManagementController
-      - com.czertainly.api.interfaces.core.web.NotificationController
-      - com.czertainly.api.interfaces.core.web.NotificationInstanceController
-      - com.czertainly.api.interfaces.core.web.NotificationProfileController
-      - com.czertainly.api.interfaces.core.web.RAProfileManagementController
-      - com.czertainly.api.interfaces.core.web.ResourceController
-      - com.czertainly.api.interfaces.core.web.RoleManagementController
-      - com.czertainly.api.interfaces.core.web.RuleController
-      - com.czertainly.api.interfaces.core.web.ScepProfileController
-      - com.czertainly.api.interfaces.core.web.SchedulerController
-      - com.czertainly.api.interfaces.core.web.SecretManagementController
-      - com.czertainly.api.interfaces.core.web.SettingController
-      - com.czertainly.api.interfaces.core.web.StatisticsController
-      - com.czertainly.api.interfaces.core.web.TokenInstanceController
-      - com.czertainly.api.interfaces.core.web.TokenProfileController
-      - com.czertainly.api.interfaces.core.web.TriggerController
-      - com.czertainly.api.interfaces.core.web.UserManagementController
-      - com.czertainly.api.interfaces.core.web.VaultInstanceController
-      - com.czertainly.api.interfaces.core.web.VaultProfileController
-      - com.czertainly.api.interfaces.core.web.v2.ComplianceController
-      - com.czertainly.api.interfaces.core.web.v2.ComplianceProfileController
-      - com.czertainly.api.interfaces.core.web.v2.ConnectorController
-      - com.czertainly.api.interfaces.core.web.v2.OAuth2LoginController
+      - com.otilm.api.interfaces.core.client.v2.ClientOperationController
+      - com.otilm.api.interfaces.core.connector.ConnectorRegistrationController
+      - com.otilm.api.interfaces.core.local.LocalController
+      - com.otilm.api.interfaces.core.web.AcmeAccountController
+      - com.otilm.api.interfaces.core.web.AcmeProfileController
+      - com.otilm.api.interfaces.core.web.ActionController
+      - com.otilm.api.interfaces.core.web.ApprovalController
+      - com.otilm.api.interfaces.core.web.ApprovalProfileController
+      - com.otilm.api.interfaces.core.web.AuditLogController
+      - com.otilm.api.interfaces.core.web.AuthController
+      - com.otilm.api.interfaces.core.web.AuthorityInstanceController
+      - com.otilm.api.interfaces.core.web.BrandingController
+      - com.otilm.api.interfaces.core.web.CallbackController
+      - com.otilm.api.interfaces.core.web.CbomController
+      - com.otilm.api.interfaces.core.web.CertificateController
+      - com.otilm.api.interfaces.core.web.CmpProfileController
+      - com.otilm.api.interfaces.core.web.CommentController
+      - com.otilm.api.interfaces.core.web.ComplianceProfileController
+      - com.otilm.api.interfaces.core.web.ConnectorAuthController
+      - com.otilm.api.interfaces.core.web.ConnectorController
+      - com.otilm.api.interfaces.core.web.CredentialController
+      - com.otilm.api.interfaces.core.web.CryptographicKeyController
+      - com.otilm.api.interfaces.core.web.CryptographicOperationsController
+      - com.otilm.api.interfaces.core.web.CustomAttributeController
+      - com.otilm.api.interfaces.core.web.CustomOidEntryController
+      - com.otilm.api.interfaces.core.web.DiscoveryController
+      - com.otilm.api.interfaces.core.web.EntityInstanceController
+      - com.otilm.api.interfaces.core.web.EnumController
+      - com.otilm.api.interfaces.core.web.EventController
+      - com.otilm.api.interfaces.core.web.GlobalMetadataController
+      - com.otilm.api.interfaces.core.web.GroupController
+      - com.otilm.api.interfaces.core.web.InfoController
+      - com.otilm.api.interfaces.core.web.ListViewController
+      - com.otilm.api.interfaces.core.web.LocationManagementController
+      - com.otilm.api.interfaces.core.web.NotificationController
+      - com.otilm.api.interfaces.core.web.NotificationInstanceController
+      - com.otilm.api.interfaces.core.web.NotificationProfileController
+      - com.otilm.api.interfaces.core.web.ProxyController
+      - com.otilm.api.interfaces.core.web.RAProfileManagementController
+      - com.otilm.api.interfaces.core.web.ResourceController
+      - com.otilm.api.interfaces.core.web.RoleManagementController
+      - com.otilm.api.interfaces.core.web.RuleController
+      - com.otilm.api.interfaces.core.web.ScepProfileController
+      - com.otilm.api.interfaces.core.web.SchedulerController
+      - com.otilm.api.interfaces.core.web.SecretManagementController
+      - com.otilm.api.interfaces.core.web.SettingController
+      - com.otilm.api.interfaces.core.web.SigningProfileController
+      - com.otilm.api.interfaces.core.web.SigningRecordController
+      - com.otilm.api.interfaces.core.web.StatisticsController
+      - com.otilm.api.interfaces.core.web.TimeQualityConfigurationController
+      - com.otilm.api.interfaces.core.web.TokenInstanceController
+      - com.otilm.api.interfaces.core.web.TokenProfileController
+      - com.otilm.api.interfaces.core.web.TriggerController
+      - com.otilm.api.interfaces.core.web.TrustedCertificateController
+      - com.otilm.api.interfaces.core.web.TspProfileBasicCredentialController
+      - com.otilm.api.interfaces.core.web.TspProfileController
+      - com.otilm.api.interfaces.core.web.UserManagementController
+      - com.otilm.api.interfaces.core.web.VaultInstanceController
+      - com.otilm.api.interfaces.core.web.VaultProfileController
+      - com.otilm.api.interfaces.core.web.v2.ComplianceController
+      - com.otilm.api.interfaces.core.web.v2.ComplianceProfileController
+      - com.otilm.api.interfaces.core.web.v2.ConnectorController
+      - com.otilm.api.interfaces.core.web.v2.OAuth2LoginController
+
+  - id: doc-openapi-messaging-time-quality
+    groupName: messaging-time-quality
+    title: Time Quality Messaging API
+    indexCategory: messaging
+    description: AMQP message contracts between Core and Time Quality Monitor
+    interfaces:
+      - com.otilm.api.interfaces.messaging.TimeQualityMessagingController
 
   - id: doc-openapi-protocol-acme
     groupName: protocol-acme
@@ -547,8 +693,8 @@ groups:
     indexCategory: protocol
     description: ACME API according to the RFC 8555
     interfaces:
-      - com.czertainly.api.interfaces.core.acme.AcmeController
-      - com.czertainly.api.interfaces.core.acme.AcmeRaProfileController
+      - com.otilm.api.interfaces.core.acme.AcmeController
+      - com.otilm.api.interfaces.core.acme.AcmeRaProfileController
 
   - id: doc-openapi-protocol-cmp
     groupName: protocol-cmp
@@ -556,8 +702,17 @@ groups:
     indexCategory: protocol
     description: CMP API according to the RFC 4210
     interfaces:
-      - com.czertainly.api.interfaces.core.cmp.CmpController
-      - com.czertainly.api.interfaces.core.cmp.CmpRaProfileController
+      - com.otilm.api.interfaces.core.cmp.CmpController
+      - com.otilm.api.interfaces.core.cmp.CmpRaProfileController
+
+  - id: doc-openapi-protocol-tsp
+    groupName: protocol-tsp
+    title: TSP API
+    indexCategory: protocol
+    description: TSP API according to the RFC 3161
+    interfaces:
+      - com.otilm.api.interfaces.core.tsp.TspController
+      - com.otilm.api.interfaces.core.tsp.TspSigningProfileController
 
   - id: doc-openapi-protocol-scep
     groupName: protocol-scep
@@ -565,8 +720,8 @@ groups:
     indexCategory: protocol
     description: SCEP API according to the RFC 8894
     interfaces:
-      - com.czertainly.api.interfaces.core.scep.ScepController
-      - com.czertainly.api.interfaces.core.scep.ScepRaProfileController
+      - com.otilm.api.interfaces.core.scep.ScepController
+      - com.otilm.api.interfaces.core.scep.ScepRaProfileController
 
 # ---------------------------------------------------------------------------
 # common
@@ -584,18 +739,18 @@ groups:
 common:
   version: ${api.version}
   license:
-    name: MIT License
-    url: https://github.com/CZERTAINLY/CZERTAINLY/blob/develop/LICENSE.md
+    name: Apache License, Version 2.0
+    url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
   contact:
     name: ILM
     url: https://www.otilm.com
-    email: info@otilm.com
+    email: ilm@omnitrust.com
   externalDocs:
     description: ILM Documentation
     url: https://docs.otilm.com
   servers:
-    - url: https://demo.czertainly.online/api
-      description: CZERTAINLY Demo server
+    - url: https://demo.otilm.com/api
+      description: ILM Demo server
   extensions:
     x-logo:
       url: images/ilm-logo.svg

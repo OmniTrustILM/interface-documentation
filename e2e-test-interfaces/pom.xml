@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.otilm</groupId>
-        <artifactId>doc-interface</artifactId>
+        <artifactId>interface-documentation</artifactId>
         <version>${revision}</version>
     </parent>
 
@@ -16,7 +16,7 @@
     <description>
         Self-contained test interfaces used by the e2e-tests module.
         Compiled before e2e-tests so they are available on the classpath when DummyControllerGenerator runs
-        at the generate-sources phase. No dependency on com.czertainly:interfaces.
+        at the generate-sources phase. No dependency on com.otilm:interfaces.
     </description>
 
 </project>

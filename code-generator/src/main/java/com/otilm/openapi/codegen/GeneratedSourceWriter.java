@@ -12,8 +12,8 @@ import java.nio.file.Paths;
 public record GeneratedSourceWriter(String outputDirectory, String packageName) {
 
     /**
-     * Writes the generated source code to a file in the appropriate package directory.
-     * Creates parent directories if they don't exist.
+     * Writes the generated source code to a file in the appropriate package directory. Creates parent directories if
+     * they don't exist.
      */
     public void writeImplementation(String className, String sourceCode) throws IOException {
         Path packagePath = Paths.get(outputDirectory, packageName.replace('.', File.separatorChar));

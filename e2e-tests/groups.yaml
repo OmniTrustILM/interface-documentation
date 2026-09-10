@@ -1,7 +1,7 @@
-# E2E test configuration for the CZERTAINLY interface documentation pipeline.
+# E2E test configuration for the ILM interface documentation pipeline.
 #
 # This file is intentionally self-contained: it references only interfaces defined within the e2e-tests module itself,
-#so the build does not depend on the external com.czertainly:interfaces artifact.
+#so the build does not depend on the external com.otilm:interfaces artifact.
 
 security:
   baseSecurityInterfaces:
@@ -42,8 +42,8 @@ common:
     url: https://example.com
     email: test@example.com
   license:
-    name: MIT License
-    url: https://opensource.org/licenses/MIT
+    name: Apache License, Version 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
   externalDocs:
     description: Test Documentation
     url: https://example.com/docs
