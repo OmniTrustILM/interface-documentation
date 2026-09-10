@@ -35235,14 +35235,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -37373,7 +37373,7 @@ components:
           type: string
           description: "Maximum allowed clock drift from NTP reference time, in ISO\
             \ 8601 duration format"
-          example: PT500MS
+          example: PT0.5S
         leapSecondGuard:
           type: boolean
           default: true
@@ -37443,10 +37443,10 @@ components:
           example: 1
         maxClockDrift:
           type: string
-          default: PT500MS
+          default: PT0.5S
           description: "Maximum allowed clock drift from NTP reference time, in ISO\
             \ 8601 duration format"
-          example: PT500MS
+          example: PT0.5S
         leapSecondGuard:
           type: boolean
           default: true
