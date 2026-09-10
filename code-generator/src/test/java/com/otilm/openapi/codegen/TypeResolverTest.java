@@ -1,21 +1,24 @@
 package com.otilm.openapi.codegen;
 
 import com.otilm.openapi.codegen.testdata.sub1.TestModel;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TypeResolverTest {
 
     interface SimpleInterface {
         void method1(String param1, int param2);
+
         List<String> method2();
+
         TestModel method3(TestModel model);
     }
 

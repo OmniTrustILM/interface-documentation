@@ -1,25 +1,23 @@
 package com.otilm.openapi.codegen;
 
 import com.otilm.openapi.config.loader.GroupsConfigLoader;
-import com.otilm.openapi.config.util.ClassNameResolver;
 import com.otilm.openapi.config.model.GroupsConfig;
 import com.otilm.openapi.config.model.SecurityConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.otilm.openapi.config.util.ClassNameResolver;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Generates dummy controller implementations from the groups.yaml configuration.
- * This is a standalone tool that runs during the Maven build to create @RestController
- * classes that implement the interfaces defined in groups.yaml.
+ * Generates dummy controller implementations from the groups.yaml configuration. This is a standalone tool that runs
+ * during the Maven build to create @RestController classes that implement the interfaces defined in groups.yaml.
  * <p>
- * Uses reflection to inspect interfaces and generate proper method implementations.
- * Validates that each interface extends one of the three base security controllers.
- * Annotates generated classes with @SecuritySchemeCategory metadata.
+ * Uses reflection to inspect interfaces and generate proper method implementations. Validates that each interface
+ * extends one of the three base security controllers. Annotates generated classes with @SecuritySchemeCategory
+ * metadata.
  * <p>
  */
 public class DummyControllerGenerator {
@@ -65,7 +63,9 @@ public class DummyControllerGenerator {
         this.securitySchemeExtractor = new SecuritySchemeExtractor(securityConfig);
 
         // interface configuration
-        Set<String> allInterfaces = groupsConfig.getGroups().stream()
+        Set<String> allInterfaces = groupsConfig
+                .getGroups()
+                .stream()
                 .flatMap(g -> g.getInterfaces().stream())
                 .collect(Collectors.toSet());
         int groupCount = groupsConfig.getGroups().size();
@@ -104,10 +104,11 @@ public class DummyControllerGenerator {
     }
 
     /**
-     * Generates a single dummy controller implementation for the given interface.
-     * Validates that the interface extends one of the three base security controllers.
+     * Generates a single dummy controller implementation for the given interface. Validates that the interface extends
+     * one of the three base security controllers.
      */
-    private void generateDummyController(String interfaceFqn, GeneratedSourceWriter generatedSourceWriter) throws ClassNotFoundException, IOException {
+    private void generateDummyController(String interfaceFqn, GeneratedSourceWriter generatedSourceWriter)
+            throws ClassNotFoundException, IOException {
         Class<?> interfaceClass = loadInterfaceClass(interfaceFqn);
 
         String baseSecurityClass = securitySchemeExtractor.determineBaseSecurityClass(interfaceClass);
@@ -116,8 +117,8 @@ public class DummyControllerGenerator {
         // Generate implementation code with unique naming
         String implClassName = ClassNameResolver.generateImplementationClassName(interfaceClass);
         TypeResolver typeResolver = new TypeResolver(interfaceClass);
-        CodeGenerator codeGenerator = new CodeGenerator(typeResolver, PACKAGE_NAME, implClassName,
-                baseSecurityClass, securitySchemes);
+        CodeGenerator codeGenerator = new CodeGenerator(typeResolver, PACKAGE_NAME, implClassName, baseSecurityClass,
+                securitySchemes);
         String sourceCode = codeGenerator.generateImplementation(interfaceClass);
 
         generatedSourceWriter.writeImplementation(implClassName, sourceCode);
@@ -134,8 +135,8 @@ public class DummyControllerGenerator {
         try {
             return Class.forName(interfaceFqn);
         } catch (ClassNotFoundException e) {
-            throw new ClassNotFoundException("Interface not found: " + interfaceFqn +
-                    ". Make sure the interfaces JAR is on the classpath.", e);
+            throw new ClassNotFoundException(
+                    "Interface not found: " + interfaceFqn + ". Make sure the interfaces JAR is on the classpath.", e);
         }
     }
 

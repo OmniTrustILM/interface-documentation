@@ -4,27 +4,29 @@ import com.otilm.openapi.config.model.CommonConfiguration;
 import com.otilm.openapi.config.model.GroupConfiguration;
 import com.otilm.openapi.config.model.GroupsConfig;
 import com.otilm.openapi.config.model.SecurityConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * Centralized loader for groups.yaml configuration.
- * Merges functionality from codegen and openapi-generator.
+ * Centralized loader for groups.yaml configuration. Merges functionality from codegen and openapi-generator.
  */
 public class GroupsConfigLoader {
     private static final Logger logger = LoggerFactory.getLogger(GroupsConfigLoader.class);
 
     public static final String GROUPS_YAML = "groups.yaml";
-    public static final List<String> GROUPS_YAML_FILESYSTEM_PATHS = List.of(GROUPS_YAML, ".." + File.separator + GROUPS_YAML);
+    public static final List<String> GROUPS_YAML_FILESYSTEM_PATHS = List
+            .of(GROUPS_YAML, ".." + File.separator + GROUPS_YAML);
 
     private final ExtensionReferenceResolver extensionReferenceResolver = new ExtensionReferenceResolver();
     private final boolean resolveExtensions;
@@ -38,17 +40,15 @@ public class GroupsConfigLoader {
     }
 
     /**
-     * Returns a loader that skips extension resolution.
-     * Use this when the API interface classes referenced by extensions are not
-     * available on the classpath (e.g. in the index.html generator).
+     * Returns a loader that skips extension resolution. Use this when the API interface classes referenced by
+     * extensions are not available on the classpath (e.g. in the index.html generator).
      */
     public static GroupsConfigLoader withoutExtensionResolution() {
         return new GroupsConfigLoader(false);
     }
 
     /**
-     * Loads the configuration from the first available location.
-     * Tries filesystem paths, then classpath.
+     * Loads the configuration from the first available location. Tries filesystem paths, then classpath.
      */
     public GroupsConfig load() throws IOException {
         // 1. Try from filesystem paths
@@ -65,12 +65,12 @@ public class GroupsConfigLoader {
             return config;
         }
 
-        throw new IllegalStateException("Cannot find " + GROUPS_YAML + " configuration file in filesystem or classpath");
+        throw new IllegalStateException(
+                "Cannot find " + GROUPS_YAML + " configuration file in filesystem or classpath");
     }
 
     /**
-     * Loads the configuration from the filesystem.
-     * Returns null if the file does not exist.
+     * Loads the configuration from the filesystem. Returns null if the file does not exist.
      */
     public GroupsConfig loadFromFilesystem(String path) throws IOException {
         Path filePath = Paths.get(path);
@@ -86,8 +86,7 @@ public class GroupsConfigLoader {
     }
 
     /**
-     * Loads the configuration from the classpath.
-     * Returns null if the resource does not exist.
+     * Loads the configuration from the classpath. Returns null if the resource does not exist.
      */
     public GroupsConfig loadFromClasspath(String resourceName) throws IOException {
         String normalizedPath = resourceName.startsWith("/") ? resourceName : "/" + resourceName;
@@ -97,7 +96,8 @@ public class GroupsConfigLoader {
                 return load(is);
             }
         } catch (IOException e) {
-            throw new IOException("Failed to load " + GROUPS_YAML + " configuration from classpath: " + normalizedPath, e);
+            throw new IOException("Failed to load " + GROUPS_YAML + " configuration from classpath: " + normalizedPath,
+                    e);
         }
         return null;
     }
@@ -117,7 +117,10 @@ public class GroupsConfigLoader {
 
     private void resolveExtensions(GroupsConfig config) {
         if (!config.getCommon().getExtensions().isEmpty()) {
-            config.getCommon().setExtensions(resolveTopLevelExtensions(config.getCommon().getExtensions(), "common configuration"));
+            config
+                    .getCommon()
+                    .setExtensions(
+                            resolveTopLevelExtensions(config.getCommon().getExtensions(), "common configuration"));
         }
         for (GroupConfiguration group : config.getGroups()) {
             if (!group.getExtensions().isEmpty()) {
@@ -129,10 +132,9 @@ public class GroupsConfigLoader {
     private Map<String, Object> resolveTopLevelExtensions(Map<String, Object> extensions, String contextLabel) {
         Map<String, Object> resolved = new LinkedHashMap<>();
         for (Map.Entry<String, Object> entry : extensions.entrySet()) {
-            resolved.put(
-                    entry.getKey(),
-                    extensionReferenceResolver.resolveTopLevelValue(entry.getValue(), entry.getKey(), contextLabel)
-            );
+            resolved
+                    .put(entry.getKey(), extensionReferenceResolver
+                            .resolveTopLevelValue(entry.getValue(), entry.getKey(), contextLabel));
         }
         return resolved;
     }
@@ -210,9 +212,7 @@ public class GroupsConfigLoader {
         // Servers
         List<Map<String, Object>> serversMap = (List<Map<String, Object>>) rawCommon.get("servers");
         if (serversMap != null) {
-            List<CommonConfiguration.ServerConfiguration> servers = serversMap.stream()
-                    .map(this::parseServer)
-                    .toList();
+            List<CommonConfiguration.ServerConfiguration> servers = serversMap.stream().map(this::parseServer).toList();
             common.setServers(servers);
         }
 
@@ -238,9 +238,7 @@ public class GroupsConfigLoader {
             return Collections.emptyList();
         }
 
-        return rawGroups.stream()
-                .map(this::parseGroup)
-                .toList();
+        return rawGroups.stream().map(this::parseGroup).toList();
     }
 
     @SuppressWarnings("unchecked")

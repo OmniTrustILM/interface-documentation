@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Extracts @SecurityScheme annotations from the base security controller interfaces.
- * Maps each base class to the list of security scheme names it declares.
+ * Extracts @SecurityScheme annotations from the base security controller interfaces. Maps each base class to the list
+ * of security scheme names it declares.
  */
 public class SecuritySchemeExtractor {
 
@@ -35,8 +35,7 @@ public class SecuritySchemeExtractor {
     }
 
     /**
-     * Loads and analyzes the base security controller interfaces.
-     * Extracts their @SecurityScheme annotations.
+     * Loads and analyzes the base security controller interfaces. Extracts their @SecurityScheme annotations.
      */
     private void initializeBaseClassSchemes() throws ClassNotFoundException {
         try {
@@ -76,8 +75,8 @@ public class SecuritySchemeExtractor {
     }
 
     /**
-     * Analyzes a legacy controller that does not extend any base security interface.
-     * Extracts security scheme names from @SecurityRequirements annotations.
+     * Analyzes a legacy controller that does not extend any base security interface. Extracts security scheme names
+     * from @SecurityRequirements annotations.
      */
     private void analyzeLegacyController(String controllerFqn) throws ClassNotFoundException {
         Class<?> controllerClass = Class.forName(controllerFqn);
@@ -111,8 +110,7 @@ public class SecuritySchemeExtractor {
     }
 
     /**
-     * Determines which base class an interface extends.
-     * Validates that it extends exactly one of the base classes,
+     * Determines which base class an interface extends. Validates that it extends exactly one of the base classes,
      * except for legacy controllers, which are explicitly allowed.
      *
      * @param interfaceClass The interface to check
@@ -127,10 +125,9 @@ public class SecuritySchemeExtractor {
         String matchedBase = findBaseSecurityClass(interfaceClass);
 
         if (matchedBase == null) {
-            throw new IllegalArgumentException(
-                    "Controller interface " + interfaceClass.getName() + " does not extend any of the base security interfaces: " + baseSecurityInterfaces +
-                            ". Legacy exception allowed only for: " + legacyControllers
-            );
+            throw new IllegalArgumentException("Controller interface " + interfaceClass.getName()
+                    + " does not extend any of the base security interfaces: " + baseSecurityInterfaces
+                    + ". Legacy exception allowed only for: " + legacyControllers);
         }
 
         return matchedBase;
@@ -152,10 +149,9 @@ public class SecuritySchemeExtractor {
 
             if (foundBase != null) {
                 if (matchedBase != null && !matchedBase.equals(foundBase)) {
-                    throw new IllegalArgumentException(
-                            "Interface " + interfaceClass.getName() +
-                                    " (transitively) extends multiple base security classes: " + matchedBase + " and " + foundBase + ". This is invalid."
-                    );
+                    throw new IllegalArgumentException("Interface " + interfaceClass.getName()
+                            + " (transitively) extends multiple base security classes: " + matchedBase + " and "
+                            + foundBase + ". This is invalid.");
                 }
                 matchedBase = foundBase;
             }
@@ -195,8 +191,7 @@ public class SecuritySchemeExtractor {
     public record SecuritySchemeInfo(String baseClassFqn, List<String> schemeNames) {
         @Nonnull
         public String toString() {
-            return baseClassFqn.substring(baseClassFqn.lastIndexOf('.') + 1) +
-                    " → " + schemeNames;
+            return baseClassFqn.substring(baseClassFqn.lastIndexOf('.') + 1) + " → " + schemeNames;
         }
     }
 }

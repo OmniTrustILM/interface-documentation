@@ -1,14 +1,13 @@
 package com.otilm.openapi.config.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.jspecify.annotations.NonNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Model class representing a single group configuration from groups.yaml
@@ -32,8 +31,7 @@ public class GroupConfiguration {
         if (interfaces != null) {
             if (interfaces.contains(null)) {
                 throw new IllegalArgumentException(
-                        "Interfaces list contains null elements for group '" + (id != null ? id : UNKNOWN_GROUP) + "'"
-                );
+                        "Interfaces list contains null elements for group '" + (id != null ? id : UNKNOWN_GROUP) + "'");
             }
             this.interfaces = List.copyOf(interfaces);
         }
@@ -42,9 +40,8 @@ public class GroupConfiguration {
     public void setExtensions(Map<String, Object> extensions) {
         if (extensions != null) {
             if (extensions.containsKey(null) || extensions.containsValue(null)) {
-                throw new IllegalArgumentException(
-                        "Extensions map contains null keys or values for group '" + (id != null ? id : UNKNOWN_GROUP) + "'"
-                );
+                throw new IllegalArgumentException("Extensions map contains null keys or values for group '"
+                        + (id != null ? id : UNKNOWN_GROUP) + "'");
             }
             this.extensions = Map.copyOf(extensions);
         }
@@ -54,15 +51,13 @@ public class GroupConfiguration {
         if (security != null) {
             if (security.contains(null)) {
                 throw new IllegalArgumentException(
-                        "Security list contains null elements for group '" + (id != null ? id : UNKNOWN_GROUP) + "'"
-                );
+                        "Security list contains null elements for group '" + (id != null ? id : UNKNOWN_GROUP) + "'");
             }
             List<Map<String, List<String>>> copy = new ArrayList<>(security.size());
             for (Map<String, List<String>> requirement : security) {
                 if (requirement.containsKey(null)) {
-                    throw new IllegalArgumentException(
-                            "Security requirement map contains null keys for group '" + (id != null ? id : UNKNOWN_GROUP) + "'"
-                    );
+                    throw new IllegalArgumentException("Security requirement map contains null keys for group '"
+                            + (id != null ? id : UNKNOWN_GROUP) + "'");
                 }
                 Map<String, List<String>> reqCopy = LinkedHashMap.newLinkedHashMap(requirement.size());
                 for (Map.Entry<String, List<String>> entry : requirement.entrySet()) {
@@ -78,16 +73,12 @@ public class GroupConfiguration {
     private @NonNull List<String> getScopes(Map.Entry<String, List<String>> entry) {
         List<String> scopes = entry.getValue();
         if (scopes == null) {
-            throw new IllegalArgumentException(
-                    "Security requirement map contains null scope list for scheme '" + entry.getKey()
-                            + "' in group '" + (id != null ? id : UNKNOWN_GROUP) + "'"
-            );
+            throw new IllegalArgumentException("Security requirement map contains null scope list for scheme '"
+                    + entry.getKey() + "' in group '" + (id != null ? id : UNKNOWN_GROUP) + "'");
         }
         if (scopes.contains(null)) {
-            throw new IllegalArgumentException(
-                    "Security scope list contains null elements for scheme '" + entry.getKey()
-                            + "' in group '" + (id != null ? id : UNKNOWN_GROUP) + "'"
-            );
+            throw new IllegalArgumentException("Security scope list contains null elements for scheme '"
+                    + entry.getKey() + "' in group '" + (id != null ? id : UNKNOWN_GROUP) + "'");
         }
         return scopes;
     }

@@ -1,11 +1,10 @@
 package com.otilm.openapi.config.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Model class representing common configuration elements from groups.yaml
@@ -23,9 +22,7 @@ public class CommonConfiguration {
     public void setServers(List<ServerConfiguration> servers) {
         if (servers != null) {
             if (servers.contains(null)) {
-                throw new IllegalArgumentException(
-                    "Servers list contains null elements in common configuration"
-                );
+                throw new IllegalArgumentException("Servers list contains null elements in common configuration");
             }
             this.servers = List.copyOf(servers);
         }
@@ -35,8 +32,7 @@ public class CommonConfiguration {
         if (extensions != null) {
             if (extensions.containsKey(null) || extensions.containsValue(null)) {
                 throw new IllegalArgumentException(
-                    "Extensions map contains null keys or values in common configuration"
-                );
+                        "Extensions map contains null keys or values in common configuration");
             }
             this.extensions = Map.copyOf(extensions);
         }
