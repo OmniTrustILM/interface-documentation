@@ -7,10 +7,9 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  * Builds OpenAPI objects with common configuration elements
@@ -29,10 +28,7 @@ public class OpenApiInfoBuilder {
             throw new IllegalArgumentException("Description cannot be null");
         }
 
-        Info info = new Info()
-                .title(title)
-                .description(description)
-                .version(version);
+        Info info = new Info().title(title).description(description).version(version);
 
         addExtensions(info, commonConfig);
         addLicense(info, commonConfig);
@@ -56,9 +52,7 @@ public class OpenApiInfoBuilder {
     private void addLicense(Info info, CommonConfiguration commonConfig) {
         CommonConfiguration.LicenseConfiguration license = commonConfig.getLicense();
         if (license != null) {
-            info.license(new License()
-                    .name(license.getName())
-                    .url(license.getUrl()));
+            info.license(new License().name(license.getName()).url(license.getUrl()));
         }
     }
 
@@ -68,10 +62,7 @@ public class OpenApiInfoBuilder {
     private void addContact(Info info, CommonConfiguration commonConfig) {
         CommonConfiguration.ContactConfiguration contact = commonConfig.getContact();
         if (contact != null) {
-            info.contact(new Contact()
-                    .name(contact.getName())
-                    .url(contact.getUrl())
-                    .email(contact.getEmail()));
+            info.contact(new Contact().name(contact.getName()).url(contact.getUrl()).email(contact.getEmail()));
         }
     }
 
@@ -84,14 +75,15 @@ public class OpenApiInfoBuilder {
     }
 
     /**
-     * Adds servers to OpenAPI object with optional group-specific server URL override
-     * If serverUrlOverride is provided, it replaces the URL in common servers while keeping descriptions
+     * Adds servers to OpenAPI object with optional group-specific server URL override If serverUrlOverride is provided,
+     * it replaces the URL in common servers while keeping descriptions
      */
     private void addServers(OpenAPI openAPI, CommonConfiguration commonConfig, String serverUrlOverride) {
         List<CommonConfiguration.ServerConfiguration> servers = commonConfig.getServers();
 
         if (!servers.isEmpty()) {
-            List<Server> serverList = servers.stream()
+            List<Server> serverList = servers
+                    .stream()
                     .map(serverConfig -> buildServerWithUrlOverride(serverConfig, serverUrlOverride))
                     .toList();
             openAPI.servers(serverList);
@@ -101,11 +93,10 @@ public class OpenApiInfoBuilder {
     /**
      * Builds a Server object from configuration with optional URL override
      */
-    private Server buildServerWithUrlOverride(CommonConfiguration.ServerConfiguration serverConfig, String urlOverride) {
+    private Server buildServerWithUrlOverride(CommonConfiguration.ServerConfiguration serverConfig,
+            String urlOverride) {
         String url = urlOverride != null ? urlOverride : serverConfig.getUrl();
-        return new Server()
-                .url(url)
-                .description(serverConfig.getDescription());
+        return new Server().url(url).description(serverConfig.getDescription());
     }
 
     /**
@@ -114,9 +105,10 @@ public class OpenApiInfoBuilder {
     private void addExternalDocs(OpenAPI openAPI, CommonConfiguration commonConfig) {
         CommonConfiguration.ExternalDocsConfiguration externalDocs = commonConfig.getExternalDocs();
         if (externalDocs != null) {
-            openAPI.externalDocs(new ExternalDocumentation()
-                    .description(externalDocs.getDescription())
-                    .url(externalDocs.getUrl()));
+            openAPI
+                    .externalDocs(new ExternalDocumentation()
+                            .description(externalDocs.getDescription())
+                            .url(externalDocs.getUrl()));
         }
     }
 }

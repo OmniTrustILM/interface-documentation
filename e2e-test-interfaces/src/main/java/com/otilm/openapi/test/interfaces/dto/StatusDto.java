@@ -11,9 +11,19 @@ public class StatusDto {
     @Schema(description = "API version", example = "test")
     private String version;
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getStatus() {
+        return status;
+    }
 
-    public String getVersion() { return version; }
-    public void setVersion(String version) { this.version = version; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }

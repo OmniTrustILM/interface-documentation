@@ -1,14 +1,22 @@
 package com.otilm.openapi.codegen;
 
-import com.otilm.openapi.codegen.testdata.security.*;
+import com.otilm.openapi.codegen.testdata.security.BaseSecurity1;
+import com.otilm.openapi.codegen.testdata.security.BaseSecurity2;
+import com.otilm.openapi.codegen.testdata.security.DirectController;
+import com.otilm.openapi.codegen.testdata.security.InvalidMultiBaseController;
+import com.otilm.openapi.codegen.testdata.security.LegacyController;
+import com.otilm.openapi.codegen.testdata.security.MultiBaseTransitiveController;
+import com.otilm.openapi.codegen.testdata.security.NoBaseController;
+import com.otilm.openapi.codegen.testdata.security.TransitiveController;
 import com.otilm.openapi.config.model.SecurityConfiguration;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SecuritySchemeExtractorTest {
 
@@ -19,10 +27,7 @@ class SecuritySchemeExtractorTest {
 
     @BeforeEach
     void setUp() throws ClassNotFoundException {
-        SecurityConfiguration config = new SecurityConfiguration(
-                List.of(BASE1, BASE2),
-                List.of(LEGACY)
-        );
+        SecurityConfiguration config = new SecurityConfiguration(List.of(BASE1, BASE2), List.of(LEGACY));
         extractor = new SecuritySchemeExtractor(config);
     }
 
@@ -79,28 +84,25 @@ class SecuritySchemeExtractorTest {
 
     @Test
     void testDetermineBaseSecurityClassInvalidMultiBase() {
-        assertThrows(IllegalArgumentException.class, () ->
-                extractor.determineBaseSecurityClass(InvalidMultiBaseController.class));
+        assertThrows(IllegalArgumentException.class,
+                () -> extractor.determineBaseSecurityClass(InvalidMultiBaseController.class));
     }
 
     @Test
     void testDetermineBaseSecurityClassInvalidMultiBaseTransitive() {
-        assertThrows(IllegalArgumentException.class, () ->
-                extractor.determineBaseSecurityClass(MultiBaseTransitiveController.class));
+        assertThrows(IllegalArgumentException.class,
+                () -> extractor.determineBaseSecurityClass(MultiBaseTransitiveController.class));
     }
 
     @Test
     void testDetermineBaseSecurityClassNoBase() {
-        assertThrows(IllegalArgumentException.class, () ->
-                extractor.determineBaseSecurityClass(NoBaseController.class));
+        assertThrows(IllegalArgumentException.class,
+                () -> extractor.determineBaseSecurityClass(NoBaseController.class));
     }
 
     @Test
     void testMissingBaseClass() {
-        SecurityConfiguration config = new SecurityConfiguration(
-                List.of("com.nonexistent.BaseClass"),
-                List.of()
-        );
+        SecurityConfiguration config = new SecurityConfiguration(List.of("com.nonexistent.BaseClass"), List.of());
         assertThrows(ClassNotFoundException.class, () -> new SecuritySchemeExtractor(config));
     }
 }
