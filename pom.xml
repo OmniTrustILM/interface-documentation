@@ -30,7 +30,7 @@
         <!-- Dependency versions -->
         <springdoc-openapi.version>2.8.14</springdoc-openapi.version>
         <snakeyaml.version>2.0</snakeyaml.version>
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
+        <junit.jupiter.version>5.14.4</junit.jupiter.version>
     </properties>
 
     <repositories>
