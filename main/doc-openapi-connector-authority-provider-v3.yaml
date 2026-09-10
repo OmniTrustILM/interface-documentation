@@ -37,66 +37,66 @@ info:
       - 2.5
       - 5.0
       - 10.0
-    version: 1
     required:
     - labels:
       - version
       - commit
       - runtime
-      unit: "1"
+      type: gauge
       name: app_build_info
-      type: gauge
+      unit: "1"
     - labels: []
-      unit: seconds
+      type: gauge
       name: process_start_time_seconds
-      type: gauge
-    - labels: []
       unit: seconds
+    - labels: []
+      type: counter
       name: process_cpu_seconds_total
-      type: counter
+      unit: seconds
     - labels: []
-      unit: bytes
+      type: gauge
       name: process_resident_memory_bytes
-      type: gauge
+      unit: bytes
     - labels:
       - method
       - route
       - status
-      unit: requests
+      type: counter
       name: http_requests_total
-      type: counter
-    - type: histogram
+      unit: requests
+    - name: http_request_duration_seconds
       unit: seconds
-      name: http_request_duration_seconds
-      buckets_ref: http_server_latency_buckets_seconds
+      type: histogram
       labels:
       - method
       - route
+      buckets_ref: http_server_latency_buckets_seconds
     - labels:
       - route
-      unit: requests
-      name: http_server_in_flight_requests
       type: gauge
+      name: http_server_in_flight_requests
+      unit: requests
     - labels:
       - method
       - target
       - status
-      unit: requests
-      name: http_client_requests_total
       type: counter
-    - type: histogram
+      name: http_client_requests_total
+      unit: requests
+    - name: http_client_request_duration_seconds
       unit: seconds
-      name: http_client_request_duration_seconds
-      buckets_ref: http_client_latency_buckets_seconds
+      type: histogram
       labels:
       - method
       - target
+      buckets_ref: http_client_latency_buckets_seconds
     - labels:
       - event
       - outcome
-      unit: events
-      name: connector_events_total
       type: counter
+      name: connector_events_total
+      unit: events
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
