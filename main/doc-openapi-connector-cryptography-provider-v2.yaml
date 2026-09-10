@@ -65,13 +65,13 @@ info:
       - method
       - route
       - status
-    - labels:
-      - method
-      - route
-      buckets_ref: http_server_latency_buckets_seconds
+    - buckets_ref: http_server_latency_buckets_seconds
       name: http_request_duration_seconds
       unit: seconds
       type: histogram
+      labels:
+      - method
+      - route
     - type: gauge
       name: http_server_in_flight_requests
       unit: requests
@@ -84,13 +84,13 @@ info:
       - method
       - target
       - status
-    - labels:
-      - method
-      - target
-      buckets_ref: http_client_latency_buckets_seconds
+    - buckets_ref: http_client_latency_buckets_seconds
       name: http_client_request_duration_seconds
       unit: seconds
       type: histogram
+      labels:
+      - method
+      - target
     - type: counter
       name: connector_events_total
       unit: events
@@ -5661,10 +5661,10 @@ components:
       - $ref: "#/components/schemas/SecretKeyOperationStatusResponseV2Dto"
       - $ref: "#/components/schemas/KeyPairOperationStatusResponseV2Dto"
       properties:
-        result:
-          $ref: "#/components/schemas/KeyCreationResponse"
         reason:
           type: string
+        result:
+          $ref: "#/components/schemas/KeyCreationResponse"
         status:
           $ref: "#/components/schemas/OperationStatus"
         keyRequestType:

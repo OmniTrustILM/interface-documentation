@@ -170,6 +170,8 @@ tags:
     \ in the platform. Note that this API does not manage nor trigger external notifications.\
     \ For external notifications, please refer to the External Notification Management\
     \ API."
+- name: Cryptographic Asset Inventory
+  description: Cryptographic Asset Inventory API
 - name: CBOM management
   description: CBOM management API
 - name: ACME Account Management
@@ -14589,6 +14591,59 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/cryptoAssets:
+    post:
+      tags:
+      - Cryptographic Asset Inventory
+      summary: List cryptographic assets
+      description: "Returns one page of the deduplicated cross-CBOM asset inventory,\
+        \ narrowed by the supplied filters. When no sort is supplied, rows are ordered\
+        \ by name ascending, then UUID ascending — a deterministic default within\
+        \ a deployment; a supplied sort reorders the whole result set before paging,\
+        \ on the fields the searchable-fields operation marks sortable. Page numbering\
+        \ is positional, so a sync landing between requests can shift rows across\
+        \ page boundaries."
+      operationId: listCryptographicAssets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequestDto"
+        required: true
+      responses:
+        "200":
+          description: List of cryptographic assets
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationResponseDtoCryptographicAssetDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/credentials:
     get:
       tags:
@@ -29420,6 +29475,87 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/cryptoAssets/{uuid}:
+    get:
+      tags:
+      - Cryptographic Asset Inventory
+      summary: Cryptographic asset detail
+      description: "Returns the asset with its verdict provenance, its normalized\
+        \ properties, the elected representative payload beside the source CBOM documents\
+        \ that reference it — per-source payloads and occurrence evidence included\
+        \ — and the object identifiers producers recorded for it, refuted ones included."
+      operationId: getCryptographicAsset
+      parameters:
+      - name: uuid
+        in: path
+        description: Cryptographic asset UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Cryptographic asset details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CryptographicAssetDetailDto"
+        "404":
+          description: Cryptographic asset not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/cryptoAssets/search:
+    get:
+      tags:
+      - Cryptographic Asset Inventory
+      summary: Get cryptographic asset searchable fields information
+      description: "Returns the fields the list operation accepts in its filters,\
+        \ grouped by field source. Only the fields listed here are filterable; the\
+        \ platform's internal deduplication keys are never offered as fields."
+      operationId: getCryptographicAssetSearchableFields
+      responses:
+        "200":
+          description: Cryptographic asset searchable field information retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SearchFieldDataByGroupDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/connectors/{uuid}/health:
     get:
       tags:
@@ -45022,6 +45158,89 @@ components:
       - warning
       - stopped
       - cancelled
+    CryptographicAssetDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the inventory asset
+        name:
+          type: string
+          description: Normalized display name of the asset
+        type:
+          $ref: "#/components/schemas/CryptographicAssetType"
+          description: Type of the asset
+        pqcVerdict:
+          $ref: "#/components/schemas/PqcVerdict"
+          description: Post-quantum readiness verdict computed by the platform rule
+            set
+        sourceCbomCount:
+          type: integer
+          format: int32
+          description: Number of CBOM documents that reference this asset
+        occurrenceCount:
+          type: integer
+          format: int64
+          description: Total number of occurrence evidence entries recorded across
+            all source CBOMs
+        quarantined:
+          type: boolean
+          description: True when sources make contradicting claims about this asset
+            that are quarantined pending reconciliation
+      required:
+      - name
+      - occurrenceCount
+      - pqcVerdict
+      - quarantined
+      - sourceCbomCount
+      - type
+      - uuid
+    CryptographicAssetType:
+      type: string
+      enum:
+      - algorithm
+      - certificate
+      - protocol
+      - related-crypto-material
+      - unroutable
+    PaginationResponseDtoCryptographicAssetDto:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Items returned
+          items:
+            $ref: "#/components/schemas/CryptographicAssetDto"
+        itemsPerPage:
+          type: integer
+          format: int32
+          description: Number of entries per page
+        pageNumber:
+          type: integer
+          format: int32
+          description: Page number for the request
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages available
+        totalItems:
+          type: integer
+          format: int64
+          description: Number of items available
+      required:
+      - items
+      - itemsPerPage
+      - pageNumber
+      - totalItems
+      - totalPages
+    PqcVerdict:
+      type: string
+      enum:
+      - ready
+      - notReady
+      - notApplicable
+      - unknown
     CredentialRequestDto:
       type: object
       properties:
@@ -49498,6 +49717,207 @@ components:
           $ref: "#/components/schemas/Resource"
       required:
       - resource
+    CryptographicAssetDetailDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the inventory asset
+        name:
+          type: string
+          description: Normalized display name of the asset
+        type:
+          $ref: "#/components/schemas/CryptographicAssetType"
+          description: Type of the asset
+        pqcVerdict:
+          $ref: "#/components/schemas/PqcVerdict"
+          description: Post-quantum readiness verdict computed by the platform rule
+            set
+        sourceCbomCount:
+          type: integer
+          format: int32
+          description: Number of CBOM documents that reference this asset
+        occurrenceCount:
+          type: integer
+          format: int64
+          description: Total number of occurrence evidence entries recorded across
+            all source CBOMs
+        quarantined:
+          type: boolean
+          description: True when sources make contradicting claims about this asset
+            that are quarantined pending reconciliation
+        verdict:
+          $ref: "#/components/schemas/CryptographicAssetVerdictDto"
+          description: Provenance of the asset's PQC verdict
+        normalizedFields:
+          $ref: "#/components/schemas/CryptographicAssetNormalizedFieldsDto"
+          description: Normalized filterable properties derived for the asset; absent
+            when nothing is derivable
+        electedPayload:
+          type: object
+          additionalProperties: {}
+          description: "The representative payload: one source's payload served verbatim,\
+            \ elected deterministically (richest payload first, ties broken on a canonical\
+            \ form of the payload) and never merged across sources. Absent when no\
+            \ source carries a payload"
+        sources:
+          type: array
+          description: "Source CBOM documents referencing this asset, with per-source\
+            \ payload and evidence"
+          items:
+            $ref: "#/components/schemas/CryptographicAssetSourceDto"
+        oids:
+          type: array
+          description: Object identifiers producers attached to this asset; may be
+            empty
+          items:
+            $ref: "#/components/schemas/CryptographicAssetOidDto"
+      required:
+      - name
+      - occurrenceCount
+      - oids
+      - pqcVerdict
+      - quarantined
+      - sourceCbomCount
+      - sources
+      - type
+      - uuid
+      - verdict
+    CryptographicAssetEvidenceDto:
+      type: object
+      properties:
+        location:
+          type: string
+          description: "Where the occurrence was found: a file path, URL or other\
+            \ locator from the source document, sanitized before storage (URI user\
+            \ information stripped, query and fragment dropped) and capped at 1024\
+            \ characters"
+        line:
+          type: integer
+          format: int32
+          description: Line number within the location
+        offset:
+          type: integer
+          format: int32
+          description: Offset within the location
+        symbol:
+          type: string
+          description: Symbol recorded at the occurrence
+      required:
+      - location
+    CryptographicAssetNormalizedFieldsDto:
+      type: object
+      properties:
+        algorithmFamily:
+          type: string
+          description: Normalized algorithm family
+        primitive:
+          type: string
+          description: Normalized primitive
+        parameterSet:
+          type: string
+          description: Normalized parameter set
+        curve:
+          type: string
+          description: Normalized curve
+        mode:
+          type: string
+          description: Normalized mode of operation
+        padding:
+          type: string
+          description: Normalized padding
+        variant:
+          type: string
+          description: Normalized variant
+    CryptographicAssetOidDto:
+      type: object
+      properties:
+        oid:
+          type: string
+          description: Object identifier as recorded from the producers
+        refuted:
+          type: boolean
+          description: True when the platform determined the identifier does not describe
+            this asset
+      required:
+      - oid
+      - refuted
+    CryptographicAssetSourceDto:
+      type: object
+      properties:
+        cbomUuid:
+          type: string
+          format: uuid
+          description: UUID of the source CBOM record
+        serialNumber:
+          type: string
+          description: Serial number (URN) of the source CBOM
+        version:
+          type: integer
+          format: int32
+          description: Version of the source CBOM
+        occurrenceCount:
+          type: integer
+          format: int64
+          description: "Number of occurrences this source recorded for the asset,\
+            \ counted before the served evidence list is capped"
+        source:
+          type: string
+          description: "Tool or scan that produced the source CBOM (e.g.: CBOM-Lens)"
+        payload:
+          type: object
+          additionalProperties: {}
+          description: "Cryptographic properties of the component as this source declared\
+            \ them. Keys follow the source document's CycloneDX version and are always\
+            \ source-derived — the platform adds no keys of its own. Values classified\
+            \ as secret material are stored and served as the redaction envelope {\"\
+            redacted\": true, \"length\": n} with no digest, and a value whose classification\
+            \ is absent is treated as secret."
+        evidence:
+          type: array
+          description: "Occurrence evidence recorded from this source, sorted deterministically\
+            \ and capped; occurrenceCount carries the pre-cap total. May be empty"
+          items:
+            $ref: "#/components/schemas/CryptographicAssetEvidenceDto"
+      required:
+      - cbomUuid
+      - occurrenceCount
+      - serialNumber
+      - source
+      - version
+    CryptographicAssetVerdictDto:
+      type: object
+      properties:
+        ruleSetVersion:
+          type: integer
+          format: int32
+          description: Version of the platform rule set that produced the verdict
+        ruleId:
+          type: string
+          description: The rule that decided the verdict; absent when no rule matched
+            and the verdict is the rule set's default
+        reason:
+          type: string
+          description: The deciding rule's finding; absent when no rule matched
+        evaluatedFields:
+          type: object
+          additionalProperties: {}
+          description: "Values of the asset fields the deciding rule evaluated, recorded\
+            \ at decision time"
+        decidedAt:
+          type: string
+          format: date-time
+          description: When the current verdict value was decided
+        evaluatedAt:
+          type: string
+          format: date-time
+          description: When the verdict was last evaluated; a re-evaluation that confirms
+            the verdict advances this and not decidedAt
+      required:
+      - decidedAt
+      - evaluatedAt
+      - ruleSetVersion
     HealthDto:
       type: object
       properties:

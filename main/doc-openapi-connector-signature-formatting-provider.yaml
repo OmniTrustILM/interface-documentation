@@ -65,13 +65,13 @@ info:
       - method
       - route
       - status
-    - labels:
-      - method
-      - route
-      buckets_ref: http_server_latency_buckets_seconds
+    - buckets_ref: http_server_latency_buckets_seconds
       name: http_request_duration_seconds
       unit: seconds
       type: histogram
+      labels:
+      - method
+      - route
     - type: gauge
       name: http_server_in_flight_requests
       unit: requests
@@ -84,13 +84,13 @@ info:
       - method
       - target
       - status
-    - labels:
-      - method
-      - target
-      buckets_ref: http_client_latency_buckets_seconds
+    - buckets_ref: http_client_latency_buckets_seconds
       name: http_client_request_duration_seconds
       unit: seconds
       type: histogram
+      labels:
+      - method
+      - target
     - type: counter
       name: connector_events_total
       unit: events
