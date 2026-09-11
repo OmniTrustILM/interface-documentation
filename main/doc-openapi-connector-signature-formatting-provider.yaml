@@ -13,7 +13,6 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
     histograms:
       http_server_latency_buckets_seconds:
       - 0.005
@@ -38,65 +37,66 @@ info:
       - 2.5
       - 5.0
       - 10.0
+    version: 1
     required:
-    - type: gauge
-      name: app_build_info
-      unit: "1"
-      labels:
+    - labels:
       - version
       - commit
       - runtime
-    - type: gauge
+      unit: "1"
+      name: app_build_info
+      type: gauge
+    - labels: []
+      unit: seconds
       name: process_start_time_seconds
+      type: gauge
+    - labels: []
       unit: seconds
-      labels: []
-    - type: counter
       name: process_cpu_seconds_total
-      unit: seconds
-      labels: []
-    - type: gauge
-      name: process_resident_memory_bytes
+      type: counter
+    - labels: []
       unit: bytes
-      labels: []
-    - type: counter
+      name: process_resident_memory_bytes
+      type: gauge
+    - labels:
+      - method
+      - route
+      - status
+      unit: requests
       name: http_requests_total
-      unit: requests
-      labels:
-      - method
-      - route
-      - status
-    - buckets_ref: http_server_latency_buckets_seconds
+      type: counter
+    - unit: seconds
       name: http_request_duration_seconds
-      unit: seconds
-      type: histogram
+      buckets_ref: http_server_latency_buckets_seconds
       labels:
       - method
       - route
-    - type: gauge
-      name: http_server_in_flight_requests
-      unit: requests
-      labels:
+      type: histogram
+    - labels:
       - route
-    - type: counter
-      name: http_client_requests_total
       unit: requests
-      labels:
+      name: http_server_in_flight_requests
+      type: gauge
+    - labels:
       - method
       - target
       - status
-    - buckets_ref: http_client_latency_buckets_seconds
+      unit: requests
+      name: http_client_requests_total
+      type: counter
+    - unit: seconds
       name: http_client_request_duration_seconds
-      unit: seconds
-      type: histogram
+      buckets_ref: http_client_latency_buckets_seconds
       labels:
       - method
       - target
-    - type: counter
-      name: connector_events_total
-      unit: events
-      labels:
+      type: histogram
+    - labels:
       - event
       - outcome
+      unit: events
+      name: connector_events_total
+      type: counter
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com

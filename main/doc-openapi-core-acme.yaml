@@ -387,6 +387,44 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/acmeProfiles/eabKeys:
+    post:
+      tags:
+      - ACME Profile Management
+      summary: Generate an External Account Binding key
+      description: Generate a random HMAC key suitable for External Account Binding
+        and return it once. The platform neither stores nor associates the key here
+        - store it in a secret and add that secret's UUID to an ACME Profile's eabSecretUuids
+        to put it into use. The same value is what the ACME client MACs its binding
+        with.
+      operationId: generateEabKey
+      responses:
+        "200":
+          description: Key generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AcmeEabKeyDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/acmeProfiles/{uuid}/raprofile/{raProfileUuid}:
     patch:
       tags:
@@ -1032,6 +1070,18 @@ components:
         certificateAssociations:
           $ref: "#/components/schemas/ProtocolCertificateAssociationsRequestDto"
           description: Associations to set for certificates issued by the protocol
+        eabSecretUuids:
+          type: array
+          description: "UUIDs of the secrets holding the External Account Binding\
+            \ HMAC keys accepted by this ACME Profile. Each secret's UUID is the kid\
+            \ an ACME client binds a new Account with, and its content is the base64url-encoded\
+            \ key. A non-empty list makes External Account Binding mandatory - the\
+            \ directory meta then advertises externalAccountRequired. Omitting the\
+            \ property keeps the profile's current secrets; send an empty array to\
+            \ clear them and leave Account registration open."
+          items:
+            type: string
+            format: uuid
       required:
       - issueCertificateAttributes
       - revokeCertificateAttributes
@@ -2528,6 +2578,15 @@ components:
         certificateAssociations:
           $ref: "#/components/schemas/ProtocolCertificateAssociationsDto"
           description: Associations to set for certificates issued by the protocol
+        eabSecretUuids:
+          type: array
+          description: UUIDs of the secrets holding the External Account Binding HMAC
+            keys accepted by this ACME Profile. Each UUID is a kid an ACME client
+            may bind a new Account with. A non-empty list makes External Account Binding
+            mandatory - the directory meta then advertises externalAccountRequired.
+          items:
+            type: string
+            format: uuid
       required:
       - enabled
       - name
@@ -2653,6 +2712,17 @@ components:
         certificateAssociations:
           $ref: "#/components/schemas/ProtocolCertificateAssociationsRequestDto"
           description: Associations to set for certificates issued by the protocol
+        eabSecretUuids:
+          type: array
+          description: "UUIDs of the secrets holding the External Account Binding\
+            \ HMAC keys accepted by this ACME Profile. Each secret's UUID is the kid\
+            \ an ACME client binds a new Account with, and its content is the base64url-encoded\
+            \ key. Supplying at least one makes External Account Binding mandatory\
+            \ - the directory meta then advertises externalAccountRequired; an empty\
+            \ list leaves Account registration open."
+          items:
+            type: string
+            format: uuid
       required:
       - issueCertificateAttributes
       - name
@@ -2665,6 +2735,19 @@ components:
           description: Object identifier
       required:
       - uuid
+    AcmeEabKeyDto:
+      type: object
+      description: A freshly generated External Account Binding HMAC key. The platform
+        does not store it - store it in a secret and register that secret's UUID on
+        an ACME Profile to put the key into use.
+      properties:
+        key:
+          type: string
+          description: "Base64url-encoded HMAC key, 256 bits of randomness. This is\
+            \ the value an ACME client MACs its External Account Binding with, and\
+            \ the value to store as the secret's content."
+      required:
+      - key
     AcmeProfileListDto:
       type: object
       properties:

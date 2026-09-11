@@ -1814,6 +1814,30 @@ components:
           description: Requested value of notAfter field in the certificate
       required:
       - identifiers
+    ExternalAccountBinding:
+      type: object
+      description: "External Account Binding (RFC 8555 section 7.3.4): a JWS in flattened\
+        \ JSON serialization whose protected header names the binding key (kid) and\
+        \ the newAccount URL, whose payload is the account's public JWK, and whose\
+        \ signature is a MAC under the externally provisioned key."
+      properties:
+        payload:
+          type: string
+          description: "Base64url-encoded payload: the JWK of the account key being\
+            \ registered"
+        signature:
+          type: string
+          description: Base64url-encoded HMAC over the protected header and payload
+            under the binding key
+        protected:
+          type: string
+          description: "Base64url-encoded protected header: {\"alg\":\"HS256\",\"\
+            kid\":<key identifier>,\"url\":<newAccount URL>}. The kid is the UUID\
+            \ of the secret holding the binding key on the ACME Profile."
+      required:
+      - payload
+      - protected
+      - signature
     NewAccountRequest:
       type: object
       properties:
@@ -1835,6 +1859,12 @@ components:
           default: false
           description: Return existing Account only flag
           example: false
+        externalAccountBinding:
+          $ref: "#/components/schemas/ExternalAccountBinding"
+          description: External Account Binding JWS (RFC 8555 section 7.3.4). Required
+            when the directory meta advertises externalAccountRequired; binds the
+            new Account to the external key named by its kid. Honoured on newAccount
+            only - an Account update ignores it.
     Account:
       type: object
       properties:
