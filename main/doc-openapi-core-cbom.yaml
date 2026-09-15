@@ -707,7 +707,9 @@ components:
           description: UUID of the inventory asset
         name:
           type: string
-          description: Normalized display name of the asset
+          description: "Normalized display name of the asset: the producers' name,\
+            \ else the recorded OID. Absent when neither exists to serve, because\
+            \ a refuted OID is never presented as the name"
         type:
           $ref: "#/components/schemas/CryptographicAssetType"
           description: Type of the asset
@@ -729,7 +731,6 @@ components:
           description: True when sources make contradicting claims about this asset
             that are quarantined pending reconciliation
       required:
-      - name
       - occurrenceCount
       - pqcVerdict
       - quarantined
@@ -2199,7 +2200,9 @@ components:
           description: UUID of the inventory asset
         name:
           type: string
-          description: Normalized display name of the asset
+          description: "Normalized display name of the asset: the producers' name,\
+            \ else the recorded OID. Absent when neither exists to serve, because\
+            \ a refuted OID is never presented as the name"
         type:
           $ref: "#/components/schemas/CryptographicAssetType"
           description: Type of the asset
@@ -2222,7 +2225,9 @@ components:
             that are quarantined pending reconciliation
         verdict:
           $ref: "#/components/schemas/CryptographicAssetVerdictDto"
-          description: Provenance of the asset's PQC verdict
+          description: Provenance of the asset's PQC verdict. Absent until the first
+            rule-set evaluation of this asset; the row-level pqcVerdict serves unknown
+            until then
         normalizedFields:
           $ref: "#/components/schemas/CryptographicAssetNormalizedFieldsDto"
           description: Normalized filterable properties derived for the asset; absent
@@ -2247,7 +2252,6 @@ components:
           items:
             $ref: "#/components/schemas/CryptographicAssetOidDto"
       required:
-      - name
       - occurrenceCount
       - oids
       - pqcVerdict
@@ -2256,7 +2260,6 @@ components:
       - sources
       - type
       - uuid
-      - verdict
     CryptographicAssetEvidenceDto:
       type: object
       properties:
@@ -2337,7 +2340,8 @@ components:
             \ counted before the served evidence list is capped"
         source:
           type: string
-          description: "Tool or scan that produced the source CBOM (e.g.: CBOM-Lens)"
+          description: "Tool or scan that produced the source CBOM (e.g.: CBOM-Lens);\
+            \ absent when the document's metadata component carries no name"
         payload:
           type: object
           additionalProperties: {}
@@ -2357,7 +2361,6 @@ components:
       - cbomUuid
       - occurrenceCount
       - serialNumber
-      - source
       - version
     CryptographicAssetVerdictDto:
       type: object
