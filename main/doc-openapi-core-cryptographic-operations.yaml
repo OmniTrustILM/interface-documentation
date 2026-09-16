@@ -61,40 +61,13 @@ paths:
         required: true
       responses:
         "200":
-          description: Data decrypted
+          description: Data verified
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerifyDataResponseDto"
-        "422":
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-              example:
-              - Error Message 1
-              - Error Message 2
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: "Token instance, token profile, key or key item not found"
           content:
             application/json:
               schema:
@@ -111,6 +84,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -159,35 +156,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignDataResponseDto"
-        "422":
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-              example:
-              - Error Message 1
-              - Error Message 2
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: "Token instance, token profile, key or key item not found"
           content:
             application/json:
               schema:
@@ -204,6 +174,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -252,35 +246,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EncryptDataResponseDto"
-        "422":
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-              example:
-              - Error Message 1
-              - Error Message 2
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: "Token instance, token profile, key or key item not found"
           content:
             application/json:
               schema:
@@ -297,6 +264,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -345,35 +336,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DecryptDataResponseDto"
-        "422":
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-              example:
-              - Error Message 1
-              - Error Message 2
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: "Token instance, token profile, key or key item not found"
           content:
             application/json:
               schema:
@@ -390,6 +354,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -420,35 +408,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RandomDataResponseDto"
-        "422":
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-              example:
-              - Error Message 1
-              - Error Message 2
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: Token instance not found
           content:
             application/json:
               schema:
@@ -465,6 +426,118 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/verify/attributes:
+    get:
+      tags:
+      - Cryptographic Operations Controller
+      summary: List verification attributes
+      description: "Returns the verification attribute schema for the specified token,\
+        \ profile and key item."
+      operationId: listVerifyAttributes
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Verify attribute schema retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: "Token instance, token profile, key or key item not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -474,6 +547,8 @@ paths:
       tags:
       - Cryptographic Operations Controller
       summary: List of signature Attributes
+      description: Legacy attribute discovery for v1 providers only. Use listSignAttributes
+        or listVerifyAttributes instead. Not supported for v2 providers.
       operationId: listSignatureAttributes
       parameters:
       - name: tokenInstanceUuid
@@ -507,32 +582,8 @@ paths:
         schema:
           $ref: "#/components/schemas/KeyAlgorithm"
       responses:
-        "200":
-          description: List of Attributes retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BaseAttributeDto"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: "Token instance, token profile, key or key item not found"
           content:
             application/json:
               schema:
@@ -549,6 +600,310 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "200":
+          description: List of Attributes retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "501":
+          description: Legacy attribute discovery is not supported for v2 providers;
+            use the operation-specific attribute endpoints.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      deprecated: true
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/sign/attributes:
+    get:
+      tags:
+      - Cryptographic Operations Controller
+      summary: List signing attributes
+      description: "Returns the signing attribute schema for the specified token,\
+        \ profile and key item."
+      operationId: listSignAttributes
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Sign attribute schema retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: "Token instance, token profile, key or key item not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/encrypt/attributes:
+    get:
+      tags:
+      - Cryptographic Operations Controller
+      summary: List encryption attributes
+      description: "Returns the encryption attribute schema for the specified token,\
+        \ profile and key item."
+      operationId: listEncryptAttributes
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Encrypt attribute schema retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: "Token instance, token profile, key or key item not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/decrypt/attributes:
+    get:
+      tags:
+      - Cryptographic Operations Controller
+      summary: List decryption attributes
+      description: "Returns the decryption attribute schema for the specified token,\
+        \ profile and key item."
+      operationId: listDecryptAttributes
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      - name: keyItemUuid
+        in: path
+        description: Key Item UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Decrypt attribute schema retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "404":
+          description: "Token instance, token profile, key or key item not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -558,6 +913,8 @@ paths:
       tags:
       - Cryptographic Operations Controller
       summary: List of cipher Attributes
+      description: Legacy attribute discovery for v1 providers only. Use listEncryptAttributes
+        or listDecryptAttributes instead. Not supported for v2 providers.
       operationId: listCipherAttributes
       parameters:
       - name: tokenInstanceUuid
@@ -591,32 +948,8 @@ paths:
         schema:
           $ref: "#/components/schemas/KeyAlgorithm"
       responses:
-        "200":
-          description: List of Attributes retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BaseAttributeDto"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: "Token instance, token profile, key or key item not found"
           content:
             application/json:
               schema:
@@ -633,6 +966,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "200":
+          description: List of Attributes retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "422":
+          description: Validation failed or the key algorithm is unsupported
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "501":
+          description: Legacy attribute discovery is not supported for v2 providers;
+            use the operation-specific attribute endpoints.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      deprecated: true
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -651,32 +1024,8 @@ paths:
         schema:
           type: string
       responses:
-        "200":
-          description: List of Attributes retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BaseAttributeDto"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
         "404":
-          description: Not Found
+          description: Token instance not found
           content:
             application/json:
               schema:
@@ -693,6 +1042,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "200":
+          description: List of Attributes retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
       security:
       - SessionAuth: []
       - CertificateAuth: []
@@ -2274,18 +2655,6 @@ components:
           description: Base64 encoded random data
       required:
       - data
-    KeyAlgorithm:
-      type: string
-      enum:
-      - RSA
-      - ECDSA
-      - FALCON
-      - ML-DSA
-      - SLH-DSA
-      - ML-KEM
-      - CRYSTALS-Dilithium
-      - SPHINCS+
-      - Unknown
     BaseAttributeDto:
       type: object
       description: Base Attribute definition
@@ -3074,6 +3443,18 @@ components:
       - none
       - connectorCallback
       - staticList
+    KeyAlgorithm:
+      type: string
+      enum:
+      - RSA
+      - ECDSA
+      - FALCON
+      - ML-DSA
+      - SLH-DSA
+      - ML-KEM
+      - CRYSTALS-Dilithium
+      - SPHINCS+
+      - Unknown
   securitySchemes:
     SessionAuth:
       type: apiKey

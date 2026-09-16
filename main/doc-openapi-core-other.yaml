@@ -4886,6 +4886,7 @@ components:
       - destroy
       - listKeyUsages
       - updateKeyUsage
+      - listKeyRequestTypes
       - encrypt
       - decrypt
       - sign

@@ -549,6 +549,75 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/types:
+    get:
+      tags:
+      - Token Profile Management
+      summary: List supported Key Request Types
+      description: "Returns the Key Request Types supported for the specified token\
+        \ profile, based on its token configuration, profile attributes and selected\
+        \ key usages"
+      operationId: listSupportedKeyRequestTypes
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Supported Key Request Types retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyRequestType"
+        "404":
+          description: Token instance or token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/tokens/{tokenInstanceUuid}/tokenProfiles/keyUsages:
     get:
       tags:
@@ -2393,6 +2462,11 @@ components:
       required:
       - attributes
       - name
+    KeyRequestType:
+      type: string
+      enum:
+      - secret
+      - keyPair
     BaseAttributeDto:
       type: object
       description: Base Attribute definition

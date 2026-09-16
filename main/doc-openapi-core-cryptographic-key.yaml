@@ -371,6 +371,21 @@ paths:
       responses:
         "204":
           description: Key Items Usages Updated
+        "404":
+          description: Parent cryptographic key not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: One or more requested key items do not exist. The entire batch
+            is rejected and no key items are updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
         "400":
           description: Bad Request
           content:
@@ -1113,7 +1128,7 @@ paths:
     get:
       tags:
       - Cryptographic Key Management
-      summary: Get Cryptographic Key Detail
+      summary: Get Cryptographic Key Item Detail
       operationId: getKeyItem
       parameters:
       - name: uuid
@@ -1540,6 +1555,21 @@ paths:
       responses:
         "204":
           description: Key Items enabled
+        "404":
+          description: Parent cryptographic key not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: One or more requested key items do not exist. The entire batch
+            is rejected and no key items are updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
         "400":
           description: Bad Request
           content:
@@ -1581,6 +1611,21 @@ paths:
       responses:
         "204":
           description: Key Items disabled
+        "404":
+          description: Parent cryptographic key not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: One or more requested key items do not exist. The entire batch
+            is rejected and no key items are updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
         "400":
           description: Bad Request
           content:
@@ -1632,6 +1677,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "404":
+          description: Parent cryptographic key not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: One or more requested key items do not exist. The entire batch
+            is rejected and no key items are updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
         "204":
           description: Keys Items destroyed
         "400":
@@ -1671,6 +1731,21 @@ paths:
       responses:
         "204":
           description: Key Items marked as compromised
+        "404":
+          description: Parent cryptographic key not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: One or more requested key items do not exist. The entire batch
+            is rejected and no key items are updated.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
         "400":
           description: Bad Request
           content:
@@ -4446,9 +4521,11 @@ components:
         name:
           type: string
           description: Name of the Cryptographic Key
+          minLength: 1
         description:
           type: string
           description: Description of the Cryptographic Key
+          minLength: 1
         groupUuids:
           type: array
           description: UUIDs of the groups to associate with key
@@ -4831,11 +4908,11 @@ components:
       properties:
         reason:
           $ref: "#/components/schemas/KeyCompromiseReason"
-          description: Usages for the Key
+          description: Reason for marking the key items as compromised
         uuids:
           type: array
-          description: "List of UUIDs of the key Items. If not provided, the usage\
-            \ will be updated to all the itemsin the key"
+          description: "UUIDs of the key items to mark as compromised. If omitted\
+            \ or empty, all items in the key are marked as compromised."
           items:
             type: string
             format: uuid
@@ -4854,7 +4931,7 @@ components:
       properties:
         reason:
           $ref: "#/components/schemas/KeyCompromiseReason"
-          description: Usages for the Key
+          description: Reason for marking the key items as compromised
         uuids:
           type: array
           description: List of Key Item UUID
@@ -4868,7 +4945,7 @@ components:
       properties:
         reason:
           $ref: "#/components/schemas/KeyCompromiseReason"
-          description: Usages for the Key
+          description: Reason for marking the key items as compromised
         uuids:
           type: array
           description: List of UUIDs of the keys. This will mark all the items inside
