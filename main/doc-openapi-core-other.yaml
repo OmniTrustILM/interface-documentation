@@ -78,6 +78,13 @@ paths:
       tags:
       - Settings
       summary: Update platform settings
+      description: "**Request semantics:** a section left out of the body (`utils`,\
+        \ `certificates`) is left untouched. A `utils` that is present is stored as\
+        \ sent, so it carries the full desired state of that section: a field left\
+        \ out is cleared, or returns to the platform default where it has one. Inside\
+        \ `certificates`, each group (`validation`, `requestAttributes`, `registration`)\
+        \ behaves the same way as a section: one left out is untouched, one that is\
+        \ present is stored as sent."
       operationId: updatePlatformSettings
       requestBody:
         content:
@@ -86,8 +93,8 @@ paths:
               $ref: "#/components/schemas/PlatformSettingsUpdateDto"
         required: true
       responses:
-        "204":
-          description: Setting updated
+        "200":
+          description: Settings updated
         "400":
           description: Bad Request
           content:
@@ -3240,7 +3247,9 @@ components:
       properties:
         utils:
           $ref: "#/components/schemas/UtilsSettingsDto"
-          description: Utils settings of the platform
+          description: "Utils settings of the platform. When present, stored as sent:\
+            \ a URL left out is cleared, and a CBOM sync tunable left out returns\
+            \ to the platform default"
         certificates:
           $ref: "#/components/schemas/CertificateSettingsUpdateDto"
           description: Settings applicable to all certificates in inventory by default
@@ -3794,6 +3803,36 @@ components:
           description: URL of the CBOM Repository
           examples:
           - http://cbom-repository:8080
+        cbomSyncOverlapSeconds:
+          type: integer
+          format: int32
+          default: 60
+          description: "How far before the start of the last successful CBOM sync\
+            \ run each run re-lists the CBOM Repository, in seconds. It should cover\
+            \ the clock skew between the platform and the repository's object store\
+            \ plus the longest upload. 0 re-lists only from the start of the last\
+            \ run. Entries listed twice are stored once"
+          maximum: 86400
+          minimum: 0
+        cbomSyncSkippedRetryRuns:
+          type: integer
+          format: int32
+          default: 3
+          description: How many later CBOM sync runs retry a repository entry that
+            could not be stored before it is given up on as permanently skipped; 0
+            gives an entry up at its first failure
+          maximum: 1000
+          minimum: 0
+        cbomSyncMaxIngestDocuments:
+          type: integer
+          format: int32
+          default: 50
+          description: "How many CBOMs one sync run ingests cryptographic assets from,\
+            \ beyond the entries the run has just stored: earlier failures, interrupted\
+            \ ingests and CBOMs uploaded through the platform API. 0 turns that catch-up\
+            \ off"
+          maximum: 10000
+          minimum: 0
     ValueSource:
       type: object
       description: Declares how Core resolves the content of an attribute; orthogonal

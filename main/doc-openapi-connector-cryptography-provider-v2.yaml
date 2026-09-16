@@ -14,7 +14,8 @@ info:
     url: images/ilm-logo.svg
   x-metrics-profile:
     histograms:
-      http_client_latency_buckets_seconds:
+      http_server_latency_buckets_seconds:
+      - 0.005
       - 0.01
       - 0.025
       - 0.05
@@ -25,8 +26,7 @@ info:
       - 2.5
       - 5.0
       - 10.0
-      http_server_latency_buckets_seconds:
-      - 0.005
+      http_client_latency_buckets_seconds:
       - 0.01
       - 0.025
       - 0.05
@@ -64,13 +64,13 @@ info:
       type: counter
       name: http_requests_total
       unit: requests
-    - unit: seconds
+    - name: http_request_duration_seconds
+      unit: seconds
       type: histogram
       labels:
       - method
       - route
       buckets_ref: http_server_latency_buckets_seconds
-      name: http_request_duration_seconds
     - labels:
       - route
       type: gauge
@@ -83,13 +83,13 @@ info:
       type: counter
       name: http_client_requests_total
       unit: requests
-    - unit: seconds
+    - name: http_client_request_duration_seconds
+      unit: seconds
       type: histogram
       labels:
       - method
       - target
       buckets_ref: http_client_latency_buckets_seconds
-      name: http_client_request_duration_seconds
     - labels:
       - event
       - outcome
