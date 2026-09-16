@@ -2297,6 +2297,29 @@ components:
       - pageNumber
       - totalItems
       - totalPages
+    ResourceObjectDto:
+      type: object
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+          description: Resource of object
+          examples:
+          - certificates
+        objectUuid:
+          type: string
+          format: uuid
+          description: Object UUID
+          examples:
+          - 2dcc528b-9e16-46c6-877e-74eae258173f
+        name:
+          type: string
+          description: Object Name
+          examples:
+          - Name
+      required:
+      - name
+      - objectUuid
+      - resource
     TriggerHistoryObjectSummaryDto:
       type: object
       properties:
@@ -2309,6 +2332,11 @@ components:
           format: uuid
           description: Reference UUID of the object that the trigger has been evaluated
             on.
+        hostObject:
+          $ref: "#/components/schemas/ResourceObjectDto"
+          description: "The object whose page shows the evaluated object, when that\
+            \ object has no page of its own - the host object of a comment, for instance.\
+            \ Absent when the evaluated object is navigable itself."
         matched:
           type: boolean
           description: Was matched at least by one trigger.
@@ -2644,29 +2672,6 @@ components:
       - pageNumber
       - totalItems
       - totalPages
-    ResourceObjectDto:
-      type: object
-      properties:
-        resource:
-          $ref: "#/components/schemas/Resource"
-          description: Resource of object
-          examples:
-          - certificates
-        objectUuid:
-          type: string
-          format: uuid
-          description: Object UUID
-          examples:
-          - 2dcc528b-9e16-46c6-877e-74eae258173f
-        name:
-          type: string
-          description: Object Name
-          examples:
-          - Name
-      required:
-      - name
-      - objectUuid
-      - resource
     ActionDto:
       type: object
       properties:

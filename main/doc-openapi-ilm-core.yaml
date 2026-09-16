@@ -35411,14 +35411,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -41267,11 +41267,11 @@ components:
       - $ref: "#/components/schemas/BaseAttributeContentDtoV2"
       - $ref: "#/components/schemas/BaseAttributeContentDtoV3"
       properties:
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
         reference:
           type: string
         data: {}
-        contentType:
-          $ref: "#/components/schemas/AttributeContentType"
     CustomAttributeUpdateRequestDto:
       type: object
       properties:
@@ -43329,6 +43329,29 @@ components:
       - pageNumber
       - totalItems
       - totalPages
+    ResourceObjectDto:
+      type: object
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+          description: Resource of object
+          examples:
+          - certificates
+        objectUuid:
+          type: string
+          format: uuid
+          description: Object UUID
+          examples:
+          - 2dcc528b-9e16-46c6-877e-74eae258173f
+        name:
+          type: string
+          description: Object Name
+          examples:
+          - Name
+      required:
+      - name
+      - objectUuid
+      - resource
     TriggerHistoryObjectSummaryDto:
       type: object
       properties:
@@ -43341,6 +43364,11 @@ components:
           format: uuid
           description: Reference UUID of the object that the trigger has been evaluated
             on.
+        hostObject:
+          $ref: "#/components/schemas/ResourceObjectDto"
+          description: "The object whose page shows the evaluated object, when that\
+            \ object has no page of its own - the host object of a comment, for instance.\
+            \ Absent when the evaluated object is navigable itself."
         matched:
           type: boolean
           description: Was matched at least by one trigger.
@@ -47613,29 +47641,6 @@ components:
       - providerGroupsCount
       - providerRulesCount
       - uuid
-    ResourceObjectDto:
-      type: object
-      properties:
-        resource:
-          $ref: "#/components/schemas/Resource"
-          description: Resource of object
-          examples:
-          - certificates
-        objectUuid:
-          type: string
-          format: uuid
-          description: Object UUID
-          examples:
-          - 2dcc528b-9e16-46c6-877e-74eae258173f
-        name:
-          type: string
-          description: Object Name
-          examples:
-          - Name
-      required:
-      - name
-      - objectUuid
-      - resource
     ComplianceGroupListDto:
       type: object
       properties:
