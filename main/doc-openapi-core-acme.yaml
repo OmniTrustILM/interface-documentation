@@ -985,6 +985,59 @@ paths:
       - BearerJWTAuth: []
 components:
   schemas:
+    AcmeIdentifierAuthorizationMode:
+      type: string
+      enum:
+      - preauthorizedOrChallenge
+      - preauthorizedOnly
+    AcmeIdentifierMatchType:
+      type: string
+      enum:
+      - exact
+      - subdomain
+    AcmeIdentifierType:
+      type: string
+      enum:
+      - dns
+      - ip
+    AcmePreauthorizedIdentifierDto:
+      type: object
+      description: "An identifier an ACME account may obtain from this profile without\
+        \ proving control of it. An order whose identifiers are all covered gets its\
+        \ authorizations created valid, so no http-01 or dns-01 challenge is issued\
+        \ for them."
+      properties:
+        type:
+          $ref: "#/components/schemas/AcmeIdentifierType"
+          description: "Which kind of ordered identifier this entry can cover. An\
+            \ entry covers its own type and no other, so a dotted value listed as\
+            \ 'ip' never pre-authorizes the DNS name that reads the same."
+        value:
+          type: string
+          description: "The identifier value: a DNS name, or an IP address for an\
+            \ RFC 8738 ip identifier."
+          example: apps.example.com
+          minLength: 1
+        matchType:
+          $ref: "#/components/schemas/AcmeIdentifierMatchType"
+          description: "How the value is compared with an ordered identifier. 'exact'\
+            \ covers that identifier only. 'subdomain' covers descendants of the name\
+            \ at any depth but not the name itself, so covering both takes two entries;\
+            \ it applies to DNS names, an IP address always being matched exactly.\
+            \ DNS comparison is case-insensitive, IP comparison is by octets."
+        allowWildcard:
+          type: boolean
+          default: false
+          description: "Whether the wildcard identifier of this entry may also be\
+            \ pre-authorized. It sits on the entry rather than the profile, so allowing\
+            \ '*.apps.example.com' is a decision about that pattern rather than a\
+            \ switch over every listed name. A wildcard is covered only when everything\
+            \ it stands for is already inside this entry's scope."
+          example: false
+      required:
+      - matchType
+      - type
+      - value
     AcmeProfileEditRequestDto:
       type: object
       properties:
@@ -1082,6 +1135,22 @@ components:
           items:
             type: string
             format: uuid
+        preauthorizedIdentifiers:
+          type: array
+          description: Identifiers an account may obtain from this profile without
+            proving control of them. An order whose identifiers are all covered is
+            ready at creation and carries no challenges. Omitting the property keeps
+            the profile's current entries; send an empty array to clear them.
+          items:
+            $ref: "#/components/schemas/AcmePreauthorizedIdentifierDto"
+        identifierAuthorizationMode:
+          $ref: "#/components/schemas/AcmeIdentifierAuthorizationMode"
+          description: "What happens to an ordered identifier the pre-authorization\
+            \ policy does not cover. 'preauthorizedOrChallenge', the default, sends\
+            \ it through the usual http-01 and dns-01 flow. 'preauthorizedOnly' refuses\
+            \ the order, and needs at least one pre-authorized identifier - to stop\
+            \ a profile accepting orders at all, disable new orders instead. Omitting\
+            \ the property keeps the profile's current mode."
       required:
       - issueCertificateAttributes
       - revokeCertificateAttributes
@@ -2587,6 +2656,16 @@ components:
           items:
             type: string
             format: uuid
+        preauthorizedIdentifiers:
+          type: array
+          description: Identifiers an account may obtain from this profile without
+            proving control of them.
+          items:
+            $ref: "#/components/schemas/AcmePreauthorizedIdentifierDto"
+        identifierAuthorizationMode:
+          $ref: "#/components/schemas/AcmeIdentifierAuthorizationMode"
+          description: What happens to an ordered identifier the pre-authorization
+            policy does not cover.
       required:
       - enabled
       - name
@@ -2723,6 +2802,21 @@ components:
           items:
             type: string
             format: uuid
+        preauthorizedIdentifiers:
+          type: array
+          description: Identifiers an account may obtain from this profile without
+            proving control of them. An order whose identifiers are all covered is
+            ready at creation and carries no challenges.
+          items:
+            $ref: "#/components/schemas/AcmePreauthorizedIdentifierDto"
+        identifierAuthorizationMode:
+          $ref: "#/components/schemas/AcmeIdentifierAuthorizationMode"
+          default: preauthorizedOrChallenge
+          description: "What happens to an ordered identifier the pre-authorization\
+            \ policy does not cover. 'preauthorizedOrChallenge', the default, sends\
+            \ it through the usual http-01 and dns-01 flow. 'preauthorizedOnly' refuses\
+            \ the order, and needs at least one pre-authorized identifier - to stop\
+            \ a profile accepting orders at all, disable new orders instead."
       required:
       - issueCertificateAttributes
       - name
