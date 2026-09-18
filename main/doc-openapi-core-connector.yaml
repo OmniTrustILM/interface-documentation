@@ -4238,7 +4238,7 @@ components:
             $ref: "#/components/schemas/FunctionGroupDto"
         interfaces:
           type: array
-          description: List of connector interfaces implemented by the Connector
+          description: A connector interface implemented by the Connector
           items:
             $ref: "#/components/schemas/ConnectorInterfaceDto"
         proxy:
@@ -4316,6 +4316,9 @@ components:
       - xadesFormatting
     ConnectorInterfaceDto:
       type: object
+      description: "An interface a connector implements: its code, its version, and\
+        \ the features it supports. The version decides which generation of the provider\
+        \ contract Core speaks to that connector."
       properties:
         uuid:
           type: string
@@ -5039,7 +5042,7 @@ components:
             $ref: "#/components/schemas/FunctionGroupDto"
         interfaces:
           type: array
-          description: List of connector interfaces implemented by the Connector
+          description: A connector interface implemented by the Connector
           items:
             $ref: "#/components/schemas/ConnectorInterfaceDto"
         proxy:

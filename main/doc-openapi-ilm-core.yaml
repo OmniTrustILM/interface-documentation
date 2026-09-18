@@ -29618,6 +29618,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: "Delete refused: cancel a v2 Discovery that has not ended,\
+            \ or wait for it to end once it is processing and can no longer be cancelled"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -35383,7 +35395,7 @@ components:
             $ref: "#/components/schemas/FunctionGroupDto"
         interfaces:
           type: array
-          description: List of connector interfaces implemented by the Connector
+          description: A connector interface implemented by the Connector
           items:
             $ref: "#/components/schemas/ConnectorInterfaceDto"
         proxy:
@@ -35461,6 +35473,9 @@ components:
       - xadesFormatting
     ConnectorInterfaceDto:
       type: object
+      description: "An interface a connector implements: its code, its version, and\
+        \ the features it supports. The version decides which generation of the provider\
+        \ contract Core speaks to that connector."
       properties:
         uuid:
           type: string
@@ -37371,8 +37386,11 @@ components:
           $ref: "#/components/schemas/NameAndUuidDto"
           description: Connector associated with this Vault instance
         connectorInterface:
+          type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: Connector Interface associated with this Vault instance
+          description: The connector interface this vault instance is associated with.
+            Sent as an explicit null once the interface has been removed from its
+            connector; the key is always present.
         attributes:
           type: array
           description: List of attributes of the Vault instance
@@ -37386,7 +37404,6 @@ components:
       required:
       - attributes
       - connector
-      - connectorInterface
       - name
       - uuid
     UpdateUserRequestDto:
@@ -41748,8 +41765,9 @@ components:
         connectorInterface:
           type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: "Connector Interface this Authority instance is bound to; null\
-            \ for legacy v1 connectors, which are identified by kind instead"
+          description: "The connector interface this authority instance is bound to.\
+            \ Sent as an explicit null for a legacy v1 connector, which is identified\
+            \ by kind instead; the key is always present."
         connectorUuid:
           type: string
           deprecated: true
@@ -43820,7 +43838,7 @@ components:
             $ref: "#/components/schemas/FunctionGroupDto"
         interfaces:
           type: array
-          description: List of connector interfaces implemented by the Connector
+          description: A connector interface implemented by the Connector
           items:
             $ref: "#/components/schemas/ConnectorInterfaceDto"
         proxy:
@@ -44431,11 +44449,13 @@ components:
           $ref: "#/components/schemas/NameAndUuidDto"
           description: Connector associated with this Vault instance
         connectorInterface:
+          type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: Connector Interface associated with this Vault instance
+          description: The connector interface this vault instance is associated with.
+            Sent as an explicit null once the interface has been removed from its
+            connector; the key is always present.
       required:
       - connector
-      - connectorInterface
       - name
       - uuid
     PaginationResponseDtoVaultProfileDto:
@@ -45894,9 +45914,18 @@ components:
         connectorUuid:
           type: string
           description: Discovery Provider UUID
+        interfaceUuid:
+          type: string
+          format: uuid
+          description: UUID of the DISCOVERY Connector Interface to bind this run
+            to. Required when the Connector exposes more than one; selected automatically
+            when it exposes exactly one. A Connector with no DISCOVERY interface yields
+            a legacy v1 run.
         kind:
           type: string
-          description: Discovery Kind
+          description: "Discovery Kind. Required for a run against a v1 Discovery\
+            \ Provider, whose function group is kind-scoped. A v2 Discovery Provider\
+            \ has no kinds — omit it for a run bound to a DISCOVERY interface."
         triggers:
           type: array
           description: "List of triggers to be triggered after the discovery is finished,\
@@ -45933,7 +45962,6 @@ components:
       required:
       - attributes
       - connectorUuid
-      - kind
       - name
     ScheduleDiscoveryDto:
       type: object
@@ -45961,7 +45989,8 @@ components:
           - Name
         kind:
           type: string
-          description: Discovery Kind
+          description: "Discovery Kind. Absent for a run against a v2 Discovery Provider,\
+            \ which has no kinds."
           examples:
           - IP-HostName
         status:
@@ -45989,6 +46018,11 @@ components:
         connectorName:
           type: string
           description: Name of the Discovery Provider
+        connectorInterface:
+          $ref: "#/components/schemas/ConnectorInterfaceDto"
+          description: "The connector interface this run is driven through, and so\
+            \ which generation drives it. Absent for a run against a legacy v1 connector,\
+            \ which declares no connector interface."
         attributeValues:
           type: object
           additionalProperties:
@@ -46018,7 +46052,6 @@ components:
       required:
       - connectorName
       - connectorUuid
-      - kind
       - name
       - status
       - uuid
@@ -47559,6 +47592,7 @@ components:
       - updateObjectPermissions
       - schedule
       - listAttributes
+      - listResources
       - validateAttributes
       - attributeCallback
       - updateAttributeResources
@@ -50284,7 +50318,8 @@ components:
           - Name
         kind:
           type: string
-          description: Discovery Kind
+          description: "Discovery Kind. Absent for a run against a v2 Discovery Provider,\
+            \ which has no kinds."
           examples:
           - IP-HostName
         status:
@@ -50312,18 +50347,25 @@ components:
           type: integer
           format: int32
           default: 0
-          description: Number of certificates that are discovered
+          description: How many certificates this discovery found and saved.
         connectorTotalCertificatesDiscovered:
           type: integer
           format: int32
           default: 0
-          description: Number of certificates that were discovered by connector
+          description: "How many certificate items the Discovery Provider reported.\
+            \ Counts items, so a certificate found on several hosts counts once per\
+            \ host; totalCertificatesDiscovered counts it once."
         connectorUuid:
           type: string
           description: UUID of the Discovery Provider
         connectorName:
           type: string
           description: Name of the Discovery Provider
+        connectorInterface:
+          $ref: "#/components/schemas/ConnectorInterfaceDto"
+          description: "The connector interface this run is driven through, and so\
+            \ which generation drives it. Absent for a run against a legacy v1 connector,\
+            \ which declares no connector interface."
         attributes:
           type: array
           description: List of Discovery Attributes
@@ -50354,6 +50396,9 @@ components:
             $ref: "#/components/schemas/Resource"
         progress:
           $ref: "#/components/schemas/DiscoveryProgressDto"
+          description: "Progress counters reported by the connector, with an optional\
+            \ per-resource breakdown. Omitted for a v1 run and when the connector\
+            \ reports no progress. The counters inside are independently optional."
         runMessageCount:
           type: integer
           format: int64
@@ -50362,6 +50407,36 @@ components:
             \ so this counts kinds of problem rather than occurrences. A non-zero\
             \ count does not imply the run failed. Always 0 for runs against a v1\
             \ Discovery Provider."
+        itemsDiscovered:
+          type: integer
+          format: int64
+          description: "How many items this discovery has received from the Discovery\
+            \ Provider, across all resource types. Usually the same as the number\
+            \ the items listing returns, and larger when an item could not be kept\
+            \ — a malformed payload, or one already collected earlier in the run.\
+            \ Whatever the provider has produced but not yet handed over shows in\
+            \ progress, not here. Not set for a discovery run against a v1 Discovery\
+            \ Provider."
+        itemsNewlyDiscovered:
+          type: integer
+          format: int64
+          description: "How many of the items collected were not already in the inventory\
+            \ when this run staged them. Counted per item rather than per object,\
+            \ so the same certificate found on two hosts counts twice."
+        itemsProcessed:
+          type: integer
+          format: int64
+          description: How many of the newly discovered items are now in the inventory.
+            Counts only items that were imported cleanly; one the platform could not
+            import is counted by itemsFailed instead. itemsNewlyDiscovered less this
+            and itemsFailed is what the run has still to import.
+        itemsFailed:
+          type: integer
+          format: int64
+          description: "How many of the newly discovered items the platform could\
+            \ not import, each for a reason recorded against the item in the items\
+            \ listing. A discovery can finish with a non-zero count here — it ends\
+            \ with a warning rather than a failure."
         stoppable:
           type: boolean
           description: "Whether this run can be stopped and later resumed. Always\
@@ -50374,7 +50449,9 @@ components:
       - connectorName
       - connectorStatus
       - connectorUuid
-      - kind
+      - itemsFailed
+      - itemsNewlyDiscovered
+      - itemsProcessed
       - name
       - resources
       - runMessageCount
@@ -50384,49 +50461,75 @@ components:
       - uuid
     DiscoveryProgressDto:
       type: object
-      description: "Run-level progress of a discovery run: the run-wide counters,\
-        \ plus an optional per-resource breakdown."
+      description: "How far a discovery has got: how much of the provider's work is\
+        \ done, and optionally how many items it has found per resource type."
       properties:
-        processed:
+        targetsProcessed:
           type: integer
           format: int64
-          description: Number of items processed so far; omitted when the connector
-            cannot report it
-        totalEstimate:
+          description: "How many targets the provider has attempted so far, including\
+            \ ones that failed. A target is one unit of the provider's work — one\
+            \ address and port, one inventory entry, one keystore alias — and can\
+            \ yield many items or none. Omitted if the provider cannot count its work."
+        targetsTotal:
           type: integer
           format: int64
-          description: Estimated total number of items for the run; omitted when the
-            connector cannot produce an estimate
+          description: "How many targets this discovery will attempt in total — exact\
+            \ if the provider knows, an estimate otherwise, and it may change as the\
+            \ run goes on. Use it with targetsProcessed to show progress. Omitted\
+            \ when the provider cannot know the total; there is then no percentage\
+            \ to show, and clients must not guess one."
+        targetsFailed:
+          type: integer
+          format: int64
+          description: "How many targets could not be examined — an unreachable host,\
+            \ a refused connection, a target that answered nothing usable. Included\
+            \ in targetsProcessed, not added to it, so a mostly dark range still reaches\
+            \ its total. Failures here do not make the discovery itself fail."
         phase:
           type: string
-          description: "Connector-defined free-text phase label (e.g. \"scanning\"\
-            , \"enumerating\"); omitted when the connector has no phase concept"
+          description: "Free-text label for what the provider is doing (e.g. \"scanning\"\
+            , \"enumerating\"); omitted if it has none"
         byResource:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/DiscoveryResourceProgressDto"
+          description: "How many items were found, broken down by resource type. Present\
+            \ only if the provider reports the breakdown."
           propertyNames:
             $ref: "#/components/schemas/Resource"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "When the platform recorded this report. A discovery is polled\
+            \ on a backoff that settles at several minutes, so counters can be older\
+            \ than the response carrying them; this says how much older. Set by the\
+            \ platform — a value sent by a Discovery Provider is ignored."
+          examples:
+          - 2026-09-13T14:32:07.000+02:00
+          readOnly: true
     DiscoveryResourceProgressDto:
       type: object
-      description: "Progress counters. Used for a whole run and, keyed by resource\
-        \ code inside byResource (e.g. \"certificates\", \"keys\"), for one resource\
-        \ type at a time. Every field is optional."
+      description: "How many items of one resource type have been found, keyed by\
+        \ resource code inside byResource (e.g. \"certificates\", \"keys\"). Every\
+        \ field is optional, but a provider with nothing to report MUST leave the\
+        \ whole object out rather than send an empty one — a client keeping the last\
+        \ progress it was sent cannot tell an empty report from a missing one."
       properties:
-        processed:
+        produced:
           type: integer
           format: int64
-          description: Number of items processed so far; omitted when the connector
-            cannot report it
+          description: How many items of this resource type the provider has found
+            so far; omitted if it cannot count them
         totalEstimate:
           type: integer
           format: int64
-          description: Estimated total number of items for the run; omitted when the
-            connector cannot produce an estimate
+          description: Estimated total number of items of this resource type for the
+            whole discovery; omitted if the provider cannot estimate
         phase:
           type: string
-          description: "Connector-defined free-text phase label (e.g. \"scanning\"\
-            , \"enumerating\"); omitted when the connector has no phase concept"
+          description: Free-text label for what the provider is doing with this resource
+            type; omitted if it has none
     DiscoveryMessageDto:
       type: object
       description: "One kind of problem a Discovery run reported, with how often it\
@@ -50577,8 +50680,11 @@ components:
           description: UUID of the staged Discovery item
         inventoryUuid:
           type: string
-          description: "UUID of the object this item became in inventory. Absent until\
-            \ the item is processed, and absent permanently if its processing failed."
+          description: "UUID of this item's object in inventory. For a certificate,\
+            \ present as soon as one with the same content exists — including from\
+            \ an earlier run, so it may be present while processed is false. For every\
+            \ other resource it is what the item became: absent until processed, and\
+            \ absent permanently if processing failed."
         sequence:
           type: integer
           format: int64
@@ -50599,7 +50705,8 @@ components:
         payload:
           $ref: "#/components/schemas/DiscoveredItemPayload"
           description: "Resource-specific data the Discovery Provider reported, discriminated\
-            \ by resource"
+            \ by resource. Absent when the stored payload could no longer be decoded;\
+            \ the item is still listed, so the run's counts hold"
         newlyDiscovered:
           type: boolean
           description: "True when the object was not already in the inventory at the\
@@ -50626,9 +50733,7 @@ components:
           readOnly: true
       required:
       - newlyDiscovered
-      - payload
       - processed
-      - resource
       - sequence
       - uniqueRef
       - uuid

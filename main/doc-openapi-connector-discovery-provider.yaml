@@ -1815,6 +1815,8 @@ components:
       - name
     DiscoveryProviderCertificateDataDto:
       type: object
+      description: "One certificate a Discovery Provider reports, with the metadata\
+        \ it was found under."
       properties:
         uuid:
           type: string
@@ -1827,6 +1829,18 @@ components:
           description: Metadata for the Certificate
           items:
             $ref: "#/components/schemas/MetadataAttribute"
+        sequence:
+          type: integer
+          format: int64
+          description: "Run-wide item number the Connector assigned, shared across\
+            \ the run's resources. Absent for a v1 Connector, whose provider numbers\
+            \ nothing."
+          minimum: 1
+        discoveredAt:
+          type: string
+          format: date-time
+          description: "When the Connector observed the certificate, which is not\
+            \ when Core staged it. Absent for a v1 Connector."
       required:
       - base64Content
       - meta

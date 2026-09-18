@@ -1921,6 +1921,9 @@ components:
       - xadesFormatting
     ConnectorInterfaceDto:
       type: object
+      description: "An interface a connector implements: its code, its version, and\
+        \ the features it supports. The version decides which generation of the provider\
+        \ contract Core speaks to that connector."
       properties:
         uuid:
           type: string
@@ -1998,8 +2001,11 @@ components:
           $ref: "#/components/schemas/NameAndUuidDto"
           description: Connector associated with this Vault instance
         connectorInterface:
+          type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: Connector Interface associated with this Vault instance
+          description: The connector interface this vault instance is associated with.
+            Sent as an explicit null once the interface has been removed from its
+            connector; the key is always present.
         attributes:
           type: array
           description: List of attributes of the Vault instance
@@ -2013,7 +2019,6 @@ components:
       required:
       - attributes
       - connector
-      - connectorInterface
       - name
       - uuid
     VaultInstanceRequestDto:
@@ -2222,11 +2227,13 @@ components:
           $ref: "#/components/schemas/NameAndUuidDto"
           description: Connector associated with this Vault instance
         connectorInterface:
+          type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: Connector Interface associated with this Vault instance
+          description: The connector interface this vault instance is associated with.
+            Sent as an explicit null once the interface has been removed from its
+            connector; the key is always present.
       required:
       - connector
-      - connectorInterface
       - name
       - uuid
     BaseAttributeDto:

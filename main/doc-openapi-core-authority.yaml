@@ -2310,8 +2310,9 @@ components:
         connectorInterface:
           type: "null"
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: "Connector Interface this Authority instance is bound to; null\
-            \ for legacy v1 connectors, which are identified by kind instead"
+          description: "The connector interface this authority instance is bound to.\
+            \ Sent as an explicit null for a legacy v1 connector, which is identified\
+            \ by kind instead; the key is always present."
         connectorUuid:
           type: string
           deprecated: true
@@ -2358,6 +2359,9 @@ components:
       - xadesFormatting
     ConnectorInterfaceDto:
       type: object
+      description: "An interface a connector implements: its code, its version, and\
+        \ the features it supports. The version decides which generation of the provider\
+        \ contract Core speaks to that connector."
       properties:
         uuid:
           type: string

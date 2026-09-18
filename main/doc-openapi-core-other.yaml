@@ -5006,6 +5006,7 @@ components:
       - updateObjectPermissions
       - schedule
       - listAttributes
+      - listResources
       - validateAttributes
       - attributeCallback
       - updateAttributeResources

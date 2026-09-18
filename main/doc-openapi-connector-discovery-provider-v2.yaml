@@ -13,6 +13,31 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
+    version: 1
+    histograms:
+      http_server_latency_buckets_seconds:
+      - 0.005
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
+      http_client_latency_buckets_seconds:
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
     required:
     - type: gauge
       name: app_build_info
@@ -40,13 +65,13 @@ info:
       - method
       - route
       - status
-    - type: histogram
-      labels:
+    - labels:
       - method
       - route
       buckets_ref: http_server_latency_buckets_seconds
       name: http_request_duration_seconds
       unit: seconds
+      type: histogram
     - type: gauge
       name: http_server_in_flight_requests
       unit: requests
@@ -59,44 +84,19 @@ info:
       - method
       - target
       - status
-    - type: histogram
-      labels:
+    - labels:
       - method
       - target
       buckets_ref: http_client_latency_buckets_seconds
       name: http_client_request_duration_seconds
       unit: seconds
+      type: histogram
     - type: counter
       name: connector_events_total
       unit: events
       labels:
       - event
       - outcome
-    version: 1
-    histograms:
-      http_client_latency_buckets_seconds:
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
-      http_server_latency_buckets_seconds:
-      - 0.005
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -125,11 +125,12 @@ tags:
   description: "Stateless discovery v2 metadata surface: which resource types this\
     \ connector supports, and the attribute schema for configuring a run."
 - name: Discovery Operations v2
-  description: "Stateless discovery v2 run lifecycle: initiate a run, poll or stream\
-    \ its results, and control it (stop/resume/cancel). Every call carries the full\
-    \ runId + meta + attributes context; the connector is not required to hold any\
-    \ state between calls. A connector MUST answer 404 for any runId it does not recognize,\
-    \ including after a restart."
+  description: |-
+    Stateless discovery v2 run lifecycle: initiate a run, poll or stream its results, and control it (stop/resume/cancel).
+
+    Every call replays the run's identity, resources, handle and attributes, so you need keep no state between calls: rebuild the run from the request, including after a restart. Answer 404 only for a runId you cannot rebuild — it ends the run at once, and a stopped run may be waiting days for its resume.
+
+    If you can rebuild the run but no longer hold the items a drain asks for, answer 404 rather than a later page: Core takes the highest sequence you return as its new cursor, so a page served across a gap loses everything in it.
 paths:
   /v2/discoveryProvider/discoveries/stream:
     post:
@@ -167,6 +168,13 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetailExtended"
+        "422":
+          description: "The request body is invalid — a missing runId, an empty or\
+            \ unsupported resources set, or an invalid attribute (errorCode VALIDATION_FAILED)"
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
         "401":
           description: Unauthorized
           content:
@@ -189,11 +197,11 @@ paths:
       tags:
       - Discovery Operations v2
       summary: Stop a discovery run
-      description: "Halts scanning for an in-progress run. The connector persists\
-        \ a best-effort checkpoint into the returned meta; this checkpoint MUST preserve\
-        \ the item sequence counter, so a subsequent resume continues assigning sequences\
-        \ from where the run left off. Items already discovered but not yet drained\
-        \ remain drainable via POST /results while the run is stopped."
+      description: "Halts scanning for an in-progress run. The connector returns a\
+        \ best-effort checkpoint, which MUST preserve the item sequence counter, so\
+        \ a subsequent resume continues assigning sequences from where the run left\
+        \ off. Items already discovered but not yet drained remain drainable via POST\
+        \ /results while the run is stopped."
       operationId: stop
       requestBody:
         content:
@@ -203,7 +211,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Run stopped; meta carries the checkpoint to resume from
+          description: Run stopped; checkpoint carries the handle to resume from
           content:
             application/json:
               schema:
@@ -216,10 +224,10 @@ paths:
                 $ref: "#/components/schemas/ProblemDetailExtended"
         "422":
           description: "Run cannot be stopped: past the point of no return, or the\
-            \ connector cannot checkpoint this run (errorCode OPERATION_PAST_POINT_OF_NO_RETURN).\
+            \ connector cannot checkpoint this run (errorCode OPERATION_PAST_POINT_OF_NO_RETURN);\
             \ Core's own gate rejects stops for runs whose effective stoppability\
             \ is false before they reach the connector, so this refusal is the connector's\
-            \ runtime authority"
+            \ runtime authority. Or the request body is invalid (errorCode VALIDATION_FAILED)"
           content:
             application/problem+json:
               schema:
@@ -246,7 +254,8 @@ paths:
       tags:
       - Discovery Operations v2
       summary: Get discovery run status
-      description: Returns the run's current state and progress.
+      description: "Returns the run's current state and progress, and the connector's\
+        \ metadata statement about the run when it has one."
       operationId: status
       requestBody:
         content:
@@ -263,6 +272,13 @@ paths:
                 $ref: "#/components/schemas/DiscoveryStatusResponseDto"
         "404":
           description: Not Found. Endpoint not found or not implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "422":
+          description: "The request body is invalid — a missing runId, an empty or\
+            \ unsupported resources set, or an invalid attribute (errorCode VALIDATION_FAILED)"
           content:
             application/problem+json:
               schema:
@@ -289,9 +305,9 @@ paths:
       tags:
       - Discovery Operations v2
       summary: Resume a stopped discovery run
-      description: Continues a stopped run from the checkpoint carried in the replayed
-        meta. Item sequences assigned after resuming continue the run's existing sequence
-        space; the connector never restarts numbering for a resumed run.
+      description: Continues a stopped run from the replayed checkpoint. Item sequences
+        assigned after resuming continue the run's existing sequence space; the connector
+        never restarts numbering for a resumed run.
       operationId: resume
       requestBody:
         content:
@@ -301,9 +317,9 @@ paths:
         required: true
       responses:
         "202":
-          description: "Resume accepted; meta carries the connector's (possibly updated)\
-            \ opaque run handle, and stoppable, when present, re-declares whether\
-            \ the resumed run can be stopped again"
+          description: "Resume accepted; checkpoint carries the connector's (possibly\
+            \ updated) opaque run handle, and stoppable, when present, re-declares\
+            \ whether the resumed run can be stopped again"
           content:
             application/json:
               schema:
@@ -318,6 +334,13 @@ paths:
           description: "The checkpoint needed to resume this run is no longer available\
             \ (errorCode CHECKPOINT_LOST); distinct from 404, which means the run\
             \ was never known"
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "422":
+          description: "The request body is invalid — a missing runId, an empty or\
+            \ unsupported resources set, or an invalid attribute (errorCode VALIDATION_FAILED)"
           content:
             application/problem+json:
               schema:
@@ -344,16 +367,10 @@ paths:
       tags:
       - Discovery Operations v2
       summary: Drain discovered items
-      description: "Returns one page of items discovered after afterSequence, bounded\
-        \ by maxItems and maxBytes. This call doubles as the acknowledgment mechanism:\
-        \ submitting a given afterSequence is the implicit ack for every item at or\
-        \ below it, and the connector MAY discard those items once it has answered.\
-        \ Draining is legal at any point during a live run. A drain with afterSequence\
-        \ equal to highestSequence, made after the run has reached a terminal state,\
-        \ is the full ack. Until the full ack arrives, the connector MUST retain terminal-run\
-        \ state for at least 24 hours after the run reached a terminal state. Once\
-        \ the full ack arrives, the connector MAY discard all state it holds for the\
-        \ run."
+      description: |-
+        Returns one page of items discovered after afterSequence, bounded by maxItems and maxBytes. This call doubles as the acknowledgment mechanism: submitting a given afterSequence is the implicit ack for every item at or below it, and the connector MAY discard those items once it has answered. Draining is legal at any point during a live run. A drain with afterSequence equal to highestSequence, made after the run has reached a terminal state, is the full ack. Until the full ack arrives, the connector MUST retain terminal-run state for at least 24 hours after the run reached a terminal state. Once the full ack arrives, the connector MAY discard all state it holds for the run.
+
+        A connector that bounds its result buffer should size it against Core's polling interval rather than assume prompt collection: after an empty drain the next one waits out the interval, which is tens of seconds by default and operator-configurable.
       operationId: results
       requestBody:
         content:
@@ -371,6 +388,13 @@ paths:
                 $ref: "#/components/schemas/DiscoveryResultsResponseDto"
         "404":
           description: Not Found. Endpoint not found or not implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "422":
+          description: "The request body is invalid — a missing runId, an empty or\
+            \ unsupported resources set, or an invalid attribute (errorCode VALIDATION_FAILED)"
           content:
             application/problem+json:
               schema:
@@ -412,9 +436,9 @@ paths:
         required: true
       responses:
         "202":
-          description: "Run accepted; meta carries the connector's opaque run handle,\
-            \ replayed on every subsequent lifecycle call, and stoppable, when present,\
-            \ declares whether this run can be stopped and resumed"
+          description: "Run accepted; checkpoint carries the connector's opaque run\
+            \ handle, replayed on every subsequent lifecycle call, and stoppable,\
+            \ when present, declares whether this run can be stopped and resumed"
           content:
             application/json:
               schema:
@@ -474,7 +498,8 @@ paths:
                 $ref: "#/components/schemas/ProblemDetailExtended"
         "422":
           description: "Cancel refused: the run is past the point of no return (errorCode\
-            \ OPERATION_PAST_POINT_OF_NO_RETURN)"
+            \ OPERATION_PAST_POINT_OF_NO_RETURN), or the request body is invalid (errorCode\
+            \ VALIDATION_FAILED)"
           content:
             application/problem+json:
               schema:
@@ -1514,18 +1539,26 @@ components:
           format: uuid
           description: Discovery run identifier assigned by Core when the run was
             created
-        meta:
+        resources:
           type: array
-          description: "Connector-defined metadata returned in the original discovery\
-            \ initiate/stop/resume response, replayed here so the stateless connector\
-            \ can resolve its run state; absent on the initiate call itself, which\
-            \ is the call that mints it. Serialized size is capped at 64 KB."
+          description: "Resource types this run covers, fixed at initiate and replayed\
+            \ unchanged on every later call. Not derivable from resourceAttributes,\
+            \ which omits a resource that declares no attributes of its own."
+          items:
+            $ref: "#/components/schemas/Resource"
+          minItems: 1
+        checkpoint:
+          type: array
+          description: "Opaque run handle from the initiate, stop or resume response\
+            \ that last carried one, replayed so the stateless connector can resolve\
+            \ its run state. Absent on initiate, which mints it. Serialized size is\
+            \ capped at 64 KB."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         attributes:
           type: array
-          description: "Run-level attributes supplied when the discovery run was initiated;\
-            \ optional, since a connector may define no run-level attributes at all."
+          description: "Run-level attributes supplied when the run was initiated;\
+            \ optional, since a connector may define none."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         resourceAttributes:
@@ -1534,7 +1567,7 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/RequestAttribute"
-          description: "Per-resource attributes, keyed by resource code (e.g. \"certificates\"\
+          description: "Per-resource attributes keyed by resource code (e.g. \"certificates\"\
             , \"keys\"); optional, since a connector may define none."
           propertyNames:
             $ref: "#/components/schemas/Resource"
@@ -1547,6 +1580,7 @@ components:
             \ of the run."
           minimum: 0
       required:
+      - resources
       - runId
     FileAttributeContentData:
       type: object
@@ -2711,50 +2745,76 @@ components:
     DiscoveryProgressEvent:
       type: object
       properties:
-        processed:
+        targetsProcessed:
           type: integer
           format: int64
-          description: Number of items processed so far; omitted when the connector
-            cannot report it
-        totalEstimate:
+          description: "How many targets the provider has attempted so far, including\
+            \ ones that failed. A target is one unit of the provider's work — one\
+            \ address and port, one inventory entry, one keystore alias — and can\
+            \ yield many items or none. Omitted if the provider cannot count its work."
+        targetsTotal:
           type: integer
           format: int64
-          description: Estimated total number of items for the run; omitted when the
-            connector cannot produce an estimate
+          description: "How many targets this discovery will attempt in total — exact\
+            \ if the provider knows, an estimate otherwise, and it may change as the\
+            \ run goes on. Use it with targetsProcessed to show progress. Omitted\
+            \ when the provider cannot know the total; there is then no percentage\
+            \ to show, and clients must not guess one."
+        targetsFailed:
+          type: integer
+          format: int64
+          description: "How many targets could not be examined — an unreachable host,\
+            \ a refused connection, a target that answered nothing usable. Included\
+            \ in targetsProcessed, not added to it, so a mostly dark range still reaches\
+            \ its total. Failures here do not make the discovery itself fail."
         phase:
           type: string
-          description: "Connector-defined free-text phase label (e.g. \"scanning\"\
-            , \"enumerating\"); omitted when the connector has no phase concept"
+          description: "Free-text label for what the provider is doing (e.g. \"scanning\"\
+            , \"enumerating\"); omitted if it has none"
         byResource:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/DiscoveryResourceProgressDto"
+          description: "How many items were found, broken down by resource type. Present\
+            \ only if the provider reports the breakdown."
           propertyNames:
             $ref: "#/components/schemas/Resource"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "When the platform recorded this report. A discovery is polled\
+            \ on a backoff that settles at several minutes, so counters can be older\
+            \ than the response carrying them; this says how much older. Set by the\
+            \ platform — a value sent by a Discovery Provider is ignored."
+          examples:
+          - 2026-09-13T14:32:07.000+02:00
+          readOnly: true
         type:
           $ref: "#/components/schemas/DiscoveryEventType"
       required:
       - type
     DiscoveryResourceProgressDto:
       type: object
-      description: "Progress counters. Used for a whole run and, keyed by resource\
-        \ code inside byResource (e.g. \"certificates\", \"keys\"), for one resource\
-        \ type at a time. Every field is optional."
+      description: "How many items of one resource type have been found, keyed by\
+        \ resource code inside byResource (e.g. \"certificates\", \"keys\"). Every\
+        \ field is optional, but a provider with nothing to report MUST leave the\
+        \ whole object out rather than send an empty one — a client keeping the last\
+        \ progress it was sent cannot tell an empty report from a missing one."
       properties:
-        processed:
+        produced:
           type: integer
           format: int64
-          description: Number of items processed so far; omitted when the connector
-            cannot report it
+          description: How many items of this resource type the provider has found
+            so far; omitted if it cannot count them
         totalEstimate:
           type: integer
           format: int64
-          description: Estimated total number of items for the run; omitted when the
-            connector cannot produce an estimate
+          description: Estimated total number of items of this resource type for the
+            whole discovery; omitted if the provider cannot estimate
         phase:
           type: string
-          description: "Connector-defined free-text phase label (e.g. \"scanning\"\
-            , \"enumerating\"); omitted when the connector has no phase concept"
+          description: Free-text label for what the provider is doing with this resource
+            type; omitted if it has none
     DiscoveryResultBatchEvent:
       type: object
       properties:
@@ -2935,18 +2995,26 @@ components:
           format: uuid
           description: Discovery run identifier assigned by Core when the run was
             created
-        meta:
+        resources:
           type: array
-          description: "Connector-defined metadata returned in the original discovery\
-            \ initiate/stop/resume response, replayed here so the stateless connector\
-            \ can resolve its run state; absent on the initiate call itself, which\
-            \ is the call that mints it. Serialized size is capped at 64 KB."
+          description: "Resource types this run covers, fixed at initiate and replayed\
+            \ unchanged on every later call. Not derivable from resourceAttributes,\
+            \ which omits a resource that declares no attributes of its own."
+          items:
+            $ref: "#/components/schemas/Resource"
+          minItems: 1
+        checkpoint:
+          type: array
+          description: "Opaque run handle from the initiate, stop or resume response\
+            \ that last carried one, replayed so the stateless connector can resolve\
+            \ its run state. Absent on initiate, which mints it. Serialized size is\
+            \ capped at 64 KB."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         attributes:
           type: array
-          description: "Run-level attributes supplied when the discovery run was initiated;\
-            \ optional, since a connector may define no run-level attributes at all."
+          description: "Run-level attributes supplied when the run was initiated;\
+            \ optional, since a connector may define none."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         resourceAttributes:
@@ -2955,49 +3023,73 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/RequestAttribute"
-          description: "Per-resource attributes, keyed by resource code (e.g. \"certificates\"\
+          description: "Per-resource attributes keyed by resource code (e.g. \"certificates\"\
             , \"keys\"); optional, since a connector may define none."
           propertyNames:
             $ref: "#/components/schemas/Resource"
       required:
+      - resources
       - runId
     DiscoveryStopResponseDto:
       type: object
       properties:
-        meta:
+        checkpoint:
           type: array
-          description: "Connector-defined metadata for this run, replayed by Core\
-            \ on every subsequent lifecycle call — status, results, stream, stop,\
-            \ resume and cancel — so the stateless connector can resolve its run state.\
-            \ Serialized size is capped at 64 KB; Core fails the run outright if this\
-            \ exceeds the cap."
+          description: "Checkpoint to resume from: the opaque run handle as of the\
+            \ stop, replayed by Core on status, results, stream, stop, resume and\
+            \ cancel, and never rendered. Serialized size is capped at 64 KB; over\
+            \ the cap Core fails the run."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
     DiscoveryProgressDto:
       type: object
-      description: "Run-level progress of a discovery run: the run-wide counters,\
-        \ plus an optional per-resource breakdown."
+      description: "How far a discovery has got: how much of the provider's work is\
+        \ done, and optionally how many items it has found per resource type."
       properties:
-        processed:
+        targetsProcessed:
           type: integer
           format: int64
-          description: Number of items processed so far; omitted when the connector
-            cannot report it
-        totalEstimate:
+          description: "How many targets the provider has attempted so far, including\
+            \ ones that failed. A target is one unit of the provider's work — one\
+            \ address and port, one inventory entry, one keystore alias — and can\
+            \ yield many items or none. Omitted if the provider cannot count its work."
+        targetsTotal:
           type: integer
           format: int64
-          description: Estimated total number of items for the run; omitted when the
-            connector cannot produce an estimate
+          description: "How many targets this discovery will attempt in total — exact\
+            \ if the provider knows, an estimate otherwise, and it may change as the\
+            \ run goes on. Use it with targetsProcessed to show progress. Omitted\
+            \ when the provider cannot know the total; there is then no percentage\
+            \ to show, and clients must not guess one."
+        targetsFailed:
+          type: integer
+          format: int64
+          description: "How many targets could not be examined — an unreachable host,\
+            \ a refused connection, a target that answered nothing usable. Included\
+            \ in targetsProcessed, not added to it, so a mostly dark range still reaches\
+            \ its total. Failures here do not make the discovery itself fail."
         phase:
           type: string
-          description: "Connector-defined free-text phase label (e.g. \"scanning\"\
-            , \"enumerating\"); omitted when the connector has no phase concept"
+          description: "Free-text label for what the provider is doing (e.g. \"scanning\"\
+            , \"enumerating\"); omitted if it has none"
         byResource:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/DiscoveryResourceProgressDto"
+          description: "How many items were found, broken down by resource type. Present\
+            \ only if the provider reports the breakdown."
           propertyNames:
             $ref: "#/components/schemas/Resource"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "When the platform recorded this report. A discovery is polled\
+            \ on a backoff that settles at several minutes, so counters can be older\
+            \ than the response carrying them; this says how much older. Set by the\
+            \ platform — a value sent by a Discovery Provider is ignored."
+          examples:
+          - 2026-09-13T14:32:07.000+02:00
+          readOnly: true
     DiscoveryStatusResponseDto:
       type: object
       properties:
@@ -3006,41 +3098,47 @@ components:
           description: Current state of the discovery run
         progress:
           $ref: "#/components/schemas/DiscoveryProgressDto"
+          description: How far the run has got. Omitted when the connector cannot
+            report progress.
         highestSequence:
           type: integer
           format: int64
-          description: "Run-wide highest item sequence assigned so far — never page-scoped.\
-            \ Consumers must advance cursors only by item sequences actually received.\
-            \ Item sequences start at 1, so 0 means the run has produced no items\
-            \ yet."
+          description: "Run-wide highest item sequence assigned so far, never page-scoped.\
+            \ Consumers advance cursors only by item sequences actually received.\
+            \ Sequences start at 1, so 0 means no items yet."
           minimum: 0
+        meta:
+          type: array
+          description: "The connector's metadata about the run as a whole: typed,\
+            \ labelled entries a person reads, e.g. the resolver used or the scan\
+            \ window. Absent: Core keeps what it holds. Present: replaces the previous\
+            \ set entirely; an empty list clears it. Over 64 KB serialized, Core drops\
+            \ it and files a run message; the run goes on. Counts, totals and ratios\
+            \ belong in progress."
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
       required:
       - highestSequence
       - state
     DiscoveryInitiateResponseDto:
       type: object
       properties:
-        meta:
+        checkpoint:
           type: array
-          description: "Connector-defined metadata for this run, replayed by Core\
-            \ on every subsequent lifecycle call — status, results, stream, stop,\
-            \ resume and cancel — so the stateless connector can resolve its run state.\
-            \ Serialized size is capped at 64 KB; Core fails the run outright if this\
-            \ exceeds the cap."
+          description: "Opaque run handle the stateless connector resolves its run\
+            \ state from. Core replays it on status, results, stream, stop, resume\
+            \ and cancel, and never renders it. Serialized size is capped at 64 KB;\
+            \ over the cap Core fails the run."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         stoppable:
           type: boolean
-          description: |-
-            Whether this run can be stopped and later resumed.
-
-            **Feature gate:** may only narrow the discoveryStopResume feature flag, never widen it — true without the flag advertised is a contract violation and Core clamps the run to not-stoppable.
-
-            **Absent:** undeclared — Core gates on the flag alone.
-
-            **Refresh:** each resume response replaces the value; omitting it reverts the run to flag-gating.
-
-            **Runtime:** the connector may still refuse a stop past the point of no return.
+          description: "Whether this run can be stopped and later resumed. May only\
+            \ narrow the discoveryStopResume feature flag, never widen it: true without\
+            \ the flag is clamped to not-stoppable. Absent: Core gates on the flag\
+            \ alone. Each resume response replaces the value; omitting it there reverts\
+            \ the run to flag-gating. The connector may still refuse a stop past the\
+            \ point of no return."
     DiscoveryDrainRequestDto:
       type: object
       properties:
@@ -3049,18 +3147,26 @@ components:
           format: uuid
           description: Discovery run identifier assigned by Core when the run was
             created
-        meta:
+        resources:
           type: array
-          description: "Connector-defined metadata returned in the original discovery\
-            \ initiate/stop/resume response, replayed here so the stateless connector\
-            \ can resolve its run state; absent on the initiate call itself, which\
-            \ is the call that mints it. Serialized size is capped at 64 KB."
+          description: "Resource types this run covers, fixed at initiate and replayed\
+            \ unchanged on every later call. Not derivable from resourceAttributes,\
+            \ which omits a resource that declares no attributes of its own."
+          items:
+            $ref: "#/components/schemas/Resource"
+          minItems: 1
+        checkpoint:
+          type: array
+          description: "Opaque run handle from the initiate, stop or resume response\
+            \ that last carried one, replayed so the stateless connector can resolve\
+            \ its run state. Absent on initiate, which mints it. Serialized size is\
+            \ capped at 64 KB."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         attributes:
           type: array
-          description: "Run-level attributes supplied when the discovery run was initiated;\
-            \ optional, since a connector may define no run-level attributes at all."
+          description: "Run-level attributes supplied when the run was initiated;\
+            \ optional, since a connector may define none."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         resourceAttributes:
@@ -3069,7 +3175,7 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/RequestAttribute"
-          description: "Per-resource attributes, keyed by resource code (e.g. \"certificates\"\
+          description: "Per-resource attributes keyed by resource code (e.g. \"certificates\"\
             , \"keys\"); optional, since a connector may define none."
           propertyNames:
             $ref: "#/components/schemas/Resource"
@@ -3098,6 +3204,7 @@ components:
           maximum: 10485760
           minimum: 1
       required:
+      - resources
       - runId
     DiscoveryResultsResponseDto:
       type: object
@@ -3133,18 +3240,26 @@ components:
           format: uuid
           description: Discovery run identifier assigned by Core when the run was
             created
-        meta:
+        resources:
           type: array
-          description: "Connector-defined metadata returned in the original discovery\
-            \ initiate/stop/resume response, replayed here so the stateless connector\
-            \ can resolve its run state; absent on the initiate call itself, which\
-            \ is the call that mints it. Serialized size is capped at 64 KB."
+          description: "Resource types this run covers, fixed at initiate and replayed\
+            \ unchanged on every later call. Not derivable from resourceAttributes,\
+            \ which omits a resource that declares no attributes of its own."
+          items:
+            $ref: "#/components/schemas/Resource"
+          minItems: 1
+        checkpoint:
+          type: array
+          description: "Opaque run handle from the initiate, stop or resume response\
+            \ that last carried one, replayed so the stateless connector can resolve\
+            \ its run state. Absent on initiate, which mints it. Serialized size is\
+            \ capped at 64 KB."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         attributes:
           type: array
-          description: "Run-level attributes supplied when the discovery run was initiated;\
-            \ optional, since a connector may define no run-level attributes at all."
+          description: "Run-level attributes supplied when the run was initiated;\
+            \ optional, since a connector may define none."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         resourceAttributes:
@@ -3153,16 +3268,10 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/RequestAttribute"
-          description: "Per-resource attributes, keyed by resource code (e.g. \"certificates\"\
+          description: "Per-resource attributes keyed by resource code (e.g. \"certificates\"\
             , \"keys\"); optional, since a connector may define none."
           propertyNames:
             $ref: "#/components/schemas/Resource"
-        resources:
-          type: array
-          description: Resource types to discover in this run
-          items:
-            $ref: "#/components/schemas/Resource"
-          minItems: 1
       required:
       - resources
       - runId
