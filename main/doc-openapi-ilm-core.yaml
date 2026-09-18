@@ -16894,6 +16894,119 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+  /v1/cboms/syncSkips:
+    post:
+      tags:
+      - CBOM management
+      summary: List the CBOM Repository entries the sync could not store
+      description: |-
+        The documents the header sync found in the CBOM Repository listing but could not turn into a CBOM record: the document could not be read, or storing its header failed. Later sync runs retry an entry until its retry budget (the platform setting `cbomSyncSkippedRetryRuns`) is spent; it is then kept as permanently skipped until the retention (`cbomSyncSkipRetentionDays`) after its last attempt runs out. Each row carries the reason of the last failure, worded for an operator. An entry leaves the list on the run that manages to store its document, or finds the document gone from the repository; nothing else removes one but the retention and an operator deleting the CBOM.
+
+        By default the list is ordered newest failure first: last attempt descending, then UUID ascending. `sort` reorders it and names its field by source `property` and identifier `CBOM_SYNC_SKIP_LAST_ATTEMPT_AT`, `CBOM_SYNC_SKIP_FIRST_SKIPPED_AT`, `CBOM_SYNC_SKIP_ATTEMPTS` or `CBOM_SYNC_SKIP_SERIAL_NUMBER`. `filters` may use `CBOM_SYNC_SKIP_STATE` (equals, not equals) and `CBOM_SYNC_SKIP_SERIAL_NUMBER` (equals, not equals, contains, not contains, starts with), both of source `property`. The searchable-fields operation of this list publishes all of them, the three that are ordering keys only among them. The rows have a fixed shape: no field is offered as a column, and `columns` is accepted and ignored.
+      operationId: listCbomSyncSkips
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequestDto"
+            examples:
+              Written-off entries, oldest first:
+                description: "Written-off entries, oldest first"
+                value:
+                  pageNumber: 1
+                  itemsPerPage: 10
+                  filters:
+                  - fieldSource: property
+                    fieldIdentifier: CBOM_SYNC_SKIP_STATE
+                    condition: EQUALS
+                    value:
+                    - permanentlySkipped
+                  sort:
+                    fieldSource: property
+                    fieldIdentifier: CBOM_SYNC_SKIP_LAST_ATTEMPT_AT
+                    direction: asc
+        required: true
+      responses:
+        "200":
+          description: List of the entries the sync could not store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationResponseDtoCbomSyncSkipDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/cboms/syncSkips/{uuid}/retry:
+    post:
+      tags:
+      - CBOM management
+      summary: Ask the sync to try a permanently skipped entry again
+      description: |-
+        Puts a permanently skipped entry back to retrying with a full budget: `state` becomes `retrying` and `attempts` becomes 0, while `reason`, `firstSkippedAt` and `lastAttemptAt` keep the values of the last attempt until the next sync run tries the entry. An entry that is still retrying is left as it is. Answers with the row as it now stands.
+
+        The retry does not make the entry permanent: if the document still cannot be stored, the new budget is spent like the first one and the entry is written off again, and the retention then runs from that last attempt.
+      operationId: retryCbomSyncSkip
+      parameters:
+      - name: uuid
+        in: path
+        description: Sync skip record UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: The entry as it now stands
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CbomSyncSkipDto"
+        "404":
+          description: No such entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/authorities:
     get:
       tags:
@@ -31549,6 +31662,44 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/cboms/syncSkips/search:
+    get:
+      tags:
+      - CBOM management
+      summary: Get the searchable fields of the entries the sync could not store
+      description: "The fields the list of entries the sync could not store may be\
+        \ filtered or ordered by. Each carries the conditions it accepts and, where\
+        \ the list may be ordered by it, `sortable`; a field that is an ordering key\
+        \ only carries `sortable` with an empty list of conditions, so every identifier\
+        \ `sort` accepts can be read from here rather than from prose. The rows have\
+        \ a fixed shape, so no field is offered as a column: `displayable` is never\
+        \ set."
+      operationId: getCbomSyncSkipSearchableFields
+      responses:
+        "200":
+          description: Searchable field information retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SearchFieldDataByGroupDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/cboms/search:
     get:
       tags:
@@ -35923,14 +36074,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -39167,6 +39318,17 @@ components:
             \ off"
           maximum: 10000
           minimum: 0
+        cbomSyncSkipRetentionDays:
+          type: integer
+          format: int32
+          default: 90
+          description: "How many days after its last attempt a CBOM Repository entry\
+            \ the sync gave up on (permanently skipped) stays listed before its record\
+            \ is removed; an entry still being retried is kept whatever its age. At\
+            \ least one day: a retention of nothing would remove a write-off as it\
+            \ lands"
+          maximum: 3650
+          minimum: 1
     BrandingSettingsUpdateDto:
       type: object
       properties:
@@ -46896,6 +47058,13 @@ components:
           description: When this record last successfully reached the synced state;
             later failed attempts neither advance nor clear it. Platform versions
             predating the asset sync omit the field.
+        assetSyncError:
+          type: string
+          description: "Why the last cryptographic asset sync attempt for this record\
+            \ failed or refused the document, in words meant for an operator; never\
+            \ a raw driver or parser message. A later attempt that succeeds clears\
+            \ it. Absent while there is no failure to report, and on platform versions\
+            \ predating it."
         attributeValues:
           type: object
           additionalProperties:
@@ -46961,6 +47130,120 @@ components:
           description: Raw JSON content of CBOM document
       required:
       - content
+    CbomSyncSkipDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the record
+        serialNumber:
+          type: string
+          description: Serial number (URN) of the CBOM the repository lists
+        version:
+          type: integer
+          format: int32
+          description: Version of the CBOM the repository lists
+        state:
+          $ref: "#/components/schemas/CbomSyncSkipState"
+          description: "Whether the next sync runs still try the entry, or the retry\
+            \ budget is spent"
+        attempts:
+          type: integer
+          format: int32
+          description: "Failed attempts charged to the entry's current retry budget,\
+            \ the one that first failed included. The budget is spent when this reaches\
+            \ cbomSyncSkippedRetryRuns + 1. An operator's retry gives the entry a\
+            \ new budget and returns this to 0, while firstSkippedAt, lastAttemptAt\
+            \ and reason keep the record of what has happened so far -- so a count\
+            \ of 0 beside an earlier first failure means a retry was asked for and\
+            \ no run has tried the entry since"
+        firstSkippedAt:
+          type: string
+          format: date-time
+          description: When the entry first failed
+        lastAttemptAt:
+          type: string
+          format: date-time
+          description: When the entry was last tried
+        reason:
+          type: string
+          description: "Why the last attempt failed, in words meant for an operator;\
+            \ never a raw driver or parser message"
+        algorithms:
+          type: integer
+          format: int32
+          description: Number of algorithms the repository listing reported for the
+            entry
+        certificates:
+          type: integer
+          format: int32
+          description: Number of certificates the repository listing reported for
+            the entry
+        protocols:
+          type: integer
+          format: int32
+          description: Number of protocols the repository listing reported for the
+            entry
+        cryptoMaterial:
+          type: integer
+          format: int32
+          description: Number of crypto material items the repository listing reported
+            for the entry
+        totalAssets:
+          type: integer
+          format: int32
+          description: Total number of assets the repository listing reported for
+            the entry
+      required:
+      - algorithms
+      - attempts
+      - certificates
+      - cryptoMaterial
+      - firstSkippedAt
+      - lastAttemptAt
+      - protocols
+      - reason
+      - serialNumber
+      - state
+      - totalAssets
+      - uuid
+      - version
+    CbomSyncSkipState:
+      type: string
+      enum:
+      - retrying
+      - permanentlySkipped
+    PaginationResponseDtoCbomSyncSkipDto:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Items returned
+          items:
+            $ref: "#/components/schemas/CbomSyncSkipDto"
+        itemsPerPage:
+          type: integer
+          format: int32
+          description: Number of entries per page
+        pageNumber:
+          type: integer
+          format: int32
+          description: Page number for the request
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages available
+        totalItems:
+          type: integer
+          format: int64
+          description: Number of items available
+      required:
+      - items
+      - itemsPerPage
+      - pageNumber
+      - totalItems
+      - totalPages
     AuthorityInstanceRequestDto:
       type: object
       properties:
@@ -47205,6 +47488,7 @@ components:
       - cmpConfirm
       - upload
       - sync
+      - retry
       - compromise
       - destroy
       - listKeyUsages
@@ -48192,6 +48476,7 @@ components:
       - TimestampSourceType
       - TspAuthenticationMethod
       - CbomAssetSyncState
+      - CbomSyncSkipState
       - CryptographicAssetType
       - PqcVerdict
     SearchFieldDataByGroupDto:
@@ -51359,6 +51644,13 @@ components:
           description: When this record last successfully reached the synced state;
             later failed attempts neither advance nor clear it. Platform versions
             predating the asset sync omit the field.
+        assetSyncError:
+          type: string
+          description: "Why the last cryptographic asset sync attempt for this record\
+            \ failed or refused the document, in words meant for an operator; never\
+            \ a raw driver or parser message. A later attempt that succeeds clears\
+            \ it. Absent while there is no failure to report, and on platform versions\
+            \ predating it."
         attributeValues:
           type: object
           additionalProperties:

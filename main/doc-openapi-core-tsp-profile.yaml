@@ -2842,6 +2842,7 @@ components:
       - TimestampSourceType
       - TspAuthenticationMethod
       - CbomAssetSyncState
+      - CbomSyncSkipState
       - CryptographicAssetType
       - PqcVerdict
     SearchFieldDataByGroupDto:

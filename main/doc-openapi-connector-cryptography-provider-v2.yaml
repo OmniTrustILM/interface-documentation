@@ -37,66 +37,66 @@ info:
       - 2.5
       - 5.0
       - 10.0
-    version: 1
     required:
-    - labels:
+    - name: app_build_info
+      unit: "1"
+      labels:
       - version
       - commit
       - runtime
-      unit: "1"
-      name: app_build_info
       type: gauge
-    - labels: []
+    - name: process_start_time_seconds
       unit: seconds
-      name: process_start_time_seconds
+      labels: []
       type: gauge
-    - labels: []
+    - name: process_cpu_seconds_total
       unit: seconds
-      name: process_cpu_seconds_total
+      labels: []
       type: counter
-    - labels: []
+    - name: process_resident_memory_bytes
       unit: bytes
-      name: process_resident_memory_bytes
+      labels: []
       type: gauge
-    - labels:
+    - name: http_requests_total
+      unit: requests
+      labels:
       - method
       - route
       - status
-      unit: requests
-      name: http_requests_total
       type: counter
-    - unit: seconds
-      name: http_request_duration_seconds
+    - name: http_request_duration_seconds
+      unit: seconds
+      type: histogram
+      labels:
+      - method
+      - route
       buckets_ref: http_server_latency_buckets_seconds
-      labels:
-      - method
-      - route
-      type: histogram
-    - labels:
-      - route
+    - name: http_server_in_flight_requests
       unit: requests
-      name: http_server_in_flight_requests
+      labels:
+      - route
       type: gauge
-    - labels:
+    - name: http_client_requests_total
+      unit: requests
+      labels:
       - method
       - target
       - status
-      unit: requests
-      name: http_client_requests_total
       type: counter
-    - unit: seconds
-      name: http_client_request_duration_seconds
-      buckets_ref: http_client_latency_buckets_seconds
+    - name: http_client_request_duration_seconds
+      unit: seconds
+      type: histogram
       labels:
       - method
       - target
-      type: histogram
-    - labels:
+      buckets_ref: http_client_latency_buckets_seconds
+    - name: connector_events_total
+      unit: events
+      labels:
       - event
       - outcome
-      unit: events
-      name: connector_events_total
       type: counter
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -3977,14 +3977,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
