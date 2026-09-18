@@ -1274,11 +1274,11 @@ components:
       - $ref: "#/components/schemas/BaseAttributeContentDtoV2"
       - $ref: "#/components/schemas/BaseAttributeContentDtoV3"
       properties:
-        contentType:
-          $ref: "#/components/schemas/AttributeContentType"
         reference:
           type: string
         data: {}
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
     AttributeResource:
       type: string
       enum:
