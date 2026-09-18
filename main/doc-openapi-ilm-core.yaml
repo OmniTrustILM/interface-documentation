@@ -36074,14 +36074,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        description:
-          type: string
-          description: "Optional description of the Attribute, should contain helper\
-            \ text on what is expected"
         uuid:
           type: string
           description: UUID of the Attribute for unique identification
           example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        description:
+          type: string
+          description: "Optional description of the Attribute, should contain helper\
+            \ text on what is expected"
       required:
       - name
       - type
@@ -39329,6 +39329,43 @@ components:
             \ lands"
           maximum: 3650
           minimum: 1
+        cbomSyncPageSize:
+          type: integer
+          format: int32
+          default: 1000
+          description: "How many entries one page of the CBOM Repository listing carries,\
+            \ sent as the search `limit`. Pages are followed through the `Link rel=\"\
+            next\"` header, so this bounds one request rather than one run"
+          maximum: 1000
+          minimum: 1
+        cbomSyncAssetIngestEnabled:
+          type: boolean
+          default: true
+          description: "Whether a sync run ingests cryptographic assets at all. Off\
+            \ covers both discovery paths -- the ingest of a document the run has\
+            \ just stored and the catch-up over the documents that still owe one --\
+            \ and leaves each CBOM exactly as it was found, so turning it back on\
+            \ resumes rather than repairs"
+        cbomSyncAssetBatchSize:
+          type: integer
+          format: int32
+          default: 100
+          description: "How many cryptographic assets one ingest transaction writes\
+            \ before committing, and the page size the withdrawal of a CBOM's assets\
+            \ walks. It bounds how long one transaction holds its locks, not how much\
+            \ work a run does"
+          maximum: 10000
+          minimum: 1
+        cbomSyncIngestRetryAfterSeconds:
+          type: integer
+          format: int32
+          default: 1800
+          description: "How long a CBOM whose asset ingest is in progress or has failed\
+            \ is left alone before a run offers it again, in seconds. Measured from\
+            \ the start of the attempt, so it has to exceed the longest single document\
+            \ the deployment expects to ingest. 0 offers it to the very next run"
+          maximum: 86400
+          minimum: 0
     BrandingSettingsUpdateDto:
       type: object
       properties:
@@ -41972,11 +42009,11 @@ components:
       - $ref: "#/components/schemas/BaseAttributeContentDtoV2"
       - $ref: "#/components/schemas/BaseAttributeContentDtoV3"
       properties:
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
         reference:
           type: string
         data: {}
-        contentType:
-          $ref: "#/components/schemas/AttributeContentType"
     CustomAttributeUpdateRequestDto:
       type: object
       properties:
