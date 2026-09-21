@@ -48470,6 +48470,7 @@ components:
       - FilterFieldSource
       - SortDirection
       - SettingsSection
+      - JwkSetLoadFailure
       - AuthType
       - HealthStatus
       - ConnectorStatus
@@ -49662,6 +49663,13 @@ components:
       required:
       - kid
       - publicKey
+    JwkSetLoadFailure:
+      type: string
+      description: Reason the configured JWK Set could not be loaded for display
+      enum:
+      - unavailable
+      - invalid
+      - tooLarge
     OAuth2ProviderSettingsResponseDto:
       type: object
       properties:
@@ -49737,6 +49745,10 @@ components:
           description: List of public keys used by the provider
           items:
             $ref: "#/components/schemas/JwkDto"
+        jwkSetLoadFailure:
+          $ref: "#/components/schemas/JwkSetLoadFailure"
+          description: Reason the configured JWK Set could not be loaded. Absent when
+            loading succeeded or no explicit JWK Set source is configured.
       required:
       - jwkSetKeys
       - name

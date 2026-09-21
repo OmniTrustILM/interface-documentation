@@ -2956,6 +2956,7 @@ components:
       - FilterFieldSource
       - SortDirection
       - SettingsSection
+      - JwkSetLoadFailure
       - AuthType
       - HealthStatus
       - ConnectorStatus
