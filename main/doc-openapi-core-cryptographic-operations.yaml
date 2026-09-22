@@ -22,6 +22,88 @@ tags:
 - name: Cryptographic Operations Controller
   description: Cryptographic Operations Controller API
 paths:
+  /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/random:
+    post:
+      tags:
+      - Cryptographic Operations Controller
+      summary: Generate random data with a token profile
+      description: "A cryptography provider v2 token requires this form, because its\
+        \ contract scopes random-data generation by token profile. A v1 token is served\
+        \ here too, so a client needs no version detection; the token profile is then\
+        \ ignored."
+      operationId: randomDataWithTokenProfile
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RandomDataRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Random data generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RandomDataResponseDto"
+        "404":
+          description: Token instance or token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{uuid}/items/{keyItemUuid}/verify:
     post:
       tags:
@@ -387,6 +469,8 @@ paths:
       tags:
       - Cryptographic Operations Controller
       summary: Generate random data
+      description: Serves v1 tokens. A v2 token scopes random-data generation by token
+        profile and must use randomDataWithTokenProfile instead.
       operationId: randomData
       parameters:
       - name: tokenInstanceUuid
@@ -426,6 +510,91 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "501":
+          description: Random-data generation is not supported in this form for a
+            cryptography provider v2 token; use randomDataWithTokenProfile.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/operations/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/random/attributes:
+    get:
+      tags:
+      - Cryptographic Operations Controller
+      summary: List of random generator Attributes for a token profile
+      description: "A cryptography provider v2 token requires this form, because its\
+        \ contract scopes random-data generation by token profile. A v1 token is served\
+        \ here too, so a client needs no version detection; the token profile is then\
+        \ ignored."
+      operationId: listRandomAttributesWithTokenProfile
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "404":
+          description: Token instance or token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "200":
+          description: List of Attributes retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseAttributeDto"
         "422":
           description: Validation failed
           content:
@@ -1015,6 +1184,8 @@ paths:
       tags:
       - Cryptographic Operations Controller
       summary: List of random generator Attributes
+      description: Serves v1 tokens. A v2 token scopes random-data generation by token
+        profile and must use listRandomAttributesWithTokenProfile instead.
       operationId: listRandomAttributes
       parameters:
       - name: tokenInstanceUuid
@@ -1058,6 +1229,13 @@ paths:
                 type: array
                 items:
                   type: string
+        "501":
+          description: Random-data generation is not supported in this form for a
+            cryptography provider v2 token; use listRandomAttributesWithTokenProfile.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "400":
           description: Bad Request
           content:
@@ -1934,6 +2112,20 @@ components:
       enum:
       - none
       - encrypted
+    RandomDataRequestDto:
+      type: object
+      properties:
+        length:
+          type: integer
+          format: int32
+          description: Number of random bytes to generate
+        attributes:
+          type: array
+          description: Random generator Attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - length
     RangeAttributeConstraint:
       type: object
       description: Range attribute constraint to specify boundaries for integer value
@@ -2350,20 +2542,6 @@ components:
       - keyStore
       - keyValue
       - generic
-    SignatureRequestData:
-      type: object
-      properties:
-        data:
-          type: string
-          description: Base64 encoded data to be signed or verified
-        identifier:
-          type: string
-          description: "Custom identifier of the data, that should be the same as\
-            \ in the request, if available"
-          examples:
-          - customId
-      required:
-      - data
     StringAttributeContentV2:
       type: object
       description: String attribute content
@@ -2448,28 +2626,6 @@ components:
       required:
       - contentType
       - data
-    VerifyDataRequestDto:
-      type: object
-      properties:
-        signatureAttributes:
-          type: array
-          description: List of signature Attributes
-          items:
-            $ref: "#/components/schemas/RequestAttribute"
-        data:
-          type: array
-          description: Data to be signed
-          items:
-            $ref: "#/components/schemas/SignatureRequestData"
-        signatures:
-          type: array
-          description: Signatures to verify
-          items:
-            $ref: "#/components/schemas/SignatureRequestData"
-      required:
-      - data
-      - signatureAttributes
-      - signatures
     ErrorMessageDto:
       type: object
       properties:
@@ -2497,6 +2653,51 @@ components:
       - code
       - message
       - statusCode
+    RandomDataResponseDto:
+      type: object
+      properties:
+        data:
+          type: string
+          description: Base64 encoded random data
+      required:
+      - data
+    SignatureRequestData:
+      type: object
+      properties:
+        data:
+          type: string
+          description: Base64 encoded data to be signed or verified
+        identifier:
+          type: string
+          description: "Custom identifier of the data, that should be the same as\
+            \ in the request, if available"
+          examples:
+          - customId
+      required:
+      - data
+    VerifyDataRequestDto:
+      type: object
+      properties:
+        signatureAttributes:
+          type: array
+          description: List of signature Attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        data:
+          type: array
+          description: Data to be signed
+          items:
+            $ref: "#/components/schemas/SignatureRequestData"
+        signatures:
+          type: array
+          description: "Signatures to verify, paired with the data by position; an\
+            \ identifier sent on both lists must therefore be in the same order"
+          items:
+            $ref: "#/components/schemas/SignatureRequestData"
+      required:
+      - data
+      - signatureAttributes
+      - signatures
     VerificationResponseData:
       type: object
       properties:
@@ -2633,28 +2834,6 @@ components:
             $ref: "#/components/schemas/CipherResponseData"
       required:
       - decryptedData
-    RandomDataRequestDto:
-      type: object
-      properties:
-        length:
-          type: integer
-          format: int32
-          description: Number of random bytes to generate
-        attributes:
-          type: array
-          description: Random generator Attributes
-          items:
-            $ref: "#/components/schemas/RequestAttribute"
-      required:
-      - length
-    RandomDataResponseDto:
-      type: object
-      properties:
-        data:
-          type: string
-          description: Base64 encoded random data
-      required:
-      - data
     BaseAttributeDto:
       type: object
       description: Base Attribute definition
