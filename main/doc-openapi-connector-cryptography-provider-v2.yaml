@@ -64,13 +64,13 @@ info:
       type: counter
       name: http_requests_total
       unit: requests
-    - type: histogram
+    - unit: seconds
+      type: histogram
       labels:
       - method
       - route
       buckets_ref: http_server_latency_buckets_seconds
       name: http_request_duration_seconds
-      unit: seconds
     - labels:
       - route
       type: gauge
@@ -83,13 +83,13 @@ info:
       type: counter
       name: http_client_requests_total
       unit: requests
-    - type: histogram
+    - unit: seconds
+      type: histogram
       labels:
       - method
       - target
       buckets_ref: http_client_latency_buckets_seconds
       name: http_client_request_duration_seconds
-      unit: seconds
     - labels:
       - event
       - outcome
@@ -520,8 +520,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/SignDataResponseV2Dto"
         "422":
-          description: Request body was read successfully but violates a field validation
-            rule (errorCode VALIDATION_FAILED)
+          description: "Request body was read successfully but violates a field validation\
+            \ rule (errorCode VALIDATION_FAILED), or the signatureAlgorithm selection\
+            \ names an algorithm the key does not support (errorCode PARAMETER_UNSUPPORTED)"
           content:
             application/problem+json:
               schema:
@@ -677,7 +678,8 @@ paths:
       - Cryptographic Operations v2
       summary: List signing attributes
       description: "Returns the signing parameter schema supported by the connector\
-        \ for the supplied token, profile and key context"
+        \ for the supplied token, profile and key context. The schema includes signatureAlgorithm,\
+        \ a v3 data attribute offering the signature algorithms the key supports."
       operationId: listSignAttributes
       requestBody:
         content:
