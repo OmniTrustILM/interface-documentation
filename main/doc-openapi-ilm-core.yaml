@@ -27493,8 +27493,8 @@ paths:
       - Signing Profile Management
       summary: Get signing operation attribute descriptors for a certificate
       description: "Returns the signing operation attribute descriptors (e.g. signature\
-        \ scheme, digest algorithm) derived from the key algorithm of the given certificate.\
-        \ Intended for use during Signing Profile creation to populate the signingOperationAttributes\
+        \ scheme, digest algorithm) for the key of the given certificate. Intended\
+        \ for use during Signing Profile creation to populate the signingOperationAttributes\
         \ field."
       operationId: listSignatureAttributesForCertificate
       parameters:
@@ -27506,6 +27506,18 @@ paths:
           type: string
           format: uuid
       responses:
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "200":
           description: Signature attribute descriptors retrieved
           content:
