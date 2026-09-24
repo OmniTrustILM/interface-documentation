@@ -13,66 +13,66 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
     required:
-    - unit: "1"
-      name: app_build_info
-      type: gauge
-      labels:
+    - labels:
       - version
       - commit
       - runtime
-    - unit: seconds
+      type: gauge
+      name: app_build_info
+      unit: "1"
+    - labels: []
+      type: gauge
       name: process_start_time_seconds
-      type: gauge
-      labels: []
-    - unit: seconds
+      unit: seconds
+    - labels: []
+      type: counter
       name: process_cpu_seconds_total
-      type: counter
-      labels: []
-    - unit: bytes
+      unit: seconds
+    - labels: []
+      type: gauge
       name: process_resident_memory_bytes
-      type: gauge
-      labels: []
-    - unit: requests
+      unit: bytes
+    - labels:
+      - method
+      - route
+      - status
+      type: counter
       name: http_requests_total
-      type: counter
+      unit: requests
+    - type: histogram
       labels:
       - method
       - route
-      - status
-    - unit: seconds
-      name: http_request_duration_seconds
       buckets_ref: http_server_latency_buckets_seconds
-      labels:
-      - method
+      name: http_request_duration_seconds
+      unit: seconds
+    - labels:
       - route
-      type: histogram
-    - unit: requests
-      name: http_server_in_flight_requests
       type: gauge
-      labels:
-      - route
-    - unit: requests
-      name: http_client_requests_total
-      type: counter
-      labels:
+      name: http_server_in_flight_requests
+      unit: requests
+    - labels:
       - method
       - target
       - status
-    - unit: seconds
-      name: http_client_request_duration_seconds
-      buckets_ref: http_client_latency_buckets_seconds
+      type: counter
+      name: http_client_requests_total
+      unit: requests
+    - type: histogram
       labels:
       - method
       - target
-      type: histogram
-    - unit: events
-      name: connector_events_total
-      type: counter
-      labels:
+      buckets_ref: http_client_latency_buckets_seconds
+      name: http_client_request_duration_seconds
+      unit: seconds
+    - labels:
       - event
       - outcome
+      type: counter
+      name: connector_events_total
+      unit: events
+    version: 1
     histograms:
       http_client_latency_buckets_seconds:
       - 0.01
@@ -2054,12 +2054,12 @@ paths:
         List attributes for creating the requested key type. Definitions must not contain resolved credentials or
         secret values.
 
-        A connector that declares `keyExport` must include the reserved `keyExportable` attribute here: a data
-        attribute named `keyExportable` with boolean content, exactly one content item, required, defaulting to
-        `false`. That is how the exportable intent reaches key creation, so the create request needs no field of
-        its own for it, and it takes part in `keyCreationId` replay equivalence like any other create-key
-        attribute. A connector that does not declare `keyExport` must not publish it, and must create keys
-        non-extractable wherever the technology expresses the distinction.
+        A connector that declares `keyExport` must include the reserved `keyExportable` attribute here: a v3
+        data attribute named `keyExportable` with boolean content, exactly one content item, required, defaulting
+        to `false`. That is how the exportable intent reaches key creation, so the create request needs no field
+        of its own for it, and it takes part in `keyCreationId` replay equivalence like any other create-key
+        attribute. A connector that does not declare `keyExport` must not publish it and is never sent it, and
+        must create keys non-extractable wherever the technology expresses the distinction.
       operationId: listCreateKeyAttributes
       requestBody:
         content:
