@@ -3582,13 +3582,13 @@ components:
         uuid:
           type: string
           description: UUID of the staged Discovery item
-        inventoryUuid:
-          type: string
-          description: "UUID of this item's object in inventory. For a certificate,\
-            \ present as soon as one with the same content exists — including from\
-            \ an earlier run, so it may be present while processed is false. For every\
-            \ other resource it is what the item became: absent until processed, and\
-            \ absent permanently if processing failed."
+        inventory:
+          $ref: "#/components/schemas/NameAndUuidDto"
+          description: "The inventory object this item became. For a certificate,\
+            \ present as soon as one with the same content exists, including from\
+            \ an earlier run, so it may be present while processed is false. For other\
+            \ resources, absent until processed and permanently absent if processing\
+            \ failed. Its resource is the item's resource."
         sequence:
           type: integer
           format: int64
@@ -3606,11 +3606,14 @@ components:
           type: string
           format: date-time
           description: When the Discovery Provider reported discovering this item
+        resource:
+          $ref: "#/components/schemas/Resource"
         payload:
           $ref: "#/components/schemas/DiscoveredItemPayload"
           description: "Resource-specific data the Discovery Provider reported, discriminated\
-            \ by resource. Absent when the stored payload could no longer be decoded;\
-            \ the item is still listed, so the run's counts hold"
+            \ by resource, which is always the item's own resource. Absent when the\
+            \ stored payload could no longer be decoded; the item is still listed,\
+            \ so the run's counts hold"
         newlyDiscovered:
           type: boolean
           description: "True when the object was not already in the inventory at the\
@@ -3619,7 +3622,7 @@ components:
         processed:
           type: boolean
           description: Indicator whether processing of the staged item has been attempted;
-            processedError and inventoryUuid convey the outcome.
+            processedError and inventory convey the outcome.
         processedError:
           type: string
           description: "Reason recorded against this item, if any — not only a failure,\
@@ -3632,12 +3635,10 @@ components:
             reported none.
           items:
             $ref: "#/components/schemas/MetadataAttribute"
-        resource:
-          $ref: "#/components/schemas/Resource"
-          readOnly: true
       required:
       - newlyDiscovered
       - processed
+      - resource
       - sequence
       - uniqueRef
       - uuid
