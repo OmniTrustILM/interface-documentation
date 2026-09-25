@@ -18,61 +18,60 @@ info:
       - version
       - commit
       - runtime
-      type: gauge
-      name: app_build_info
       unit: "1"
-    - labels: []
+      name: app_build_info
       type: gauge
+    - labels: []
+      unit: seconds
       name: process_start_time_seconds
-      unit: seconds
+      type: gauge
     - labels: []
-      type: counter
+      unit: seconds
       name: process_cpu_seconds_total
-      unit: seconds
+      type: counter
     - labels: []
-      type: gauge
-      name: process_resident_memory_bytes
       unit: bytes
-    - labels:
-      - method
-      - route
-      - status
-      type: counter
-      name: http_requests_total
-      unit: requests
-    - type: histogram
-      labels:
-      - method
-      - route
-      buckets_ref: http_server_latency_buckets_seconds
-      name: http_request_duration_seconds
-      unit: seconds
-    - labels:
-      - route
+      name: process_resident_memory_bytes
       type: gauge
-      name: http_server_in_flight_requests
+    - labels:
+      - method
+      - route
+      - status
       unit: requests
+      name: http_requests_total
+      type: counter
+    - labels:
+      - method
+      - route
+      type: histogram
+      unit: seconds
+      name: http_request_duration_seconds
+      buckets_ref: http_server_latency_buckets_seconds
+    - labels:
+      - route
+      unit: requests
+      name: http_server_in_flight_requests
+      type: gauge
     - labels:
       - method
       - target
       - status
-      type: counter
-      name: http_client_requests_total
       unit: requests
-    - type: histogram
-      labels:
+      name: http_client_requests_total
+      type: counter
+    - labels:
       - method
       - target
-      buckets_ref: http_client_latency_buckets_seconds
-      name: http_client_request_duration_seconds
+      type: histogram
       unit: seconds
+      name: http_client_request_duration_seconds
+      buckets_ref: http_client_latency_buckets_seconds
     - labels:
       - event
       - outcome
-      type: counter
-      name: connector_events_total
       unit: events
-    version: 1
+      name: connector_events_total
+      type: counter
     histograms:
       http_client_latency_buckets_seconds:
       - 0.01
@@ -97,6 +96,7 @@ info:
       - 2.5
       - 5.0
       - 10.0
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -4786,15 +4786,7 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
       required:
-      - keyUsages
       - tokenAttributes
       - tokenProfileAttributes
     KeyRequestType:
@@ -4840,13 +4832,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyMeta:
           type: array
           description: "Connector-defined metadata identifying the key, as returned\
@@ -4877,7 +4862,6 @@ components:
       required:
       - data
       - keyMeta
-      - keyUsages
       - signatureAttributes
       - signatures
       - tokenAttributes
@@ -4926,13 +4910,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyMeta:
           type: array
           description: "Connector-defined metadata identifying the key, as returned\
@@ -4945,7 +4922,6 @@ components:
           minItems: 1
       required:
       - keyMeta
-      - keyUsages
       - tokenAttributes
       - tokenProfileAttributes
     OperationExecutionMode:
@@ -4969,13 +4945,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyMeta:
           type: array
           description: "Connector-defined metadata identifying the key, as returned\
@@ -5005,7 +4974,6 @@ components:
       - data
       - executionMode
       - keyMeta
-      - keyUsages
       - signatureAttributes
       - tokenAttributes
       - tokenProfileAttributes
@@ -5105,13 +5073,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         length:
           type: integer
           format: int32
@@ -5124,7 +5085,6 @@ components:
           items:
             $ref: "#/components/schemas/RequestAttribute"
       required:
-      - keyUsages
       - length
       - operationAttributes
       - tokenAttributes
@@ -5154,13 +5114,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyMeta:
           type: array
           description: "Connector-defined metadata identifying the key, as returned\
@@ -5186,7 +5139,6 @@ components:
       - cipherAttributes
       - cipherData
       - keyMeta
-      - keyUsages
       - tokenAttributes
       - tokenProfileAttributes
     CipherDataV2Dto:
@@ -5246,13 +5198,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyRequestType:
           $ref: "#/components/schemas/KeyRequestType"
           description: Type of key to create
@@ -5264,7 +5209,7 @@ components:
           type: string
           description: |
             Identifier of a key creation operation. Replays must use the same keyRequestType, executionMode,
-            tokenAttributes, tokenProfileAttributes, keyUsages, and createKeyAttributes. An asynchronous replay
+            tokenAttributes, tokenProfileAttributes, and createKeyAttributes. An asynchronous replay
             returns HTTP 202 with the original operationMeta. A synchronous replay returns HTTP 200 with the
             original result. Non-equivalent reuse returns RESOURCE_ALREADY_EXISTS (HTTP 409).
           maxLength: 256
@@ -5279,7 +5224,6 @@ components:
       - executionMode
       - keyCreationId
       - keyRequestType
-      - keyUsages
       - tokenAttributes
       - tokenProfileAttributes
     KeyAlgorithm:
@@ -5564,20 +5508,13 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyImportId:
           type: string
           description: |
             Identifier of a key import operation, so a retry cannot create a second key in the technology.
 
             A replay is the same operation only when every one of these matches the first submission: `executionMode`,
-            `keyRequestType`, `keyReference`, `tokenAttributes`, `tokenProfileAttributes`, `keyUsages`,
+            `keyRequestType`, `keyReference`, `tokenAttributes`, `tokenProfileAttributes`,
             `importKeyAttributes`, `exportable`, and the imported key itself. Because the platform re-protects the
             material for every submission, the key's identity decides equivalence rather than the envelope bytes.
 
@@ -5645,7 +5582,6 @@ components:
       - keyImportId
       - keyReference
       - keyRequestType
-      - keyUsages
       - material
       - passphrase
       - tokenAttributes
@@ -5772,19 +5708,11 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyRequestType:
           $ref: "#/components/schemas/KeyRequestType"
           description: Type of key to import
       required:
       - keyRequestType
-      - keyUsages
       - tokenAttributes
       - tokenProfileAttributes
     ExportKeyRequestV2Dto:
@@ -5807,13 +5735,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyMeta:
           type: array
           description: "Connector-defined metadata identifying the key, as returned\
@@ -5860,7 +5781,6 @@ components:
       - exportKeyAttributes
       - keyMeta
       - keyRequestType
-      - keyUsages
       - passphrase
       - tokenAttributes
       - tokenProfileAttributes
@@ -5970,13 +5890,6 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyMeta:
           type: array
           description: "Connector-defined metadata identifying the key, as returned\
@@ -5994,7 +5907,6 @@ components:
       required:
       - executionMode
       - keyMeta
-      - keyUsages
       - tokenAttributes
       - tokenProfileAttributes
     KeyOperationResponseV2Dto:
@@ -6037,19 +5949,11 @@ components:
           description: Token profile attributes
           items:
             $ref: "#/components/schemas/RequestAttribute"
-        keyUsages:
-          type: array
-          description: Key usages selected on the token profile
-          items:
-            $ref: "#/components/schemas/KeyUsage"
-          minItems: 1
-          uniqueItems: true
         keyRequestType:
           $ref: "#/components/schemas/KeyRequestType"
           description: Type of key whose creation attributes are requested
       required:
       - keyRequestType
-      - keyUsages
       - tokenAttributes
       - tokenProfileAttributes
     AttributeCallbackRequestDto:

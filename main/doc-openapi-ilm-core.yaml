@@ -26256,8 +26256,7 @@ paths:
       - Token Profile Management
       summary: List supported Key Request Types
       description: "Returns the Key Request Types supported for the specified token\
-        \ profile, based on its token configuration, profile attributes and selected\
-        \ key usages"
+        \ profile, based on its token configuration and profile attributes"
       operationId: listSupportedKeyRequestTypes
       parameters:
       - name: tokenInstanceUuid
@@ -42209,11 +42208,11 @@ components:
       - $ref: "#/components/schemas/BaseAttributeContentDtoV2"
       - $ref: "#/components/schemas/BaseAttributeContentDtoV3"
       properties:
-        contentType:
-          $ref: "#/components/schemas/AttributeContentType"
         reference:
           type: string
         data: {}
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
     CustomAttributeUpdateRequestDto:
       type: object
       properties:
