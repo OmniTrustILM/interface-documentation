@@ -4962,6 +4962,7 @@ components:
       - rekey
       - revoke
       - export
+      - import
       - getStatus
       - getContent
       - getChain
