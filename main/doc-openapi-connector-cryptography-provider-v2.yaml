@@ -13,66 +13,65 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
     required:
-    - unit: "1"
-      name: app_build_info
-      type: gauge
-      labels:
+    - labels:
       - version
       - commit
       - runtime
-    - unit: seconds
+      unit: "1"
+      name: app_build_info
+      type: gauge
+    - labels: []
+      unit: seconds
       name: process_start_time_seconds
       type: gauge
-      labels: []
-    - unit: seconds
+    - labels: []
+      unit: seconds
       name: process_cpu_seconds_total
       type: counter
-      labels: []
-    - unit: bytes
+    - labels: []
+      unit: bytes
       name: process_resident_memory_bytes
       type: gauge
-      labels: []
-    - unit: requests
-      name: http_requests_total
-      type: counter
-      labels:
+    - labels:
       - method
       - route
       - status
-    - buckets_ref: http_server_latency_buckets_seconds
-      labels:
+      unit: requests
+      name: http_requests_total
+      type: counter
+    - labels:
       - method
       - route
       type: histogram
       unit: seconds
       name: http_request_duration_seconds
-    - unit: requests
+      buckets_ref: http_server_latency_buckets_seconds
+    - labels:
+      - route
+      unit: requests
       name: http_server_in_flight_requests
       type: gauge
-      labels:
-      - route
-    - unit: requests
-      name: http_client_requests_total
-      type: counter
-      labels:
+    - labels:
       - method
       - target
       - status
-    - buckets_ref: http_client_latency_buckets_seconds
-      labels:
+      unit: requests
+      name: http_client_requests_total
+      type: counter
+    - labels:
       - method
       - target
       type: histogram
       unit: seconds
       name: http_client_request_duration_seconds
-    - unit: events
-      name: connector_events_total
-      type: counter
-      labels:
+      buckets_ref: http_client_latency_buckets_seconds
+    - labels:
       - event
       - outcome
+      unit: events
+      name: connector_events_total
+      type: counter
     histograms:
       http_client_latency_buckets_seconds:
       - 0.01
@@ -97,6 +96,7 @@ info:
       - 2.5
       - 5.0
       - 10.0
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -3979,14 +3979,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        uuid:
-          type: string
-          description: UUID of the Attribute for unique identification
-          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
         description:
           type: string
           description: "Optional description of the Attribute, should contain helper\
             \ text on what is expected"
+        uuid:
+          type: string
+          description: UUID of the Attribute for unique identification
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
       required:
       - name
       - type
