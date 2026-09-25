@@ -13,7 +13,6 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
     histograms:
       http_server_latency_buckets_seconds:
       - 0.005
@@ -39,64 +38,65 @@ info:
       - 5.0
       - 10.0
     required:
-    - name: app_build_info
-      unit: "1"
-      labels:
+    - labels:
       - version
       - commit
       - runtime
       type: gauge
-    - name: process_start_time_seconds
-      unit: seconds
-      labels: []
+      name: app_build_info
+      unit: "1"
+    - labels: []
       type: gauge
-    - name: process_cpu_seconds_total
+      name: process_start_time_seconds
       unit: seconds
-      labels: []
+    - labels: []
       type: counter
-    - name: process_resident_memory_bytes
-      unit: bytes
-      labels: []
+      name: process_cpu_seconds_total
+      unit: seconds
+    - labels: []
       type: gauge
-    - name: http_requests_total
-      unit: requests
-      labels:
+      name: process_resident_memory_bytes
+      unit: bytes
+    - labels:
       - method
       - route
       - status
       type: counter
-    - name: http_request_duration_seconds
-      unit: seconds
+      name: http_requests_total
+      unit: requests
+    - unit: seconds
       type: histogram
       labels:
       - method
       - route
       buckets_ref: http_server_latency_buckets_seconds
-    - name: http_server_in_flight_requests
-      unit: requests
-      labels:
+      name: http_request_duration_seconds
+    - labels:
       - route
       type: gauge
-    - name: http_client_requests_total
+      name: http_server_in_flight_requests
       unit: requests
-      labels:
+    - labels:
       - method
       - target
       - status
       type: counter
-    - name: http_client_request_duration_seconds
-      unit: seconds
+      name: http_client_requests_total
+      unit: requests
+    - unit: seconds
       type: histogram
       labels:
       - method
       - target
       buckets_ref: http_client_latency_buckets_seconds
-    - name: connector_events_total
-      unit: events
-      labels:
+      name: http_client_request_duration_seconds
+    - labels:
       - event
       - outcome
       type: counter
+      name: connector_events_total
+      unit: events
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com

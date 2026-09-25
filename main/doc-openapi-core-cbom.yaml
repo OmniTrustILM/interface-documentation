@@ -875,7 +875,9 @@ components:
             \ a refuted OID is never presented as the name"
         type:
           $ref: "#/components/schemas/CryptographicAssetType"
-          description: Type of the asset
+          description: "Type of the asset, as the producer declared it in CycloneDX\
+            \ cryptoProperties.assetType. Absent when the producer declared none of\
+            \ the CycloneDX asset types"
         pqcVerdict:
           $ref: "#/components/schemas/PqcVerdict"
           description: Post-quantum readiness verdict computed by the platform rule
@@ -898,7 +900,6 @@ components:
       - pqcVerdict
       - quarantined
       - sourceCbomCount
-      - type
       - uuid
     CryptographicAssetType:
       type: string
@@ -2489,7 +2490,9 @@ components:
             \ a refuted OID is never presented as the name"
         type:
           $ref: "#/components/schemas/CryptographicAssetType"
-          description: Type of the asset
+          description: "Type of the asset, as the producer declared it in CycloneDX\
+            \ cryptoProperties.assetType. Absent when the producer declared none of\
+            \ the CycloneDX asset types"
         pqcVerdict:
           $ref: "#/components/schemas/PqcVerdict"
           description: Post-quantum readiness verdict computed by the platform rule
@@ -2542,7 +2545,6 @@ components:
       - quarantined
       - sourceCbomCount
       - sources
-      - type
       - uuid
     CryptographicAssetEvidenceDto:
       type: object
@@ -2664,7 +2666,8 @@ components:
           type: object
           additionalProperties: {}
           description: "Values of the asset fields the deciding rule evaluated, recorded\
-            \ at decision time"
+            \ at decision time and as stored, so assetType may be unroutable for an\
+            \ asset served with no type"
         decidedAt:
           type: string
           format: date-time

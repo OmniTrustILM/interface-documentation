@@ -46303,7 +46303,9 @@ components:
             \ a refuted OID is never presented as the name"
         type:
           $ref: "#/components/schemas/CryptographicAssetType"
-          description: Type of the asset
+          description: "Type of the asset, as the producer declared it in CycloneDX\
+            \ cryptoProperties.assetType. Absent when the producer declared none of\
+            \ the CycloneDX asset types"
         pqcVerdict:
           $ref: "#/components/schemas/PqcVerdict"
           description: Post-quantum readiness verdict computed by the platform rule
@@ -46326,7 +46328,6 @@ components:
       - pqcVerdict
       - quarantined
       - sourceCbomCount
-      - type
       - uuid
     CryptographicAssetType:
       type: string
@@ -49593,8 +49594,15 @@ components:
           additionalProperties:
             type: integer
             format: int64
-          description: "Asset count by asset type. Keys are CryptographicAssetType\
-            \ codes; every type is present, with 0 when none"
+          description: "Asset count by asset type. Keys are the four CycloneDX asset\
+            \ type codes; every one is present, with 0 when none. Assets with no asset\
+            \ type are counted in untypedAssetCount instead"
+        untypedAssetCount:
+          type: integer
+          format: int64
+          description: "Number of assets served with no asset type, because their\
+            \ producer declared none of the CycloneDX asset types. Never counted in\
+            \ statByType"
         statByPqcVerdict:
           type: object
           additionalProperties:
@@ -51102,7 +51110,9 @@ components:
             \ a refuted OID is never presented as the name"
         type:
           $ref: "#/components/schemas/CryptographicAssetType"
-          description: Type of the asset
+          description: "Type of the asset, as the producer declared it in CycloneDX\
+            \ cryptoProperties.assetType. Absent when the producer declared none of\
+            \ the CycloneDX asset types"
         pqcVerdict:
           $ref: "#/components/schemas/PqcVerdict"
           description: Post-quantum readiness verdict computed by the platform rule
@@ -51155,7 +51165,6 @@ components:
       - quarantined
       - sourceCbomCount
       - sources
-      - type
       - uuid
     CryptographicAssetEvidenceDto:
       type: object
@@ -51277,7 +51286,8 @@ components:
           type: object
           additionalProperties: {}
           description: "Values of the asset fields the deciding rule evaluated, recorded\
-            \ at decision time"
+            \ at decision time and as stored, so assetType may be unroutable for an\
+            \ asset served with no type"
         decidedAt:
           type: string
           format: date-time
