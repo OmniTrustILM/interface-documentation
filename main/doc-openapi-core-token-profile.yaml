@@ -2301,6 +2301,7 @@ components:
       - ML-KEM
       - CRYSTALS-Dilithium
       - SPHINCS+
+      - AES
       - Unknown
     KeyTransferCapabilityDto:
       type: object

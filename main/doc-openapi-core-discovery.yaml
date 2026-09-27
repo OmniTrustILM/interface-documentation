@@ -3653,6 +3653,7 @@ components:
       - ML-KEM
       - CRYSTALS-Dilithium
       - SPHINCS+
+      - AES
       - Unknown
     KeyFormat:
       type: string

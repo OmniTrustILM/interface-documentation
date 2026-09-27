@@ -16563,20 +16563,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "409":
-          description: '`RESOURCE_ALREADY_EXISTS` — an entry''s `importId` was reused
-            for an import of something else'
+          description: an entry's `importId` was already used to import something
+            else
           content:
-            application/problem+json:
+            application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
+                $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: |
-            - `VALIDATION_FAILED` — the body is readable but breaks a field rule, such as a named entry the
-              file does not carry, key material with nowhere to go, or two entries sharing an `importId`.
+          description: "the file cannot be read, or the selection breaks a rule: an\
+            \ entry the file does not hold, a certificate request, key material with\
+            \ nowhere to go or a destination for an entry without key material, or\
+            \ a key with no name to take"
           content:
-            application/problem+json:
+            application/json:
               schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -38226,6 +38232,7 @@ components:
       - ML-KEM
       - CRYSTALS-Dilithium
       - SPHINCS+
+      - AES
       - Unknown
     KeyTransferCapabilityDto:
       type: object
@@ -46886,8 +46893,9 @@ components:
           minLength: 1
         keyName:
           type: string
-          description: Name for the imported key. The platform derives one from the
-            certificate when this is absent.
+          description: "Name for the imported key. When it is absent, the platform\
+            \ takes the entry's alias, or when the entry has none, its certificate's\
+            \ common name."
         exportable:
           type: boolean
           default: false
@@ -46915,9 +46923,13 @@ components:
       properties:
         entryReference:
           type: string
-          description: "Reference of the entry to import, derived from the entry's\
-            \ own content. Read the file first to learn it, or compute it from content\
-            \ already held."
+          description: |
+            Reference of the entry to import. Read the file first to learn it, or compute it from content already
+            held.
+
+            The lowercase hex SHA-256 of the entry's DER: of the certificate for a certificate, of the
+            `SubjectPublicKeyInfo` for a key pair or private key, of the key as the file holds it for a secret key or
+            a key of an algorithm the platform does not support, and of the request for a certificate request.
           minLength: 1
         importId:
           type: string
@@ -46981,116 +46993,6 @@ components:
       required:
       - entries
       - file
-    ErrorCode:
-      type: string
-      enum:
-      - VALIDATION_FAILED
-      - RESOURCE_NOT_FOUND
-      - RESOURCE_ALREADY_EXISTS
-      - REQUEST_TIMEOUT
-      - OPERATION_NOT_SUPPORTED
-      - ATTRIBUTES_ERROR
-      - SERVICE_UNAVAILABLE
-      - INTERNAL_SERVER_ERROR
-      - BAD_REQUEST
-      - UNAUTHORIZED
-      - FORBIDDEN
-      - RATE_LIMIT_EXCEEDED
-      - GATEWAY_TIMEOUT
-      - UPSTREAM_ERROR
-      - CREDENTIAL_INVALID
-      - POLICY_VIOLATION
-      - OPERATION_PAST_POINT_OF_NO_RETURN
-      - OPERATION_NOT_TRACKED
-      - ATTRIBUTE_DEFINITION_NOT_FOUND
-      - DOCUMENT_MALFORMED
-      - DOCUMENT_TOO_LARGE
-      - SIGNATURE_NOT_FOUND
-      - PARAMETER_UNSUPPORTED
-      - CONTEXT_MISMATCH
-      - CSR_MALFORMED
-      - REVOCATION_NOT_ALLOWED
-      - REGISTRATION_NOT_FOUND
-      - RENEWAL_SOURCE_NOT_FOUND
-      - CSR_SUBJECT_MISMATCH
-      - CERTIFICATE_MISMATCH
-      - CHECKPOINT_LOST
-      - KEY_TYPE_NOT_IMPORTABLE
-      - KEY_TYPE_NOT_EXPORTABLE
-      - KEY_MATERIAL_MISMATCH
-      - KEY_DECRYPTION_FAILED
-      - EXPORTABLE_NOT_SUPPORTED
-      - KEY_NOT_EXPORTABLE
-    ProblemDetailExtended:
-      type: object
-      properties:
-        type:
-          type: string
-          format: uri
-          description: RFC 9457 type URI identifying the problem type
-          example: https://docs.otilm.com/problems/common/validation-failed
-        title:
-          type:
-          - string
-          - "null"
-          description: Short human-readable summary of the problem type
-          example: Validation failed
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code (MUST match the actual response code)
-          example: 422
-          maximum: 599
-          minimum: 100
-        detail:
-          type:
-          - string
-          - "null"
-          description: Human-readable explanation specific to this occurrence
-          example: One or more fields failed validation.
-        instance:
-          type:
-          - string
-          - "null"
-          format: uri
-          description: "URI reference identifying the occurrence (e.g., request path\
-            \ or operation ID)."
-          example: https://api.example.org/foo/bar/123
-        properties:
-          type:
-          - object
-          - "null"
-          additionalProperties: {}
-          description: Generic map of properties that are not known ahead of time
-        errorCode:
-          $ref: "#/components/schemas/ErrorCode"
-          description: Application specific error code
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp of when the error occurred (RFC 3339 format)
-          examples:
-          - 2026-01-22T15:10:20.123Z
-          - 2026-01-22T15:10:20.123+02:00
-        correlationId:
-          type: string
-          description: Correlation ID for tracking the request. Trace value from X-Request-Id
-            or W3C Trace Context.
-        retryable:
-          type: boolean
-          description: Indicates if the operation that caused the error can be retried
-            safely
-        retryAfterSeconds:
-          type: integer
-          format: int32
-          description: "Backoff hint, number of seconds after which the client can\
-            \ retry the operation. Aligns with Retry-After header."
-      required:
-      - errorCode
-      - retryable
-      - status
-      - timestamp
-      - type
     CertificateImportResponseDto:
       type: object
       description: Outcome of importing the selected entries
@@ -47744,6 +47646,7 @@ components:
       - revoke
       - export
       - import
+      - inspect
       - getStatus
       - getContent
       - getChain

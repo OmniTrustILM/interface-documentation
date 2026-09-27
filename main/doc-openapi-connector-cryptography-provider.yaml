@@ -3607,6 +3607,7 @@ components:
       - ML-KEM
       - CRYSTALS-Dilithium
       - SPHINCS+
+      - AES
       - Unknown
     KeyData:
       type: object

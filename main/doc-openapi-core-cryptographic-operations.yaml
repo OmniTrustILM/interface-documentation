@@ -3633,6 +3633,7 @@ components:
       - ML-KEM
       - CRYSTALS-Dilithium
       - SPHINCS+
+      - AES
       - Unknown
   securitySchemes:
     SessionAuth:
