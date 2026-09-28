@@ -449,6 +449,14 @@ groups:
     interfaces:
       - com.otilm.api.interfaces.core.web.GroupController
 
+  - id: doc-openapi-core-inspection
+    groupName: core-inspection
+    title: Inspection API
+    indexCategory: core
+    description: REST API for reading uploaded files to report what they hold
+    interfaces:
+      - com.otilm.api.interfaces.core.web.InspectionController
+
   - id: doc-openapi-core-local
     groupName: core-local
     title: Local API
@@ -656,6 +664,7 @@ groups:
       - com.otilm.api.interfaces.core.web.GlobalMetadataController
       - com.otilm.api.interfaces.core.web.GroupController
       - com.otilm.api.interfaces.core.web.InfoController
+      - com.otilm.api.interfaces.core.web.InspectionController
       - com.otilm.api.interfaces.core.web.ListViewController
       - com.otilm.api.interfaces.core.web.LocationManagementController
       - com.otilm.api.interfaces.core.web.NotificationController
