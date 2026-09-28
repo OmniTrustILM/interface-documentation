@@ -743,6 +743,10 @@ paths:
       tags:
       - Token Profile Management
       summary: List of available Token Profiles
+      description: "With importable, lists only the token profiles whose provider\
+        \ imports every given key type and algorithm, as far as the platform has recorded.\
+        \ A profile whose provider declares key import but whose answer is not recorded\
+        \ yet is listed; the import then checks it."
       operationId: listTokenProfiles
       parameters:
       - name: enabled
@@ -750,6 +754,16 @@ paths:
         required: false
         schema:
           type: boolean
+      - name: importable
+        in: query
+        description: "A key request type and an algorithm the token profile must import,\
+          \ as `type:algorithm` codes such as `keyPair:RSA`. Repeat the parameter\
+          \ per pair."
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
       responses:
         "200":
           description: Token Profiles retrieved
@@ -759,6 +773,17 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TokenProfileDto"
+        "422":
+          description: An importable value is not a key request type and an algorithm
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
