@@ -33,7 +33,7 @@
         <!-- Override Spring Boot's managed junit-jupiter.version (5.12.2) so the whole
              junit-bom moves coherently; junit.jupiter.version stays as an alias for the
              module poms that reference it. -->
-        <junit-jupiter.version>5.14.4</junit-jupiter.version>
+        <junit-jupiter.version>6.1.3</junit-jupiter.version>
         <junit.jupiter.version>${junit-jupiter.version}</junit.jupiter.version>
     </properties>
 
