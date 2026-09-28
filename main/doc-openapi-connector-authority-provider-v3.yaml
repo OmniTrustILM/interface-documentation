@@ -13,31 +13,6 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
-    histograms:
-      http_server_latency_buckets_seconds:
-      - 0.005
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
-      http_client_latency_buckets_seconds:
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
     required:
     - type: gauge
       name: app_build_info
@@ -65,13 +40,13 @@ info:
       - method
       - route
       - status
-    - buckets_ref: http_server_latency_buckets_seconds
-      name: http_request_duration_seconds
-      unit: seconds
-      type: histogram
+    - type: histogram
       labels:
       - method
       - route
+      buckets_ref: http_server_latency_buckets_seconds
+      name: http_request_duration_seconds
+      unit: seconds
     - type: gauge
       name: http_server_in_flight_requests
       unit: requests
@@ -84,19 +59,44 @@ info:
       - method
       - target
       - status
-    - buckets_ref: http_client_latency_buckets_seconds
-      name: http_client_request_duration_seconds
-      unit: seconds
-      type: histogram
+    - type: histogram
       labels:
       - method
       - target
+      buckets_ref: http_client_latency_buckets_seconds
+      name: http_client_request_duration_seconds
+      unit: seconds
     - type: counter
       name: connector_events_total
       unit: events
       labels:
       - event
       - outcome
+    version: 1
+    histograms:
+      http_client_latency_buckets_seconds:
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
+      http_server_latency_buckets_seconds:
+      - 0.005
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
