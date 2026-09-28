@@ -3783,6 +3783,10 @@ components:
         key:
           $ref: "#/components/schemas/KeyDto"
           description: Key Pair of the certificate
+        keystoreAvailable:
+          type: boolean
+          description: Whether the certificate can be downloaded with its private
+            key as PKCS#12
         altKey:
           $ref: "#/components/schemas/KeyDto"
           description: Alternative Key Pair of the certificate
@@ -3849,6 +3853,7 @@ components:
       - complianceStatus
       - hybridCertificate
       - keySize
+      - keystoreAvailable
       - privateKeyAvailability
       - publicKeyAlgorithm
       - state
@@ -4955,14 +4960,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        uuid:
-          type: string
-          description: UUID of the Attribute for unique identification
-          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
         description:
           type: string
           description: "Optional description of the Attribute, should contain helper\
             \ text on what is expected"
+        uuid:
+          type: string
+          description: UUID of the Attribute for unique identification
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
       required:
       - name
       - type
