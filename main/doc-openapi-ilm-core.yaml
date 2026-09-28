@@ -73,6 +73,8 @@ tags:
   description: Comments API
 - name: Token Instance Management
   description: Token Instance Management API
+- name: Inspection
+  description: Reading uploaded files to report what they hold
 - name: Workflow Rules Management
   description: Workflow Rules Management API
 - name: Enums
@@ -13978,6 +13980,74 @@ paths:
           description: Forbidden
           content:
             application/octet-stream:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/inspections:
+    post:
+      tags:
+      - Inspection
+      summary: Read an uploaded file
+      description: |
+        Report what an uploaded file holds, without importing or storing anything.
+
+        The file travels base64-encoded in `file`, like every upload in the platform, and is held in memory rather
+        than written anywhere; it is never echoed in an error, since it may carry key material. Every container the
+        platform understands is accepted, so a caller uploads once and then decides: PKCS#12 in any composition, a PEM bundle of certificates with at most one private
+        key, a standalone PKCS#8 key, plain or encrypted, an OpenSSL traditional PEM key, an OpenSSH private key, a
+        single certificate as PEM or DER, and PKCS#7. The container is recognised by its content, not by its file
+        name. JKS and JCEKS stores are read too.
+
+        Nothing here has to be carried into a later operation. Each entry is reported with a reference derived from
+        the entry's own content, so an operation given that reference acts on that content whichever file it
+        arrives with. Read a file when a user should see what is inside before anything is imported; a caller that
+        already knows what it is sending does not need to.
+      operationId: inspect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InspectionRequestDto"
+        required: true
+      responses:
+        "200":
+          description: File read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InspectionResponseDto"
+        "404":
+          description: Token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: "Unprocessable Entity, including a file no supported container\
+            \ format explains, a file the supplied passphrase does not open, and a\
+            \ file beyond the platform's limits"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
@@ -36303,14 +36373,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        uuid:
-          type: string
-          description: UUID of the Attribute for unique identification
-          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
         description:
           type: string
           description: "Optional description of the Attribute, should contain helper\
             \ text on what is expected"
+        uuid:
+          type: string
+          description: UUID of the Attribute for unique identification
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
       required:
       - name
       - type
@@ -46027,6 +46097,130 @@ components:
             $ref: "#/components/schemas/RequestAttribute"
       required:
       - passphrase
+    InspectionRequestDto:
+      type: object
+      description: The file to read and the options for reading it
+      properties:
+        file:
+          type: string
+          format: byte
+          description: |
+            Content of the uploaded file, base64-encoded: a container such as PKCS#12 or PEM, a standalone key, or a
+            certificate. At most 5 MiB decoded. The platform holds it in memory only, never writes it anywhere and
+            never echoes it in an error, since the file may carry key material.
+          maxLength: 6990508
+          writeOnly: true
+        passphrase:
+          type: string
+          format: password
+          description: Passphrase that opens the uploaded file. Absent for a file
+            that carries no protection of its own.
+          writeOnly: true
+        tokenProfileUuid:
+          type: string
+          description: "Token profile the caller intends to import key material into.\
+            \ When given, each entry is reported with whether that profile can hold\
+            \ it."
+      required:
+      - file
+    InspectedEntryDto:
+      type: object
+      description: One entry found in an uploaded file
+      properties:
+        entryReference:
+          type: string
+          description: |
+            Reference for this entry, used to select it when importing.
+
+            The lowercase hex SHA-256 of the entry's DER: of the certificate for a certificate, of the
+            `SubjectPublicKeyInfo` for a key pair or private key, of the key as the file holds it for a secret key or
+            a key of an algorithm the platform does not support, and of the request for a certificate request. It is
+            never derived from the entry's position in the file, so a reference cannot come to mean a different entry
+            between inspecting and importing.
+        kind:
+          $ref: "#/components/schemas/InspectedEntryKind"
+          description: What this entry turned out to be
+        alias:
+          type: string
+          description: "The name the file gives the entry, such as a keystore alias\
+            \ or a PKCS#12 friendly name"
+        subjectDn:
+          type: string
+          description: Subject distinguished name of the entry's certificate
+        issuerDn:
+          type: string
+          description: Issuer distinguished name of the entry's certificate
+        serialNumber:
+          type: string
+          description: Serial number of the entry's certificate
+        fingerprint:
+          type: string
+          description: SHA-256 fingerprint of the entry's certificate
+        notBefore:
+          type: string
+          format: date-time
+          description: Start of the certificate's validity
+        notAfter:
+          type: string
+          format: date-time
+          description: End of the certificate's validity
+        subjectAlternativeNames:
+          type: array
+          description: Subject alternative names of the entry's certificate
+          items:
+            type: string
+        keyAlgorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+          description: "Algorithm of the entry's key, where it can be determined without\
+            \ opening protected material"
+        keyLength:
+          type: integer
+          format: int32
+          description: "Length of the entry's key in bits, where it can be determined"
+        chainLength:
+          type: integer
+          format: int32
+          description: "Number of certificates found with this entry, including the\
+            \ entry's own certificate"
+        importable:
+          type: boolean
+          description: Whether the entry's key material can be imported into the token
+            profile the inspection named. Absent when the inspection named no token
+            profile.
+        notImportableReason:
+          type: string
+          description: "Why the entry cannot be imported, when it cannot"
+      required:
+      - entryReference
+      - kind
+    InspectedEntryKind:
+      type: string
+      description: "What one entry of an uploaded file turned out to be. The kind\
+        \ decides what can be done with the entry: only a key needs somewhere to be\
+        \ stored, and only a certificate can go straight into the inventory."
+      enum:
+      - keyPairWithChain
+      - certificate
+      - privateKey
+      - secretKey
+      - signingRequest
+    InspectionResponseDto:
+      type: object
+      description: Entries found in an uploaded file
+      properties:
+        containerDigest:
+          type: string
+          description: "The lowercase hex SHA-256 of the uploaded file, so a caller\
+            \ can tell two uploads apart and confirm the file it is about to import\
+            \ is the one it read"
+        entries:
+          type: array
+          description: Entries found in the file
+          items:
+            $ref: "#/components/schemas/InspectedEntryDto"
+      required:
+      - containerDigest
+      - entries
     EntityInstanceRequestDto:
       type: object
       properties:
@@ -47063,17 +47257,6 @@ components:
       - entryReference
       - imported
       - kind
-    InspectedEntryKind:
-      type: string
-      description: "What one entry of an uploaded file turned out to be. The kind\
-        \ decides what can be done with the entry: only a key needs somewhere to be\
-        \ stored, and only a certificate can go straight into the inventory."
-      enum:
-      - keyPairWithChain
-      - certificate
-      - privateKey
-      - secretKey
-      - signingRequest
     RemoveCertificateDto:
       type: object
       properties:

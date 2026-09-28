@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf8" />
+  <title>Inspection API</title>
+  <!-- needed for adaptive design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <script src="https://cdn.redocly.com/redoc/v2.5.4/bundles/redoc.standalone.js" integrity="sha384-w447zOpYfw/1Tv/5AK9NfHTlQIqE3RVR6KY62jCyy9zNDgO64cMwGGP1Fj0zJVf5" crossorigin="anonymous"></script><style data-styled="true" data-styled-version="6.4.2">.kktglN{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.kktglN{width:100%;padding:40px 40px;}}/*!sc*/
+.kmAAAV{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.kmAAAV{width:100%;padding:0px 40px;}}/*!sc*/
+data-styled.g5[id="sc-hKVpXn"]{content:"kktglN,kmAAAV,"}/*!sc*/
+.jleRXN{padding:40px 0;}/*!sc*/
+.jleRXN:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.jleRXN>.jleRXN:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.jleRXN{padding:0;}}/*!sc*/
+.grDwca{padding:40px 0;position:relative;}/*!sc*/
+.grDwca:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.grDwca>.grDwca:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.grDwca{padding:0;}}/*!sc*/
+.grDwca:not(:last-of-type):after{position:absolute;bottom:0;width:100%;display:block;content:'';border-bottom:1px solid rgba(0, 0, 0, 0.2);}/*!sc*/
+data-styled.g6[id="sc-eCQgVK"]{content:"jleRXN,grDwca,"}/*!sc*/
+.fpMlmc{width:40%;color:#ffffff;background-color:#263238;padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.fpMlmc{width:100%;padding:40px 40px;}}/*!sc*/
+data-styled.g7[id="sc-jSppWd"]{content:"fpMlmc,"}/*!sc*/
+.bdQQyo{background-color:#263238;}/*!sc*/
+data-styled.g8[id="sc-gKkgUA"]{content:"bdQQyo,"}/*!sc*/
+.lhRBUS{display:flex;width:100%;padding:0;}/*!sc*/
+@media print,screen and (max-width: 75rem){.lhRBUS{flex-direction:column;}}/*!sc*/
+data-styled.g9[id="sc-iCECmn"]{content:"lhRBUS,"}/*!sc*/
+.eRMVDe{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#333333;}/*!sc*/
+data-styled.g10[id="sc-fuztkK"]{content:"eRMVDe,"}/*!sc*/
+.MOVBZ{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;margin:0 0 20px;}/*!sc*/
+data-styled.g11[id="sc-qdQOe"]{content:"MOVBZ,"}/*!sc*/
+.iamDfj{color:#ffffff;}/*!sc*/
+data-styled.g13[id="sc-kEbgWM"]{content:"iamDfj,"}/*!sc*/
+.jprlAr{border-bottom:1px solid rgba(38, 50, 56, 0.3);margin:1em 0 1em 0;color:rgba(38, 50, 56, 0.7);font-weight:normal;text-transform:uppercase;font-size:0.929em;line-height:20px;}/*!sc*/
+data-styled.g14[id="sc-iqkkDd"]{content:"jprlAr,"}/*!sc*/
+.jmoZom{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.jmoZom:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+h1:hover>.jmoZom::before,h2:hover>.jmoZom::before,.jmoZom:hover::before{visibility:visible;}/*!sc*/
+data-styled.g15[id="sc-crPgjm"]{content:"jmoZom,"}/*!sc*/
+.kdgFPv{height:18px;width:18px;min-width:18px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.bEEWJa{height:1.3em;width:1.3em;min-width:1.3em;vertical-align:middle;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.gngmNp{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.gngmNp polygon{fill:#1d8127;}/*!sc*/
+.hJoFRR{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.hJoFRR polygon{fill:#d41f1c;}/*!sc*/
+.bQKUih{height:20px;width:20px;min-width:20px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(0);}/*!sc*/
+.bQKUih polygon{fill:white;}/*!sc*/
+data-styled.g16[id="sc-dYjPD"]{content:"kdgFPv,bEEWJa,gngmNp,hJoFRR,bQKUih,"}/*!sc*/
+.dBLOSh{border-left:1px solid #4aa3eb;box-sizing:border-box;position:relative;padding:10px 10px 10px 0;}/*!sc*/
+@media screen and (max-width: 50rem){.dBLOSh{display:block;overflow:hidden;}}/*!sc*/
+tr:first-of-type>.dBLOSh,tr.last>.dBLOSh{border-left-width:0;background-position:top left;background-repeat:no-repeat;background-size:1px 100%;}/*!sc*/
+tr:first-of-type>.dBLOSh{background-image:linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 22px,
+      #4aa3eb 22px,
+      #4aa3eb 100%
+    );}/*!sc*/
+tr.last>.dBLOSh{background-image:linear-gradient(
+      to bottom,
+      #4aa3eb 0%,
+      #4aa3eb 22px,
+      transparent 22px,
+      transparent 100%
+    );}/*!sc*/
+tr.last+tr>.dBLOSh{border-left-color:transparent;}/*!sc*/
+tr.last:first-child>.dBLOSh{background:none;border-left-color:transparent;}/*!sc*/
+data-styled.g19[id="sc-hCcPtG"]{content:"dBLOSh,"}/*!sc*/
+.lcdEEX{vertical-align:top;line-height:20px;white-space:nowrap;font-size:13px;font-family:Courier,monospace;}/*!sc*/
+.lcdEEX.deprecated{text-decoration:line-through;color:#707070;}/*!sc*/
+data-styled.g21[id="sc-fFCZOx"]{content:"lcdEEX,"}/*!sc*/
+.hrvNJU{border-bottom:1px solid #9fb4be;padding:10px 0;width:75%;box-sizing:border-box;}/*!sc*/
+tr.expanded .hrvNJU{border-bottom:none;}/*!sc*/
+@media screen and (max-width: 50rem){.hrvNJU{padding:0 20px;border-bottom:none;border-left:1px solid #4aa3eb;}tr.last>.hrvNJU{border-left:none;}}/*!sc*/
+data-styled.g22[id="sc-bjLslk"]{content:"hrvNJU,"}/*!sc*/
+.FQCms{color:#4aa3eb;font-family:Courier,monospace;margin-right:10px;}/*!sc*/
+.FQCms::before{content:'';display:inline-block;vertical-align:middle;width:10px;height:1px;background:#4aa3eb;}/*!sc*/
+.FQCms::after{content:'';display:inline-block;vertical-align:middle;width:1px;background:#4aa3eb;height:7px;}/*!sc*/
+data-styled.g23[id="sc-ieCSdj"]{content:"FQCms,"}/*!sc*/
+.bsjUmE{border-collapse:separate;border-radius:3px;font-size:14px;border-spacing:0;width:100%;}/*!sc*/
+.bsjUmE >tr{vertical-align:middle;}/*!sc*/
+@media screen and (max-width: 50rem){.bsjUmE{display:block;}.bsjUmE >tr,.bsjUmE >tbody>tr{display:block;}}/*!sc*/
+@media screen and (max-width: 50rem) and (-ms-high-contrast:none){.bsjUmE td{float:left;width:100%;}}/*!sc*/
+.bsjUmE .sc-dILkzW,.bsjUmE .sc-dILkzW .sc-dILkzW .sc-dILkzW,.bsjUmE .sc-dILkzW .sc-dILkzW .sc-dILkzW .sc-dILkzW .sc-dILkzW{margin:1em;margin-right:0;background:#fafafa;}/*!sc*/
+.bsjUmE .sc-dILkzW .sc-dILkzW,.bsjUmE .sc-dILkzW .sc-dILkzW .sc-dILkzW .sc-dILkzW,.bsjUmE .sc-dILkzW .sc-dILkzW .sc-dILkzW .sc-dILkzW .sc-dILkzW .sc-dILkzW{background:#ffffff;}/*!sc*/
+data-styled.g25[id="sc-hHopjF"]{content:"bsjUmE,"}/*!sc*/
+.fcGuQW >ul{list-style:none;padding:0;margin:0;margin:0 -5px;}/*!sc*/
+.fcGuQW >ul >li{padding:5px 10px;display:inline-block;background-color:#11171a;border-bottom:1px solid rgba(0, 0, 0, 0.5);cursor:pointer;text-align:center;outline:none;color:#ccc;margin:0 5px 5px 5px;border:1px solid #07090b;border-radius:5px;min-width:60px;font-size:0.9em;font-weight:bold;}/*!sc*/
+.fcGuQW >ul >li.react-tabs__tab--selected{color:#333333;background:#ffffff;}/*!sc*/
+.fcGuQW >ul >li.react-tabs__tab--selected:focus{outline:auto;}/*!sc*/
+.fcGuQW >ul >li:only-child{flex:none;min-width:100px;}/*!sc*/
+.fcGuQW >ul >li.tab-success{color:#33d143;}/*!sc*/
+.fcGuQW >ul >li.tab-success.react-tabs__tab--selected{color:#1d8127;}/*!sc*/
+.fcGuQW >ul >li.tab-redirect{color:#ffa500;}/*!sc*/
+.fcGuQW >ul >li.tab-redirect.react-tabs__tab--selected{color:#996300;}/*!sc*/
+.fcGuQW >ul >li.tab-info{color:#30aadc;}/*!sc*/
+.fcGuQW >ul >li.tab-info.react-tabs__tab--selected{color:#186c8e;}/*!sc*/
+.fcGuQW >ul >li.tab-error{color:#eb6d6b;}/*!sc*/
+.fcGuQW >ul >li.tab-error.react-tabs__tab--selected{color:#d41f1c;}/*!sc*/
+.fcGuQW >.react-tabs__tab-panel{background:#11171a;}/*!sc*/
+.fcGuQW >.react-tabs__tab-panel>div,.fcGuQW >.react-tabs__tab-panel>pre{padding:20px;margin:0;}/*!sc*/
+.fcGuQW >.react-tabs__tab-panel>div>pre{padding:0;}/*!sc*/
+data-styled.g31[id="sc-cxxQMU"]{content:"fcGuQW,"}/*!sc*/
+.fiNpIH code[class*='language-'],.fiNpIH pre[class*='language-']{text-shadow:0 -0.1em 0.2em black;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}/*!sc*/
+@media print{.fiNpIH code[class*='language-'],.fiNpIH pre[class*='language-']{text-shadow:none;}}/*!sc*/
+.fiNpIH pre[class*='language-']{padding:1em;margin:0.5em 0;overflow:auto;}/*!sc*/
+.fiNpIH .token.comment,.fiNpIH .token.prolog,.fiNpIH .token.doctype,.fiNpIH .token.cdata{color:hsl(30, 20%, 50%);}/*!sc*/
+.fiNpIH .token.punctuation{opacity:0.7;}/*!sc*/
+.fiNpIH .namespace{opacity:0.7;}/*!sc*/
+.fiNpIH .token.property,.fiNpIH .token.tag,.fiNpIH .token.number,.fiNpIH .token.constant,.fiNpIH .token.symbol{color:#4a8bb3;}/*!sc*/
+.fiNpIH .token.boolean{color:#e64441;}/*!sc*/
+.fiNpIH .token.selector,.fiNpIH .token.attr-name,.fiNpIH .token.string,.fiNpIH .token.char,.fiNpIH .token.builtin,.fiNpIH .token.inserted{color:#a0fbaa;}/*!sc*/
+.fiNpIH .token.selector+a,.fiNpIH .token.attr-name+a,.fiNpIH .token.string+a,.fiNpIH .token.char+a,.fiNpIH .token.builtin+a,.fiNpIH .token.inserted+a,.fiNpIH .token.selector+a:visited,.fiNpIH .token.attr-name+a:visited,.fiNpIH .token.string+a:visited,.fiNpIH .token.char+a:visited,.fiNpIH .token.builtin+a:visited,.fiNpIH .token.inserted+a:visited{color:#4ed2ba;text-decoration:underline;}/*!sc*/
+.fiNpIH .token.property.string{color:white;}/*!sc*/
+.fiNpIH .token.operator,.fiNpIH .token.entity,.fiNpIH .token.url,.fiNpIH .token.variable{color:hsl(40, 90%, 60%);}/*!sc*/
+.fiNpIH .token.atrule,.fiNpIH .token.attr-value,.fiNpIH .token.keyword{color:hsl(350, 40%, 70%);}/*!sc*/
+.fiNpIH .token.regex,.fiNpIH .token.important{color:#e90;}/*!sc*/
+.fiNpIH .token.important,.fiNpIH .token.bold{font-weight:bold;}/*!sc*/
+.fiNpIH .token.italic{font-style:italic;}/*!sc*/
+.fiNpIH .token.entity{cursor:help;}/*!sc*/
+.fiNpIH .token.deleted{color:red;}/*!sc*/
+data-styled.g33[id="sc-iJSMbW"]{content:"fiNpIH,"}/*!sc*/
+.dzKJV{opacity:0.7;transition:opacity 0.3s ease;text-align:right;}/*!sc*/
+.dzKJV:focus-within{opacity:1;}/*!sc*/
+.dzKJV >button{background-color:transparent;border:0;color:inherit;padding:2px 10px;font-family:Roboto,sans-serif;font-size:14px;line-height:1.5em;cursor:pointer;outline:0;}/*!sc*/
+.dzKJV >button :hover,.dzKJV >button :focus{background:rgba(255, 255, 255, 0.1);}/*!sc*/
+data-styled.g34[id="sc-giQkEn"]{content:"dzKJV,"}/*!sc*/
+.iOXjCz{position:relative;}/*!sc*/
+data-styled.g38[id="sc-kLEbxe"]{content:"iOXjCz,"}/*!sc*/
+.kxMqOs{margin-left:10px;text-transform:none;font-size:0.929em;color:black;}/*!sc*/
+data-styled.g42[id="sc-gXvOjn"]{content:"kxMqOs,"}/*!sc*/
+.dLtybb{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.dLtybb p:last-child{margin-bottom:0;}/*!sc*/
+.dLtybb h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#0072cf;margin-top:0;}/*!sc*/
+.dLtybb h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.dLtybb code{color:#c62828;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.dLtybb pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.dLtybb pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.dLtybb pre code:before,.dLtybb pre code:after{content:none;}/*!sc*/
+.dLtybb blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.dLtybb img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.dLtybb ul,.dLtybb ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.dLtybb ul ul,.dLtybb ol ul,.dLtybb ul ol,.dLtybb ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.dLtybb table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.dLtybb table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.dLtybb table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.dLtybb table th,.dLtybb table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.dLtybb table th{text-align:left;font-weight:bold;}/*!sc*/
+.dLtybb .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.dLtybb .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.dLtybb h1:hover>.share-link::before,.dLtybb h2:hover>.share-link::before,.dLtybb .share-link:hover::before{visibility:visible;}/*!sc*/
+.dLtybb a{text-decoration:underline;color:#0072cf;}/*!sc*/
+.dLtybb a:visited{color:#0072cf;}/*!sc*/
+.dLtybb a:hover{color:#36a5ff;text-decoration:underline;}/*!sc*/
+.bgdxSl{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.bgdxSl p:last-child{margin-bottom:0;}/*!sc*/
+.bgdxSl p:first-child{margin-top:0;}/*!sc*/
+.bgdxSl p:last-child{margin-bottom:0;}/*!sc*/
+.bgdxSl h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#0072cf;margin-top:0;}/*!sc*/
+.bgdxSl h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.bgdxSl code{color:#c62828;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.bgdxSl pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.bgdxSl pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.bgdxSl pre code:before,.bgdxSl pre code:after{content:none;}/*!sc*/
+.bgdxSl blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.bgdxSl img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.bgdxSl ul,.bgdxSl ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.bgdxSl ul ul,.bgdxSl ol ul,.bgdxSl ul ol,.bgdxSl ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.bgdxSl table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.bgdxSl table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.bgdxSl table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.bgdxSl table th,.bgdxSl table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.bgdxSl table th{text-align:left;font-weight:bold;}/*!sc*/
+.bgdxSl .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.bgdxSl .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.bgdxSl h1:hover>.share-link::before,.bgdxSl h2:hover>.share-link::before,.bgdxSl .share-link:hover::before{visibility:visible;}/*!sc*/
+.bgdxSl a{text-decoration:underline;color:#0072cf;}/*!sc*/
+.bgdxSl a:visited{color:#0072cf;}/*!sc*/
+.bgdxSl a:hover{color:#36a5ff;text-decoration:underline;}/*!sc*/
+.iCmSTh{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.iCmSTh p:last-child{margin-bottom:0;}/*!sc*/
+.iCmSTh p:first-child{margin-top:0;}/*!sc*/
+.iCmSTh p:last-child{margin-bottom:0;}/*!sc*/
+.iCmSTh p{display:inline-block;}/*!sc*/
+.iCmSTh h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#0072cf;margin-top:0;}/*!sc*/
+.iCmSTh h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.iCmSTh code{color:#c62828;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.iCmSTh pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.iCmSTh pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.iCmSTh pre code:before,.iCmSTh pre code:after{content:none;}/*!sc*/
+.iCmSTh blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.iCmSTh img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.iCmSTh ul,.iCmSTh ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.iCmSTh ul ul,.iCmSTh ol ul,.iCmSTh ul ol,.iCmSTh ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.iCmSTh table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.iCmSTh table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.iCmSTh table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.iCmSTh table th,.iCmSTh table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.iCmSTh table th{text-align:left;font-weight:bold;}/*!sc*/
+.iCmSTh .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.iCmSTh .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.iCmSTh h1:hover>.share-link::before,.iCmSTh h2:hover>.share-link::before,.iCmSTh .share-link:hover::before{visibility:visible;}/*!sc*/
+.iCmSTh a{text-decoration:underline;color:#0072cf;}/*!sc*/
+.iCmSTh a:visited{color:#0072cf;}/*!sc*/
+.iCmSTh a:hover{color:#36a5ff;text-decoration:underline;}/*!sc*/
+data-styled.g43[id="sc-cBEgGa"]{content:"dLtybb,bgdxSl,iCmSTh,"}/*!sc*/
+.dDDioG{display:inline;}/*!sc*/
+data-styled.g44[id="sc-ciCrSJ"]{content:"dDDioG,"}/*!sc*/
+.feYhXE{position:relative;}/*!sc*/
+data-styled.g45[id="sc-jcgtOs"]{content:"feYhXE,"}/*!sc*/
+.hHzuQA:hover>.sc-giQkEn{opacity:1;}/*!sc*/
+data-styled.g50[id="sc-cTZdpT"]{content:"hHzuQA,"}/*!sc*/
+.jgTAJz{font-family:Courier,monospace;font-size:13px;white-space:pre;contain:content;overflow-x:auto;}/*!sc*/
+.jgTAJz .redoc-json code>.collapser{display:none;pointer-events:none;}/*!sc*/
+.jgTAJz .callback-function{color:gray;}/*!sc*/
+.jgTAJz .collapser:after{content:'-';cursor:pointer;}/*!sc*/
+.jgTAJz .collapsed>.collapser:after{content:'+';cursor:pointer;}/*!sc*/
+.jgTAJz .ellipsis:after{content:' … ';}/*!sc*/
+.jgTAJz .collapsible{margin-left:2em;}/*!sc*/
+.jgTAJz .hoverable{padding-top:1px;padding-bottom:1px;padding-left:2px;padding-right:2px;border-radius:2px;}/*!sc*/
+.jgTAJz .hovered{background-color:rgba(235, 238, 249, 1);}/*!sc*/
+.jgTAJz .collapser{background-color:transparent;border:0;color:#fff;font-family:Courier,monospace;font-size:13px;padding-right:6px;padding-left:6px;padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:center;width:15px;height:15px;position:absolute;top:4px;left:-1.5em;cursor:default;user-select:none;-webkit-user-select:none;padding:2px;}/*!sc*/
+.jgTAJz .collapser:focus{outline-color:#fff;outline-style:dotted;outline-width:1px;}/*!sc*/
+.jgTAJz ul{list-style-type:none;padding:0px;margin:0px 0px 0px 26px;}/*!sc*/
+.jgTAJz li{position:relative;display:block;}/*!sc*/
+.jgTAJz .hoverable{display:inline-block;}/*!sc*/
+.jgTAJz .selected{outline-style:solid;outline-width:1px;outline-style:dotted;}/*!sc*/
+.jgTAJz .collapsed>.collapsible{display:none;}/*!sc*/
+.jgTAJz .ellipsis{display:none;}/*!sc*/
+.jgTAJz .collapsed>.ellipsis{display:inherit;}/*!sc*/
+data-styled.g51[id="sc-jNDflC"]{content:"jgTAJz,"}/*!sc*/
+.kgKexQ{padding:0.9em;background-color:rgba(38,50,56,0.4);margin:0 0 10px 0;display:block;font-family:Montserrat,sans-serif;font-size:0.929em;line-height:1.5em;}/*!sc*/
+data-styled.g52[id="sc-dPqFhK"]{content:"kgKexQ,"}/*!sc*/
+.BuCyN{font-family:Montserrat,sans-serif;font-size:12px;position:absolute;z-index:1;top:-11px;left:12px;font-weight:600;color:rgba(255,255,255,0.7);}/*!sc*/
+data-styled.g53[id="sc-bBzIOb"]{content:"BuCyN,"}/*!sc*/
+.bMFMGt{position:relative;}/*!sc*/
+data-styled.g54[id="sc-cNSlRw"]{content:"bMFMGt,"}/*!sc*/
+.jUCYlq{margin-top:15px;}/*!sc*/
+data-styled.g57[id="sc-hUheUT"]{content:"jUCYlq,"}/*!sc*/
+.jMRTsl{vertical-align:middle;font-size:13px;line-height:20px;}/*!sc*/
+data-styled.g59[id="sc-gSILEF"]{content:"jMRTsl,"}/*!sc*/
+.NncTE{color:rgba(102,102,102,0.9);}/*!sc*/
+data-styled.g60[id="sc-lbpDNm"]{content:"NncTE,"}/*!sc*/
+.kUjPnZ{color:#666;}/*!sc*/
+data-styled.g61[id="sc-iNyHtD"]{content:"kUjPnZ,"}/*!sc*/
+.dHYagA{color:#d41f1c;font-size:0.9em;font-weight:normal;margin-left:20px;line-height:1;}/*!sc*/
+data-styled.g63[id="sc-eIYgEQ"]{content:"dHYagA,"}/*!sc*/
+.dxUlgv{border-radius:2px;background-color:rgba(54,165,255,0.05);color:rgba(0,114,207,0.9);margin:0 5px;padding:0 5px;border:1px solid rgba(0,114,207,0.1);}/*!sc*/
+.sc-cljLBy+.sc-cljLBy{margin-left:0;}/*!sc*/
+data-styled.g69[id="sc-cljLBy"]{content:"dxUlgv,"}/*!sc*/
+.eBagBg{margin:1em 0;}/*!sc*/
+.eBagBg a{text-decoration:underline;color:#0072cf;}/*!sc*/
+.eBagBg a:visited{color:#0072cf;}/*!sc*/
+.eBagBg a:hover{color:#36a5ff;text-decoration:underline;}/*!sc*/
+data-styled.g71[id="sc-FBvLw"]{content:"eBagBg,"}/*!sc*/
+.gujxbq:after{content:' and ';font-weight:normal;}/*!sc*/
+.gujxbq:last-child:after{content:none;}/*!sc*/
+.gujxbq a{text-decoration:underline;color:#0072cf;}/*!sc*/
+.gujxbq a:visited{color:#0072cf;}/*!sc*/
+.gujxbq a:hover{color:#36a5ff;text-decoration:underline;}/*!sc*/
+data-styled.g82[id="sc-hPfayn"]{content:"gujxbq,"}/*!sc*/
+.fWJocX{white-space:nowrap;}/*!sc*/
+.fWJocX:after{content:' or ';white-space:pre;}/*!sc*/
+.fWJocX:last-child:after,.fWJocX:only-child:after{content:none;}/*!sc*/
+.fWJocX a{text-decoration:underline;color:#0072cf;}/*!sc*/
+.fWJocX a:visited{color:#0072cf;}/*!sc*/
+.fWJocX a:hover{color:#36a5ff;text-decoration:underline;}/*!sc*/
+data-styled.g83[id="sc-dtnsVa"]{content:"fWJocX,"}/*!sc*/
+.jdqJPb{flex:1 1 auto;cursor:pointer;}/*!sc*/
+data-styled.g84[id="sc-dalEhJ"]{content:"jdqJPb,"}/*!sc*/
+.cVAkzL{width:75%;text-overflow:ellipsis;border-radius:4px;overflow:hidden;}/*!sc*/
+@media screen and (max-width: 50rem){.cVAkzL{margin-top:10px;}}/*!sc*/
+data-styled.g85[id="sc-jTPGds"]{content:"cVAkzL,"}/*!sc*/
+.kEkHzF{display:inline-block;margin:0;}/*!sc*/
+data-styled.g86[id="sc-jQQpTv"]{content:"kEkHzF,"}/*!sc*/
+.kGZLat{width:100%;display:flex;margin:1em 0;flex-direction:row;}/*!sc*/
+@media screen and (max-width: 50rem){.kGZLat{flex-direction:column;}}/*!sc*/
+data-styled.g87[id="sc-fuYIqi"]{content:"kGZLat,"}/*!sc*/
+.cBgvIi{margin-top:0;margin-bottom:0.5em;}/*!sc*/
+data-styled.g93[id="sc-ctiVdb"]{content:"cBgvIi,"}/*!sc*/
+.ldPigm::before{content:'|';display:inline-block;opacity:0.5;width:15px;text-align:center;}/*!sc*/
+.ldPigm:last-child::after{display:none;}/*!sc*/
+data-styled.g95[id="sc-brKBMN"]{content:"ldPigm,"}/*!sc*/
+.iVyheB{overflow:hidden;}/*!sc*/
+data-styled.g96[id="sc-gILgRS"]{content:"iVyheB,"}/*!sc*/
+.juJQo{display:flex;flex-wrap:wrap;margin-left:-15px;}/*!sc*/
+data-styled.g97[id="sc-euUkyj"]{content:"juJQo,"}/*!sc*/
+.igFfOW{max-height:260px;max-width:260px;padding:20px;width:100%;display:block;}/*!sc*/
+data-styled.g98[id="sc-fHmNBE"]{content:"igFfOW,"}/*!sc*/
+.hLTFJP{text-align:center;}/*!sc*/
+data-styled.g99[id="sc-dtvRhV"]{content:"hLTFJP,"}/*!sc*/
+.dTEQmd{display:inline-block;}/*!sc*/
+data-styled.g100[id="sc-dlgOLa"]{content:"dTEQmd,"}/*!sc*/
+.gKxeyR{width:9ex;display:inline-block;height:13px;line-height:13px;background-color:#333;border-radius:3px;background-repeat:no-repeat;background-position:6px 4px;font-size:7px;font-family:Verdana,sans-serif;color:white;text-transform:uppercase;text-align:center;font-weight:bold;vertical-align:middle;margin-right:6px;margin-top:2px;}/*!sc*/
+.gKxeyR.get{background-color:#2F8132;}/*!sc*/
+.gKxeyR.post{background-color:#186FAF;}/*!sc*/
+.gKxeyR.put{background-color:#95507c;}/*!sc*/
+.gKxeyR.options{background-color:#947014;}/*!sc*/
+.gKxeyR.patch{background-color:#bf581d;}/*!sc*/
+.gKxeyR.delete{background-color:#cc3333;}/*!sc*/
+.gKxeyR.basic{background-color:#707070;}/*!sc*/
+.gKxeyR.link{background-color:#07818F;}/*!sc*/
+.gKxeyR.head{background-color:#A23DAD;}/*!sc*/
+.gKxeyR.hook{background-color:#0072cf;}/*!sc*/
+.gKxeyR.schema{background-color:#707070;}/*!sc*/
+data-styled.g101[id="sc-XpSrr"]{content:"gKxeyR,"}/*!sc*/
+.dqIuaF{margin:0;padding:0;}/*!sc*/
+.dqIuaF:first-child{padding-bottom:32px;}/*!sc*/
+.sc-ilnrqe .sc-ilnrqe{font-size:0.929em;}/*!sc*/
+.gTfiRs{margin:0;padding:0;display:none;}/*!sc*/
+.gTfiRs:first-child{padding-bottom:32px;}/*!sc*/
+.sc-ilnrqe .sc-ilnrqe{font-size:0.929em;}/*!sc*/
+data-styled.g102[id="sc-ilnrqe"]{content:"dqIuaF,gTfiRs,"}/*!sc*/
+.cQETmj{list-style:none inside none;overflow:hidden;text-overflow:ellipsis;padding:0;}/*!sc*/
+data-styled.g103[id="sc-uMZhz"]{content:"cQETmj,"}/*!sc*/
+.jWCnSg{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;font-size:0.929em;text-transform:none;background-color:#fafafa;}/*!sc*/
+.jWCnSg:hover{color:#0072cf;background-color:#e1e1e1;}/*!sc*/
+.jWCnSg .sc-dYjPD{height:1.5em;width:1.5em;}/*!sc*/
+.jWCnSg .sc-dYjPD polygon{fill:#333333;}/*!sc*/
+.lhfdK{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;background-color:#fafafa;}/*!sc*/
+.lhfdK:hover{color:#0072cf;background-color:#ededed;}/*!sc*/
+.lhfdK .sc-dYjPD{height:1.5em;width:1.5em;}/*!sc*/
+.lhfdK .sc-dYjPD polygon{fill:#333333;}/*!sc*/
+data-styled.g104[id="sc-bitxrY"]{content:"jWCnSg,lhfdK,"}/*!sc*/
+.ehBKwY{display:inline-block;vertical-align:middle;width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g105[id="sc-eHoOIp"]{content:"ehBKwY,"}/*!sc*/
+.gtBLyN{font-size:0.8em;margin-top:10px;text-align:center;position:fixed;width:260px;bottom:0;background:#fafafa;}/*!sc*/
+.gtBLyN a,.gtBLyN a:visited,.gtBLyN a:hover{color:#333333!important;padding:5px 0;border-top:1px solid #e1e1e1;text-decoration:none;display:flex;align-items:center;justify-content:center;}/*!sc*/
+.gtBLyN img{width:15px;margin-right:5px;}/*!sc*/
+@media screen and (max-width: 50rem){.gtBLyN{width:100%;}}/*!sc*/
+data-styled.g106[id="sc-hAkAFK"]{content:"gtBLyN,"}/*!sc*/
+.fYxpnv{cursor:pointer;position:relative;margin-bottom:5px;}/*!sc*/
+data-styled.g112[id="sc-fXwuWv"]{content:"fYxpnv,"}/*!sc*/
+.dsIRaZ{font-family:Courier,monospace;margin-left:10px;flex:1;overflow-x:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g113[id="sc-FpjRO"]{content:"dsIRaZ,"}/*!sc*/
+.jzaJhV{outline:0;color:inherit;width:100%;text-align:left;cursor:pointer;padding:10px 30px 10px 20px;border-radius:4px 4px 0 0;background-color:#11171a;display:flex;white-space:nowrap;align-items:center;border:1px solid transparent;border-bottom:0;transition:border-color 0.25s ease;}/*!sc*/
+.jzaJhV ..sc-FpjRO{color:#ffffff;}/*!sc*/
+.jzaJhV:focus{box-shadow:inset 0 2px 2px rgba(0, 0, 0, 0.45),0 2px 0 rgba(128, 128, 128, 0.25);}/*!sc*/
+data-styled.g114[id="sc-jWMFtl"]{content:"jzaJhV,"}/*!sc*/
+.hOENFc{font-size:0.929em;line-height:20px;background-color:#186FAF;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+data-styled.g115[id="sc-eEFuoE"]{content:"hOENFc,"}/*!sc*/
+.tUxhh{position:absolute;width:100%;z-index:100;background:#fafafa;color:#263238;box-sizing:border-box;box-shadow:0 0 6px rgba(0, 0, 0, 0.33);overflow:hidden;border-bottom-left-radius:4px;border-bottom-right-radius:4px;transition:all 0.25s ease;visibility:hidden;transform:translateY(-50%) scaleY(0);}/*!sc*/
+data-styled.g116[id="sc-fmtEmb"]{content:"tUxhh,"}/*!sc*/
+.bAnPPh{padding:10px;}/*!sc*/
+data-styled.g117[id="sc-ljIcGq"]{content:"bAnPPh,"}/*!sc*/
+.hPoCls{padding:5px;border:1px solid #ccc;background:#fff;word-break:break-all;color:#0072cf;}/*!sc*/
+.hPoCls >span{color:#333333;}/*!sc*/
+data-styled.g118[id="sc-jlJOIR"]{content:"hPoCls,"}/*!sc*/
+.bxWqzP{text-transform:lowercase;margin-left:0;line-height:1.5em;}/*!sc*/
+data-styled.g119[id="sc-dTCDEk"]{content:"bxWqzP,"}/*!sc*/
+.iSTZHA{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#1d8127;background-color:rgba(29,129,39,0.07);}/*!sc*/
+.iSTZHA:focus{outline:auto #1d8127;}/*!sc*/
+.cKkXxa{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#d41f1c;background-color:rgba(212,31,28,0.07);}/*!sc*/
+.cKkXxa:focus{outline:auto #d41f1c;}/*!sc*/
+.fRVDqI{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#d41f1c;background-color:rgba(212,31,28,0.07);cursor:default;}/*!sc*/
+.fRVDqI:focus{outline:auto #d41f1c;}/*!sc*/
+.fRVDqI::before{content:"—";font-weight:bold;width:1.5em;text-align:center;display:inline-block;vertical-align:top;}/*!sc*/
+.fRVDqI:focus{outline:0;}/*!sc*/
+data-styled.g121[id="sc-cbuLjy"]{content:"iSTZHA,cKkXxa,fRVDqI,"}/*!sc*/
+.cqDULz{vertical-align:top;}/*!sc*/
+data-styled.g124[id="sc-fXmTIC"]{content:"cqDULz,"}/*!sc*/
+.hgNHCh{font-size:1.3em;padding:0.2em 0;margin:3em 0 1.1em;color:#333333;font-weight:normal;}/*!sc*/
+data-styled.g125[id="sc-fINhYD"]{content:"hgNHCh,"}/*!sc*/
+.ktZmcf{margin-bottom:30px;}/*!sc*/
+data-styled.g130[id="sc-iFUzrA"]{content:"ktZmcf,"}/*!sc*/
+.hhSDrf{user-select:none;width:20px;height:20px;align-self:center;display:flex;flex-direction:column;color:#0072cf;}/*!sc*/
+data-styled.g131[id="sc-iruNHB"]{content:"hhSDrf,"}/*!sc*/
+.cczbHe{width:260px;background-color:#fafafa;overflow:hidden;display:flex;flex-direction:column;backface-visibility:hidden;height:100vh;position:sticky;position:-webkit-sticky;top:0;}/*!sc*/
+@media screen and (max-width: 50rem){.cczbHe{position:fixed;z-index:20;width:100%;background:#fafafa;display:none;}}/*!sc*/
+@media print{.cczbHe{display:none;}}/*!sc*/
+data-styled.g132[id="sc-eVYbGh"]{content:"cczbHe,"}/*!sc*/
+.ePcPSH{outline:none;user-select:none;background-color:#f2f2f2;color:#0072cf;display:none;cursor:pointer;position:fixed;right:20px;z-index:100;border-radius:50%;box-shadow:0 0 20px rgba(0, 0, 0, 0.3);bottom:44px;width:60px;height:60px;padding:0 20px;}/*!sc*/
+@media screen and (max-width: 50rem){.ePcPSH{display:flex;}}/*!sc*/
+.ePcPSH svg{color:#0065FB;}/*!sc*/
+@media print{.ePcPSH{display:none;}}/*!sc*/
+data-styled.g133[id="sc-kTmAaw"]{content:"ePcPSH,"}/*!sc*/
+.jetsmW{font-family:Roboto,sans-serif;font-size:14px;font-weight:400;line-height:1.5em;color:#333333;display:flex;position:relative;text-align:left;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;text-rendering:optimizeSpeed!important;tap-highlight-color:rgba(0, 0, 0, 0);text-size-adjust:100%;}/*!sc*/
+.jetsmW *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(255, 255, 255, 0);}/*!sc*/
+data-styled.g134[id="sc-dwkskT"]{content:"jetsmW,"}/*!sc*/
+.ldXCvc{z-index:1;position:relative;overflow:hidden;width:calc(100% - 260px);contain:layout;}/*!sc*/
+@media print,screen and (max-width: 50rem){.ldXCvc{width:100%;}}/*!sc*/
+data-styled.g135[id="sc-jtyQFi"]{content:"ldXCvc,"}/*!sc*/
+.bjzTxL{background:#263238;position:absolute;top:0;bottom:0;right:0;width:calc((100% - 260px) * 0.4);}/*!sc*/
+@media print,screen and (max-width: 75rem){.bjzTxL{display:none;}}/*!sc*/
+data-styled.g136[id="sc-ekVkVN"]{content:"bjzTxL,"}/*!sc*/
+.uMSfb{padding:5px 0;}/*!sc*/
+data-styled.g137[id="sc-kijJqc"]{content:"uMSfb,"}/*!sc*/
+.fTcICO{width:calc(100% - 40px);box-sizing:border-box;margin:0 20px;padding:5px 10px 5px 20px;border:0;border-bottom:1px solid #e1e1e1;font-family:Roboto,sans-serif;font-weight:bold;font-size:13px;color:#333333;background-color:transparent;outline:none;}/*!sc*/
+data-styled.g138[id="sc-cLhBAz"]{content:"fTcICO,"}/*!sc*/
+.kAmnlO{position:absolute;left:20px;height:1.8em;width:0.9em;}/*!sc*/
+.kAmnlO path{fill:#333333;}/*!sc*/
+data-styled.g139[id="sc-iIvZUO"]{content:"kAmnlO,"}/*!sc*/
+</style>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+</head>
+
+<body>
+  
+      <div id="redoc"><link rel="preload" as="image" href="images/ilm-logo.svg"/><div class="sc-dwkskT jetsmW redoc-wrap"><div class="sc-eVYbGh cczbHe menu-content" style="top:0px;height:calc(100vh - 0px)"><div class="sc-dtvRhV hLTFJP"><a href="https://www.otilm.com" class="sc-dlgOLa dTEQmd"><img src="images/ilm-logo.svg" alt="logo" class="sc-fHmNBE igFfOW"/></a></div><div role="search" class="sc-kijJqc uMSfb"><svg class="sc-iIvZUO kAmnlO search-icon" version="1.1" viewBox="0 0 1000 1000" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px"><path d="M968.2,849.4L667.3,549c83.9-136.5,66.7-317.4-51.7-435.6C477.1-25,252.5-25,113.9,113.4c-138.5,138.3-138.5,362.6,0,501C219.2,730.1,413.2,743,547.6,666.5l301.9,301.4c43.6,43.6,76.9,14.9,104.2-12.4C981,928.3,1011.8,893,968.2,849.4z M524.5,522c-88.9,88.7-233,88.7-321.8,0c-88.9-88.7-88.9-232.6,0-321.3c88.9-88.7,233-88.7,321.8,0C613.4,289.4,613.4,433.3,524.5,522z"></path></svg><input placeholder="Search..." aria-label="Search" type="text" class="sc-cLhBAz fTcICO search-input" value=""/></div><div class="sc-kLEbxe iOXjCz scrollbar-container undefined"><ul role="menu" class="sc-ilnrqe dqIuaF"><li tabindex="0" depth="1" data-item-id="tag/Inspection" role="menuitem" aria-label="Inspection" aria-expanded="false" class="sc-uMZhz cQETmj"><label class="sc-bitxrY jWCnSg -depth1"><span width="calc(100% - 38px)" title="Inspection" class="sc-eHoOIp ehBKwY">Inspection</span><svg class="sc-dYjPD kdgFPv" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul role="menu" class="sc-ilnrqe gTfiRs"><li tabindex="0" depth="2" data-item-id="tag/Inspection/operation/inspect" role="menuitem" aria-label="Read an uploaded file" aria-expanded="false" class="sc-uMZhz cQETmj"><label class="sc-bitxrY lhfdK -depth2"><span type="post" class="sc-XpSrr gKxeyR operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eHoOIp ehBKwY">Read an uploaded file</span></label></li></ul></li></ul><div class="sc-hAkAFK gtBLyN"><a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">API docs by Redocly</a></div></div></div><div class="sc-kTmAaw ePcPSH"><div class="sc-iruNHB hhSDrf"><svg class="" style="transform:translate(2px, -4px) rotate(180deg);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg><svg class="" style="transform:translate(2px, 4px);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg></div></div><div class="sc-jtyQFi ldXCvc api-content"><div class="sc-eCQgVK jleRXN"><div class="sc-iCECmn lhRBUS"><div class="sc-hKVpXn kktglN api-info"><h1 class="sc-fuztkK sc-ctiVdb eRMVDe cBgvIi">Inspection API<!-- --> <span>(<!-- -->2.20.0-SNAPSHOT<!-- -->)</span></h1><p>Download OpenAPI specification<!-- -->:</p><div class="sc-iJSMbW sc-cBEgGa fiNpIH dLtybb"><div class="sc-gILgRS iVyheB"><div class="sc-euUkyj juJQo"><span class="sc-brKBMN ldPigm">ILM<!-- -->:<!-- --> <a href="mailto:ilm@omnitrust.com">ilm@omnitrust.com</a></span> <span class="sc-brKBMN ldPigm">URL: <a href="https://www.otilm.com">https://www.otilm.com</a></span> <span class="sc-brKBMN ldPigm">License:<!-- --> <a href="https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md">Apache License, Version 2.0</a></span> </div></div></div><div data-role="redoc-summary" html="" class="sc-iJSMbW sc-cBEgGa fiNpIH dLtybb"></div><div data-role="redoc-description" html="&lt;p&gt;REST API for reading uploaded files to report what they hold&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa fiNpIH dLtybb"><p>REST API for reading uploaded files to report what they hold</p>
+</div><div class="sc-FBvLw eBagBg"><a href="https://docs.otilm.com">ILM Documentation</a></div></div></div></div><div id="tag/Inspection" data-section-id="tag/Inspection" class="sc-eCQgVK jleRXN"><div class="sc-iCECmn lhRBUS"><div class="sc-hKVpXn kktglN"><h2 class="sc-qdQOe MOVBZ"><a class="sc-crPgjm jmoZom" href="#tag/Inspection" aria-label="tag/Inspection"></a>Inspection</h2></div></div><div class="sc-hKVpXn kmAAAV"><div class="sc-iJSMbW sc-cBEgGa fiNpIH dLtybb redoc-markdown " html="&lt;p&gt;Reading uploaded files to report what they hold&lt;/p&gt;
+"><p>Reading uploaded files to report what they hold</p>
+</div></div></div><div id="tag/Inspection/operation/inspect" data-section-id="tag/Inspection/operation/inspect" class="sc-eCQgVK grDwca"><div data-section-id="operation/inspect" id="operation/inspect" class="sc-iCECmn lhRBUS"><div class="sc-hKVpXn kktglN"><h2 class="sc-qdQOe MOVBZ"><a class="sc-crPgjm jmoZom" href="#tag/Inspection/operation/inspect" aria-label="tag/Inspection/operation/inspect"></a>Read an uploaded file<!-- --> </h2><div class="sc-iFUzrA ktZmcf"><div html="&lt;p&gt;Report what an uploaded file holds, without importing or storing anything.&lt;/p&gt;
+&lt;p&gt;The file travels base64-encoded in &lt;code&gt;file&lt;/code&gt;, like every upload in the platform, and is held in memory rather
+than written anywhere; it is never echoed in an error, since it may carry key material. Every container the
+platform understands is accepted, so a caller uploads once and then decides: PKCS#12 in any composition, a PEM bundle of certificates with at most one private
+key, a standalone PKCS#8 key, plain or encrypted, an OpenSSL traditional PEM key, an OpenSSH private key, a
+single certificate as PEM or DER, and PKCS#7. The container is recognised by its content, not by its file
+name. JKS and JCEKS stores are read too.&lt;/p&gt;
+&lt;p&gt;Nothing here has to be carried into a later operation. Each entry is reported with a reference derived from
+the entry&amp;#39;s own content, so an operation given that reference acts on that content whichever file it
+arrives with. Read a file when a user should see what is inside before anything is imported; a caller that
+already knows what it is sending does not need to.&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa fiNpIH dLtybb"><p>Report what an uploaded file holds, without importing or storing anything.</p>
+<p>The file travels base64-encoded in <code>file</code>, like every upload in the platform, and is held in memory rather
+than written anywhere; it is never echoed in an error, since it may carry key material. Every container the
+platform understands is accepted, so a caller uploads once and then decides: PKCS#12 in any composition, a PEM bundle of certificates with at most one private
+key, a standalone PKCS#8 key, plain or encrypted, an OpenSSL traditional PEM key, an OpenSSH private key, a
+single certificate as PEM or DER, and PKCS#7. The container is recognised by its content, not by its file
+name. JKS and JCEKS stores are read too.</p>
+<p>Nothing here has to be carried into a later operation. Each entry is reported with a reference derived from
+the entry&#39;s own content, so an operation given that reference acts on that content whichever file it
+arrives with. Read a file when a user should see what is inside before anything is imported; a caller that
+already knows what it is sending does not need to.</p>
+</div></div><div class="sc-fuYIqi kGZLat"><div class="sc-dalEhJ jdqJPb"><h5 class="sc-iqkkDd sc-jQQpTv jprlAr kEkHzF">Authorizations:</h5><svg class="sc-dYjPD bEEWJa" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jTPGds cVAkzL"><span class="sc-dtnsVa fWJocX"><span class="sc-hPfayn gujxbq"><i>SessionAuth</i></span></span><span class="sc-dtnsVa fWJocX"><span class="sc-hPfayn gujxbq"><i>CertificateAuth</i></span></span><span class="sc-dtnsVa fWJocX"><span class="sc-hPfayn gujxbq"><i>BearerJWTAuth</i></span></span></div></div><h5 class="sc-iqkkDd jprlAr">Request Body schema: <span class="sc-gXvOjn kxMqOs">application/json</span><div class="sc-gSILEF sc-eIYgEQ sc-dTCDEk jMRTsl dHYagA bxWqzP">required</div></h5><div html="" class="sc-iJSMbW sc-cBEgGa fiNpIH dLtybb"></div><table class="sc-hHopjF bsjUmE"><tbody><tr class=""><td kind="field" title="file" class="sc-hCcPtG sc-fFCZOx dBLOSh lcdEEX"><span class="sc-ieCSdj FQCms"></span><span class="property-name">file</span><div class="sc-gSILEF sc-eIYgEQ jMRTsl dHYagA">required</div></td><td class="sc-bjLslk hrvNJU"><div><div><span class="sc-gSILEF sc-lbpDNm jMRTsl NncTE"></span><span class="sc-gSILEF sc-iNyHtD jMRTsl kUjPnZ">string</span><span class="sc-gSILEF sc-iNyHtD jMRTsl kUjPnZ"> <!-- -->&lt;<!-- -->byte<!-- -->&gt;<!-- --> </span><span> <span class="sc-gSILEF sc-cljLBy jMRTsl dxUlgv"> <!-- -->&lt;= 6990508 characters<!-- --> </span></span></div> <div><div html="&lt;p&gt;Content of the uploaded file, base64-encoded: a container such as PKCS#12 or PEM, a standalone key, or a
+certificate. At most 5 MiB decoded. The platform holds it in memory only, never writes it anywhere and
+never echoes it in an error, since the file may carry key material.&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa fiNpIH bgdxSl"><p>Content of the uploaded file, base64-encoded: a container such as PKCS#12 or PEM, a standalone key, or a
+certificate. At most 5 MiB decoded. The platform holds it in memory only, never writes it anywhere and
+never echoes it in an error, since the file may carry key material.</p>
+</div></div></div></td></tr><tr class=""><td kind="field" title="passphrase" class="sc-hCcPtG sc-fFCZOx dBLOSh lcdEEX"><span class="sc-ieCSdj FQCms"></span><span class="property-name">passphrase</span></td><td class="sc-bjLslk hrvNJU"><div><div><span class="sc-gSILEF sc-lbpDNm jMRTsl NncTE"></span><span class="sc-gSILEF sc-iNyHtD jMRTsl kUjPnZ">string</span><span class="sc-gSILEF sc-iNyHtD jMRTsl kUjPnZ"> <!-- -->&lt;<!-- -->password<!-- -->&gt;<!-- --> </span></div> <div><div html="&lt;p&gt;Passphrase that opens the uploaded file. Absent for a file that carries no protection of its own.&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa fiNpIH bgdxSl"><p>Passphrase that opens the uploaded file. Absent for a file that carries no protection of its own.</p>
+</div></div></div></td></tr><tr class="last "><td kind="field" title="tokenProfileUuid" class="sc-hCcPtG sc-fFCZOx dBLOSh lcdEEX"><span class="sc-ieCSdj FQCms"></span><span class="property-name">tokenProfileUuid</span></td><td class="sc-bjLslk hrvNJU"><div><div><span class="sc-gSILEF sc-lbpDNm jMRTsl NncTE"></span><span class="sc-gSILEF sc-iNyHtD jMRTsl kUjPnZ">string</span></div> <div><div html="&lt;p&gt;Token profile the caller intends to import key material into. When given, each entry is reported with whether that profile can hold it.&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa fiNpIH bgdxSl"><p>Token profile the caller intends to import key material into. When given, each entry is reported with whether that profile can hold it.</p>
+</div></div></div></td></tr></tbody></table><div><h3 class="sc-fINhYD hgNHCh">Responses</h3><div><button class="sc-cbuLjy iSTZHA"><svg class="sc-dYjPD gngmNp" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fXmTIC cqDULz">200<!-- --> </strong><div html="&lt;p&gt;File read&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa sc-ciCrSJ fiNpIH iCmSTh dDDioG"><p>File read</p>
+</div></button></div><div><button class="sc-cbuLjy cKkXxa"><svg class="sc-dYjPD hJoFRR" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fXmTIC cqDULz">400<!-- --> </strong><div html="&lt;p&gt;Bad Request&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa sc-ciCrSJ fiNpIH iCmSTh dDDioG"><p>Bad Request</p>
+</div></button></div><div><button class="sc-cbuLjy fRVDqI" disabled=""><strong class="sc-fXmTIC cqDULz">401<!-- --> </strong><div html="&lt;p&gt;Unauthorized&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa sc-ciCrSJ fiNpIH iCmSTh dDDioG"><p>Unauthorized</p>
+</div></button></div><div><button class="sc-cbuLjy cKkXxa"><svg class="sc-dYjPD hJoFRR" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fXmTIC cqDULz">403<!-- --> </strong><div html="&lt;p&gt;Forbidden&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa sc-ciCrSJ fiNpIH iCmSTh dDDioG"><p>Forbidden</p>
+</div></button></div><div><button class="sc-cbuLjy cKkXxa"><svg class="sc-dYjPD hJoFRR" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fXmTIC cqDULz">404<!-- --> </strong><div html="&lt;p&gt;Token profile not found&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa sc-ciCrSJ fiNpIH iCmSTh dDDioG"><p>Token profile not found</p>
+</div></button></div><div><button class="sc-cbuLjy cKkXxa"><svg class="sc-dYjPD hJoFRR" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-fXmTIC cqDULz">422<!-- --> </strong><div html="&lt;p&gt;Unprocessable Entity, including a file no supported container format explains, a file the supplied passphrase does not open, and a file beyond the platform&amp;#39;s limits&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa sc-ciCrSJ fiNpIH iCmSTh dDDioG"><p>Unprocessable Entity, including a file no supported container format explains, a file the supplied passphrase does not open, and a file beyond the platform&#39;s limits</p>
+</div></button></div><div><button class="sc-cbuLjy fRVDqI" disabled=""><strong class="sc-fXmTIC cqDULz">500<!-- --> </strong><div html="&lt;p&gt;Internal Server Error&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa sc-ciCrSJ fiNpIH iCmSTh dDDioG"><p>Internal Server Error</p>
+</div></button></div></div></div><div class="sc-jSppWd sc-gKkgUA fpMlmc bdQQyo"><div class="sc-fXwuWv fYxpnv"><button class="sc-jWMFtl jzaJhV"><span type="post" class="sc-eEFuoE hOENFc http-verb post">post</span><span class="sc-FpjRO dsIRaZ">/v1/inspections</span><svg class="sc-dYjPD bQKUih" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-fmtEmb tUxhh"><div class="sc-ljIcGq bAnPPh"><div html="&lt;p&gt;ILM Demo server&lt;/p&gt;
+" class="sc-iJSMbW sc-cBEgGa fiNpIH bgdxSl"><p>ILM Demo server</p>
+</div><div tabindex="0" role="button"><div class="sc-jlJOIR hPoCls"><span>https://demo.otilm.com/api</span>/v1/inspections</div></div></div></div></div><div><h3 class="sc-kEbgWM iamDfj"> <!-- -->Request samples<!-- --> </h3><div class="sc-cxxQMU fcGuQW" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="react-tabs__tab react-tabs__tab--selected" role="tab" id="tab_R_2aeq_0" aria-selected="true" aria-disabled="false" aria-controls="panel_R_2aeq_0" tabindex="0" data-rttab="true">Payload</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel_R_2aeq_0" aria-labelledby="tab_R_2aeq_0"><div><div class="sc-cNSlRw bMFMGt"><span class="sc-bBzIOb BuCyN">Content type</span><div class="sc-dPqFhK kgKexQ">application/json</div></div><div class="sc-hUheUT jUCYlq"><div class="sc-cTZdpT hHzuQA"><div class="sc-giQkEn dzKJV"><button><div class="sc-jcgtOs feYhXE">Copy</div></button></div><div tabindex="0" class="sc-iJSMbW fiNpIH sc-jNDflC jgTAJz"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"file"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"passphrase"</span>: <span class="token string">&quot;pa$$word&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"tokenProfileUuid"</span>: <span class="token string">&quot;string&quot;</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div><div><h3 class="sc-kEbgWM iamDfj"> <!-- -->Response samples<!-- --> </h3><div class="sc-cxxQMU fcGuQW" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab_R_2eeq_0" aria-selected="true" aria-disabled="false" aria-controls="panel_R_2eeq_0" tabindex="0" data-rttab="true">200</li><li class="tab-error" role="tab" id="tab_R_2eeq_1" aria-selected="false" aria-disabled="false" aria-controls="panel_R_2eeq_1" data-rttab="true">400</li><li class="tab-error" role="tab" id="tab_R_2eeq_2" aria-selected="false" aria-disabled="false" aria-controls="panel_R_2eeq_2" data-rttab="true">403</li><li class="tab-error" role="tab" id="tab_R_2eeq_3" aria-selected="false" aria-disabled="false" aria-controls="panel_R_2eeq_3" data-rttab="true">404</li><li class="tab-error" role="tab" id="tab_R_2eeq_4" aria-selected="false" aria-disabled="false" aria-controls="panel_R_2eeq_4" data-rttab="true">422</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel_R_2eeq_0" aria-labelledby="tab_R_2eeq_0"><div><div class="sc-cNSlRw bMFMGt"><span class="sc-bBzIOb BuCyN">Content type</span><div class="sc-dPqFhK kgKexQ">application/json</div></div><div class="sc-hUheUT jUCYlq"><div class="sc-cTZdpT hHzuQA"><div class="sc-giQkEn dzKJV"><button><div class="sc-jcgtOs feYhXE">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div tabindex="0" class="sc-iJSMbW fiNpIH sc-jNDflC jgTAJz"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"containerDigest"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"entries"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"entryReference"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"kind"</span>: <span class="token string">&quot;keyPairWithChain&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"alias"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"subjectDn"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"issuerDn"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"serialNumber"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"fingerprint"</span>: <span class="token string">&quot;string&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"notBefore"</span>: <span class="token string">&quot;2019-08-24T14:15:22Z&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"notAfter"</span>: <span class="token string">&quot;2019-08-24T14:15:22Z&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"subjectAlternativeNames"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><span class="token string">&quot;string&quot;</span></div></li></ul><span class="token punctuation">]</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"keyAlgorithm"</span>: <span class="token string">&quot;RSA&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"keyLength"</span>: <span class="token number">0</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"chainLength"</span>: <span class="token number">0</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"importable"</span>: <span class="token boolean">true</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"notImportableReason"</span>: <span class="token string">&quot;string&quot;</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_2eeq_1" aria-labelledby="tab_R_2eeq_1"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_2eeq_2" aria-labelledby="tab_R_2eeq_2"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_2eeq_3" aria-labelledby="tab_R_2eeq_3"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel_R_2eeq_4" aria-labelledby="tab_R_2eeq_4"></div></div></div></div></div></div></div><div class="sc-ekVkVN bjzTxL"></div></div></div>
+      <script>
+      const __redoc_state = {"menu":{"activeItemIdx":-1},"spec":{"data":{"openapi":"3.1.0","info":{"title":"Inspection API","description":"REST API for reading uploaded files to report what they hold","contact":{"name":"ILM","url":"https://www.otilm.com","email":"ilm@omnitrust.com"},"license":{"name":"Apache License, Version 2.0","url":"https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md"},"version":"2.20.0-SNAPSHOT","x-logo":{"url":"images/ilm-logo.svg"}},"externalDocs":{"description":"ILM Documentation","url":"https://docs.otilm.com"},"servers":[{"url":"https://demo.otilm.com/api","description":"ILM Demo server"}],"tags":[{"name":"Inspection","description":"Reading uploaded files to report what they hold"}],"paths":{"/v1/inspections":{"post":{"tags":["Inspection"],"summary":"Read an uploaded file","description":"Report what an uploaded file holds, without importing or storing anything.\n\nThe file travels base64-encoded in `file`, like every upload in the platform, and is held in memory rather\nthan written anywhere; it is never echoed in an error, since it may carry key material. Every container the\nplatform understands is accepted, so a caller uploads once and then decides: PKCS#12 in any composition, a PEM bundle of certificates with at most one private\nkey, a standalone PKCS#8 key, plain or encrypted, an OpenSSL traditional PEM key, an OpenSSH private key, a\nsingle certificate as PEM or DER, and PKCS#7. The container is recognised by its content, not by its file\nname. JKS and JCEKS stores are read too.\n\nNothing here has to be carried into a later operation. Each entry is reported with a reference derived from\nthe entry's own content, so an operation given that reference acts on that content whichever file it\narrives with. Read a file when a user should see what is inside before anything is imported; a caller that\nalready knows what it is sending does not need to.\n","operationId":"inspect","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/InspectionRequestDto"}}},"required":true},"responses":{"200":{"description":"File read","content":{"application/json":{"schema":{"$ref":"#/components/schemas/InspectionResponseDto"}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorMessageDto"}}}},"401":{"description":"Unauthorized"},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AuthenticationServiceExceptionDto"}}}},"404":{"description":"Token profile not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ErrorMessageDto"}}}},"422":{"description":"Unprocessable Entity, including a file no supported container format explains, a file the supplied passphrase does not open, and a file beyond the platform's limits","content":{"application/json":{"schema":{"type":"array","items":{"type":"string"}},"example":["Error Message 1","Error Message 2"]}}},"500":{"description":"Internal Server Error"}},"security":[{"SessionAuth":[]},{"CertificateAuth":[]},{"BearerJWTAuth":[]}]}}},"components":{"schemas":{"InspectionRequestDto":{"type":"object","description":"The file to read and the options for reading it","properties":{"file":{"type":"string","format":"byte","description":"Content of the uploaded file, base64-encoded: a container such as PKCS#12 or PEM, a standalone key, or a\ncertificate. At most 5 MiB decoded. The platform holds it in memory only, never writes it anywhere and\nnever echoes it in an error, since the file may carry key material.\n","maxLength":6990508,"writeOnly":true},"passphrase":{"type":"string","format":"password","description":"Passphrase that opens the uploaded file. Absent for a file that carries no protection of its own.","writeOnly":true},"tokenProfileUuid":{"type":"string","description":"Token profile the caller intends to import key material into. When given, each entry is reported with whether that profile can hold it."}},"required":["file"]},"ErrorMessageDto":{"type":"object","properties":{"message":{"type":"string","description":"Error message detail","examples":["Error message"]}},"required":["message"]},"AuthenticationServiceExceptionDto":{"type":"object","properties":{"statusCode":{"type":"integer","format":"int32","description":"Status code of the HTTP Request"},"code":{"type":"string","description":"Code of the result"},"message":{"type":"string","description":"Exception message"}},"required":["code","message","statusCode"]},"InspectedEntryDto":{"type":"object","description":"One entry found in an uploaded file","properties":{"entryReference":{"type":"string","description":"Reference for this entry, used to select it when importing.\n\nThe lowercase hex SHA-256 of the entry's DER: of the certificate for a certificate, of the\n`SubjectPublicKeyInfo` for a key pair or private key, of the key as the file holds it for a secret key or\na key of an algorithm the platform does not support, and of the request for a certificate request. It is\nnever derived from the entry's position in the file, so a reference cannot come to mean a different entry\nbetween inspecting and importing.\n"},"kind":{"$ref":"#/components/schemas/InspectedEntryKind","description":"What this entry turned out to be"},"alias":{"type":"string","description":"The name the file gives the entry, such as a keystore alias or a PKCS#12 friendly name"},"subjectDn":{"type":"string","description":"Subject distinguished name of the entry's certificate"},"issuerDn":{"type":"string","description":"Issuer distinguished name of the entry's certificate"},"serialNumber":{"type":"string","description":"Serial number of the entry's certificate"},"fingerprint":{"type":"string","description":"SHA-256 fingerprint of the entry's certificate"},"notBefore":{"type":"string","format":"date-time","description":"Start of the certificate's validity"},"notAfter":{"type":"string","format":"date-time","description":"End of the certificate's validity"},"subjectAlternativeNames":{"type":"array","description":"Subject alternative names of the entry's certificate","items":{"type":"string"}},"keyAlgorithm":{"$ref":"#/components/schemas/KeyAlgorithm","description":"Algorithm of the entry's key, where it can be determined without opening protected material"},"keyLength":{"type":"integer","format":"int32","description":"Length of the entry's key in bits, where it can be determined"},"chainLength":{"type":"integer","format":"int32","description":"Number of certificates found with this entry, including the entry's own certificate"},"importable":{"type":"boolean","description":"Whether the entry's key material can be imported into the token profile the inspection named. Absent when the inspection named no token profile."},"notImportableReason":{"type":"string","description":"Why the entry cannot be imported, when it cannot"}},"required":["entryReference","kind"]},"InspectedEntryKind":{"type":"string","description":"What one entry of an uploaded file turned out to be. The kind decides what can be done with the entry: only a key needs somewhere to be stored, and only a certificate can go straight into the inventory.","enum":["keyPairWithChain","certificate","privateKey","secretKey","signingRequest"]},"InspectionResponseDto":{"type":"object","description":"Entries found in an uploaded file","properties":{"containerDigest":{"type":"string","description":"The lowercase hex SHA-256 of the uploaded file, so a caller can tell two uploads apart and confirm the file it is about to import is the one it read"},"entries":{"type":"array","description":"Entries found in the file","items":{"$ref":"#/components/schemas/InspectedEntryDto"}}},"required":["containerDigest","entries"]},"KeyAlgorithm":{"type":"string","enum":["RSA","ECDSA","FALCON","ML-DSA","SLH-DSA","ML-KEM","CRYSTALS-Dilithium","SPHINCS+","AES","Unknown"]}},"securitySchemes":{"SessionAuth":{"type":"apiKey","description":"Session-based authentication with session ID stored in 'session-id' cookie","name":"session-id","in":"cookie"},"CertificateAuth":{"type":"apiKey","description":"Base64 encoded X.509 certificate passed in header","name":"ssl-client-cert","in":"header"},"BearerJWTAuth":{"type":"http","scheme":"Bearer","bearerFormat":"JWT"}}}}},"searchIndex":{"store":["tag/Inspection","tag/Inspection/operation/inspect"],"index":{"version":"2.3.9","fields":["title","description"],"fieldVectors":[["title/0",[0,0.871]],["description/0",[1,0.212,2,0.212,3,0.212,4,0.289,5,0.289]],["title/1",[1,0.111,2,0.111,3,0.111]],["description/1",[1,0.146,2,0.176,3,0.22,4,0.2,5,0.133,6,0.506,7,0.76,8,0.76,9,0.76,10,0.506,11,0.506,12,0.76,13,0.506,14,0.506,15,0.506,16,0.506,17,0.506,18,0.506,19,0.506,20,0.76,21,1.087,22,0.506,23,0.76,24,0.506,25,0.506,26,0.76,27,0.506,28,0.506,29,0.506,30,0.506,31,0.912,32,0.506,33,0.76,34,0.506,35,0.76,36,0.506,37,0.506,38,0.506,39,0.506,40,0.506,41,0.506,42,0.506,43,0.506,44,0.506,45,0.506,46,0.506,47,0.912,48,0.506,49,0.506,50,0.506,51,0.506,52,0.506,53,0.506,54,0.76,55,0.506,56,0.506,57,0.76,58,0.506,59,0.506,60,0.506,61,0.506,62,0.506,63,0.506,64,0.506,65,0.506,66,0.506,67,0.506,68,0.506,69,0.506,70,0.506,71,0.506,72,0.506]]],"invertedIndex":[["accept",{"_index":25,"title":{},"description":{"1":{}}}],["act",{"_index":61,"title":{},"description":{"1":{}}}],["alreadi",{"_index":68,"title":{},"description":{"1":{}}}],["anyth",{"_index":9,"title":{},"description":{"1":{}}}],["anywher",{"_index":16,"title":{},"description":{"1":{}}}],["arriv",{"_index":63,"title":{},"description":{"1":{}}}],["base64-encod",{"_index":11,"title":{},"description":{"1":{}}}],["befor",{"_index":67,"title":{},"description":{"1":{}}}],["bundl",{"_index":32,"title":{},"description":{"1":{}}}],["caller",{"_index":26,"title":{},"description":{"1":{}}}],["carri",{"_index":20,"title":{},"description":{"1":{}}}],["certif",{"_index":33,"title":{},"description":{"1":{}}}],["composit",{"_index":30,"title":{},"description":{"1":{}}}],["contain",{"_index":23,"title":{},"description":{"1":{}}}],["content",{"_index":47,"title":{},"description":{"1":{}}}],["decid",{"_index":28,"title":{},"description":{"1":{}}}],["der",{"_index":44,"title":{},"description":{"1":{}}}],["deriv",{"_index":58,"title":{},"description":{"1":{}}}],["each",{"_index":55,"title":{},"description":{"1":{}}}],["echo",{"_index":18,"title":{},"description":{"1":{}}}],["encrypt",{"_index":39,"title":{},"description":{"1":{}}}],["entri",{"_index":56,"title":{},"description":{"1":{}}}],["entry'",{"_index":59,"title":{},"description":{"1":{}}}],["error",{"_index":19,"title":{},"description":{"1":{}}}],["file",{"_index":3,"title":{"1":{}},"description":{"0":{},"1":{}}}],["given",{"_index":60,"title":{},"description":{"1":{}}}],["held",{"_index":13,"title":{},"description":{"1":{}}}],["here",{"_index":52,"title":{},"description":{"1":{}}}],["hold",{"_index":5,"title":{},"description":{"0":{},"1":{}}}],["import",{"_index":7,"title":{},"description":{"1":{}}}],["insid",{"_index":66,"title":{},"description":{"1":{}}}],["inspect",{"_index":0,"title":{"0":{}},"description":{}}],["jcek",{"_index":50,"title":{},"description":{"1":{}}}],["jk",{"_index":49,"title":{},"description":{"1":{}}}],["key",{"_index":21,"title":{},"description":{"1":{}}}],["know",{"_index":69,"title":{},"description":{"1":{}}}],["later",{"_index":53,"title":{},"description":{"1":{}}}],["materi",{"_index":22,"title":{},"description":{"1":{}}}],["memori",{"_index":14,"title":{},"description":{"1":{}}}],["name",{"_index":48,"title":{},"description":{"1":{}}}],["need",{"_index":71,"title":{},"description":{"1":{}}}],["never",{"_index":17,"title":{},"description":{"1":{}}}],["noth",{"_index":51,"title":{},"description":{"1":{}}}],["on",{"_index":34,"title":{},"description":{"1":{}}}],["onc",{"_index":27,"title":{},"description":{"1":{}}}],["openssh",{"_index":42,"title":{},"description":{"1":{}}}],["openssl",{"_index":40,"title":{},"description":{"1":{}}}],["oper",{"_index":54,"title":{},"description":{"1":{}}}],["pem",{"_index":31,"title":{},"description":{"1":{}}}],["pkcs#12",{"_index":29,"title":{},"description":{"1":{}}}],["pkcs#7",{"_index":45,"title":{},"description":{"1":{}}}],["pkcs#8",{"_index":37,"title":{},"description":{"1":{}}}],["plain",{"_index":38,"title":{},"description":{"1":{}}}],["platform",{"_index":12,"title":{},"description":{"1":{}}}],["privat",{"_index":35,"title":{},"description":{"1":{}}}],["read",{"_index":1,"title":{"1":{}},"description":{"0":{},"1":{}}}],["recognis",{"_index":46,"title":{},"description":{"1":{}}}],["refer",{"_index":57,"title":{},"description":{"1":{}}}],["report",{"_index":4,"title":{},"description":{"0":{},"1":{}}}],["see",{"_index":65,"title":{},"description":{"1":{}}}],["send",{"_index":70,"title":{},"description":{"1":{}}}],["singl",{"_index":43,"title":{},"description":{"1":{}}}],["standalon",{"_index":36,"title":{},"description":{"1":{}}}],["store",{"_index":8,"title":{},"description":{"1":{}}}],["tradit",{"_index":41,"title":{},"description":{"1":{}}}],["travel",{"_index":10,"title":{},"description":{"1":{}}}],["understand",{"_index":24,"title":{},"description":{"1":{}}}],["upload",{"_index":2,"title":{"1":{}},"description":{"0":{},"1":{}}}],["user",{"_index":64,"title":{},"description":{"1":{}}}],["v1/inspect",{"_index":72,"title":{},"description":{"1":{}}}],["whichev",{"_index":62,"title":{},"description":{"1":{}}}],["without",{"_index":6,"title":{},"description":{"1":{}}}],["written",{"_index":15,"title":{},"description":{"1":{}}}]],"pipeline":[]}},"options":{"theme":{"logo":{"gutter":"20px"},"colors":{"primary":{"main":"#0072cf"}}}}};
+
+      var container = document.getElementById('redoc');
+      Redoc.hydrate(__redoc_state, container);
+
+      </script>
+</body>
+
+</html>
