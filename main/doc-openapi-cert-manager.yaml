@@ -1755,9 +1755,9 @@ paths:
         Each entry says where its own key material goes, because a file can hold entries of different key types
         and each key type has its own provider attribute schema.
 
-        Entries succeed or fail on their own and the response reports the outcome of each. Each entry carries its
-        own `importId`, so repeating a request returns what already succeeded and retries only what did not: a
-        caller recovering from a lost or partial response resends the same body and needs to work out nothing.
+        Entries succeed or fail on their own and the response reports the outcome of each. A caller recovering
+        from a lost or partial response resends the same body: each entry is worked out again and reports what it
+        found, its outcome.
       operationId: importCertificates
       requestBody:
         content:
@@ -1767,20 +1767,13 @@ paths:
         required: true
       responses:
         "200":
-          description: Selected entries imported
+          description: The result of each selected entry
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CertificateImportResponseDto"
         "404":
           description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "409":
-          description: an entry's `importId` was already used to import something
-            else
           content:
             application/json:
               schema:
@@ -7334,14 +7327,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        uuid:
-          type: string
-          description: UUID of the Attribute for unique identification
-          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
         description:
           type: string
           description: "Optional description of the Attribute, should contain helper\
             \ text on what is expected"
+        uuid:
+          type: string
+          description: UUID of the Attribute for unique identification
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
       required:
       - name
       - type
@@ -10212,20 +10205,6 @@ components:
             `SubjectPublicKeyInfo` for a key pair or private key, of the key as the file holds it for a secret key or
             a key of an algorithm the platform does not support, and of the request for a certificate request.
           minLength: 1
-        importId:
-          type: string
-          description: |
-            Identifier of this entry's import, so a retry cannot import the same entry twice.
-
-            A replay is the same import only when this entry's reference and destination match the first submission,
-            and the file carries the same content for it. A replay returns what that entry produced the first time;
-            reuse with anything else changed is refused.
-
-            The identifier is per entry rather than per request because entries succeed and fail on their own.
-            Repeating a request whose entries partly failed returns what already succeeded and retries only what did
-            not, without the caller having to work out which is which.
-          maxLength: 256
-          minLength: 1
         keyDestination:
           $ref: "#/components/schemas/CertificateEntryKeyDestinationDto"
           description: "Where this entry's key material is stored. Required when the\
@@ -10233,7 +10212,6 @@ components:
             \ a certificate."
       required:
       - entryReference
-      - importId
     CertificateImportRequestDto:
       type: object
       description: "The file to import from, the entries to import, and where their\
@@ -10297,11 +10275,18 @@ components:
           description: What the entry turned out to be
         imported:
           type: boolean
-          description: Whether this entry was imported
+          description: Whether the entry's objects are in the inventory after the
+            call
+        certificateOutcome:
+          $ref: "#/components/schemas/ImportOutcome"
+          description: "What became of the certificate, when the entry carried one"
         certificateUuid:
           type: string
           description: "UUID of the certificate the entry produced, when it carried\
             \ one"
+        keyOutcome:
+          $ref: "#/components/schemas/ImportOutcome"
+          description: "What became of the key, when the entry carried key material"
         keyUuid:
           type: string
           description: "UUID of the key the entry produced, when it carried key material"
@@ -10312,6 +10297,15 @@ components:
       - entryReference
       - imported
       - kind
+    ImportOutcome:
+      type: string
+      description: "What became of one entry's certificate or key: made by this call,\
+        \ already in the inventory, or a private key added to an existing public-key\
+        \ record."
+      enum:
+      - created
+      - existing
+      - adopted
     InspectedEntryKind:
       type: string
       description: "What one entry of an uploaded file turned out to be. The kind\
