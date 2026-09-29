@@ -13,66 +13,66 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
     required:
-    - unit: "1"
+    - type: gauge
       name: app_build_info
-      type: gauge
+      unit: "1"
       labels:
       - version
       - commit
       - runtime
-    - unit: seconds
+    - type: gauge
       name: process_start_time_seconds
-      type: gauge
+      unit: seconds
       labels: []
-    - unit: seconds
+    - type: counter
       name: process_cpu_seconds_total
-      type: counter
+      unit: seconds
       labels: []
-    - unit: bytes
+    - type: gauge
       name: process_resident_memory_bytes
-      type: gauge
+      unit: bytes
       labels: []
-    - unit: requests
+    - type: counter
       name: http_requests_total
-      type: counter
+      unit: requests
       labels:
       - method
       - route
       - status
-    - buckets_ref: http_server_latency_buckets_seconds
+    - type: histogram
       labels:
       - method
       - route
-      type: histogram
-      unit: seconds
+      buckets_ref: http_server_latency_buckets_seconds
       name: http_request_duration_seconds
-    - unit: requests
+      unit: seconds
+    - type: gauge
       name: http_server_in_flight_requests
-      type: gauge
+      unit: requests
       labels:
       - route
-    - unit: requests
+    - type: counter
       name: http_client_requests_total
-      type: counter
+      unit: requests
       labels:
       - method
       - target
       - status
-    - buckets_ref: http_client_latency_buckets_seconds
+    - type: histogram
       labels:
       - method
       - target
-      type: histogram
-      unit: seconds
+      buckets_ref: http_client_latency_buckets_seconds
       name: http_client_request_duration_seconds
-    - unit: events
+      unit: seconds
+    - type: counter
       name: connector_events_total
-      type: counter
+      unit: events
       labels:
       - event
       - outcome
+    version: 1
     histograms:
       http_client_latency_buckets_seconds:
       - 0.01
