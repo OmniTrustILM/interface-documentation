@@ -13,8 +13,77 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
+    required:
+    - labels:
+      - version
+      - commit
+      - runtime
+      unit: "1"
+      name: app_build_info
+      type: gauge
+    - labels: []
+      unit: seconds
+      name: process_start_time_seconds
+      type: gauge
+    - labels: []
+      unit: seconds
+      name: process_cpu_seconds_total
+      type: counter
+    - labels: []
+      unit: bytes
+      name: process_resident_memory_bytes
+      type: gauge
+    - labels:
+      - method
+      - route
+      - status
+      unit: requests
+      name: http_requests_total
+      type: counter
+    - labels:
+      - method
+      - route
+      type: histogram
+      unit: seconds
+      name: http_request_duration_seconds
+      buckets_ref: http_server_latency_buckets_seconds
+    - labels:
+      - route
+      unit: requests
+      name: http_server_in_flight_requests
+      type: gauge
+    - labels:
+      - method
+      - target
+      - status
+      unit: requests
+      name: http_client_requests_total
+      type: counter
+    - labels:
+      - method
+      - target
+      type: histogram
+      unit: seconds
+      name: http_client_request_duration_seconds
+      buckets_ref: http_client_latency_buckets_seconds
+    - labels:
+      - event
+      - outcome
+      unit: events
+      name: connector_events_total
+      type: counter
     histograms:
+      http_client_latency_buckets_seconds:
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
       http_server_latency_buckets_seconds:
       - 0.005
       - 0.01
@@ -27,76 +96,7 @@ info:
       - 2.5
       - 5.0
       - 10.0
-      http_client_latency_buckets_seconds:
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
-    required:
-    - type: gauge
-      name: app_build_info
-      unit: "1"
-      labels:
-      - version
-      - commit
-      - runtime
-    - type: gauge
-      name: process_start_time_seconds
-      unit: seconds
-      labels: []
-    - type: counter
-      name: process_cpu_seconds_total
-      unit: seconds
-      labels: []
-    - type: gauge
-      name: process_resident_memory_bytes
-      unit: bytes
-      labels: []
-    - type: counter
-      name: http_requests_total
-      unit: requests
-      labels:
-      - method
-      - route
-      - status
-    - labels:
-      - method
-      - route
-      buckets_ref: http_server_latency_buckets_seconds
-      name: http_request_duration_seconds
-      unit: seconds
-      type: histogram
-    - type: gauge
-      name: http_server_in_flight_requests
-      unit: requests
-      labels:
-      - route
-    - type: counter
-      name: http_client_requests_total
-      unit: requests
-      labels:
-      - method
-      - target
-      - status
-    - labels:
-      - method
-      - target
-      buckets_ref: http_client_latency_buckets_seconds
-      name: http_client_request_duration_seconds
-      unit: seconds
-      type: histogram
-    - type: counter
-      name: connector_events_total
-      unit: events
-      labels:
-      - event
-      - outcome
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -110,6 +110,13 @@ tags:
 - name: Connector Attributes v2
   description: Attribute-definition registry and stateless callback surface for NG
     connectors.
+- name: Discovery Operations v2
+  description: |-
+    Stateless discovery v2 run lifecycle: initiate a run, poll its status and results, and control it (stop/resume/cancel).
+
+    Every call replays the run's identity, resources, handle and attributes, so you need keep no state between calls: rebuild the run from the request, including after a restart. Answer 404 only for a runId you cannot rebuild — it ends the run at once, and a stopped run may be waiting days for its resume.
+
+    If you can rebuild the run but no longer hold the items a drain asks for, answer 404 rather than a later page: Core takes the highest sequence you return as its new cursor, so a page served across a gap loses everything in it.
 - name: Health check v2
   description: "Connector Health check API. Connector returns own status and in some\
     \ cases can return status of components on which it depends like database, HSM\
@@ -124,74 +131,7 @@ tags:
 - name: Discovery Metadata v2
   description: "Stateless discovery v2 metadata surface: which resource types this\
     \ connector supports, and the attribute schema for configuring a run."
-- name: Discovery Operations v2
-  description: |-
-    Stateless discovery v2 run lifecycle: initiate a run, poll or stream its results, and control it (stop/resume/cancel).
-
-    Every call replays the run's identity, resources, handle and attributes, so you need keep no state between calls: rebuild the run from the request, including after a restart. Answer 404 only for a runId you cannot rebuild — it ends the run at once, and a stopped run may be waiting days for its resume.
-
-    If you can rebuild the run but no longer hold the items a drain asks for, answer 404 rather than a later page: Core takes the highest sequence you return as its new cursor, so a page served across a gap loses everything in it.
 paths:
-  /v2/discoveryProvider/discoveries/stream:
-    post:
-      tags:
-      - Discovery Operations v2
-      summary: Stream discovery events
-      description: "Opens a chunked application/x-ndjson response, one JSON event\
-        \ object per line, replaying items with sequence greater than afterSequence\
-        \ and then continuing to emit live events (progress, resultBatch, stateChanged,\
-        \ heartbeat, error) until the run reaches a terminal state or the caller disconnects.\
-        \ Only one stream may be active per run at a time: a new call to this endpoint\
-        \ for the same runId supersedes any prior one, and the connector MUST close\
-        \ the earlier response as it begins serving the new one. This endpoint is\
-        \ reached by direct HTTP only and never traverses the platform proxy; a connector\
-        \ reachable only through the proxy MUST NOT advertise the discoveryStreaming\
-        \ feature flag."
-      operationId: stream
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DiscoveryStreamRequestDto"
-        required: true
-      responses:
-        "200":
-          description: "NDJSON event stream opened; the body is one flat JSON DiscoveryEvent\
-            \ object per line, never a JSON array of events"
-          content:
-            application/x-ndjson:
-              schema:
-                $ref: "#/components/schemas/DiscoveryEvent"
-        "404":
-          description: Not Found. Endpoint not found or not implemented
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-        "422":
-          description: "The request body is invalid — a missing runId, an empty or\
-            \ unsupported resources set, or an invalid attribute (errorCode VALIDATION_FAILED)"
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-      security:
-      - ConnectorAPIKeyAuth: []
-      - CertificateTLSAuth: []
-      - NoAuth: []
-      - BasicAuth: []
   /v2/discoveryProvider/discoveries/stop:
     post:
       tags:
@@ -1531,7 +1471,7 @@ components:
       required:
       - contentType
       - data
-    DiscoveryStreamRequestDto:
+    DiscoveryRunRequestDto:
       type: object
       properties:
         runId:
@@ -1571,14 +1511,6 @@ components:
             , \"keys\"); optional, since a connector may define none."
           propertyNames:
             $ref: "#/components/schemas/Resource"
-        afterSequence:
-          type: integer
-          format: int64
-          default: 0
-          description: "Cursor: stream items with sequence greater than this value.\
-            \ Item sequences are dense per run, so 0 requests items from the start\
-            \ of the run."
-          minimum: 0
       required:
       - resources
       - runId
@@ -2586,298 +2518,6 @@ components:
       required:
       - contentType
       - data
-    DiscoveredCertificateDto:
-      type: object
-      properties:
-        resource:
-          $ref: "#/components/schemas/Resource"
-        certificateData:
-          type: string
-          description: Base64-encoded certificate data (DER)
-          minLength: 1
-      required:
-      - certificateData
-      - resource
-    DiscoveredItemDto:
-      type: object
-      properties:
-        sequence:
-          type: integer
-          format: int64
-          description: "Dense per-run item sequence (1, 2, 3, ... with no holes);\
-            \ the drain/stream cursor value after which the next batch starts"
-          minimum: 1
-        uniqueRef:
-          type: string
-          description: Connector-side natural key that Core uses to dedupe this item
-            across drains and retries
-          minLength: 1
-        payload:
-          $ref: "#/components/schemas/DiscoveredItemPayload"
-          description: Resource-specific payload; its concrete type is selected by
-            resource
-        meta:
-          type: array
-          description: "Item metadata (platform convention). Where an item was found\
-            \ (e.g. IP and port, file path, HSM slot) belongs here as typed, labeled\
-            \ entries, never in payload."
-          items:
-            $ref: "#/components/schemas/MetadataAttribute"
-        discoveredAt:
-          type: string
-          format: date-time
-          description: Timestamp at which the connector discovered this item
-      required:
-      - payload
-      - sequence
-      - uniqueRef
-    DiscoveredItemPayload:
-      type: object
-      description: "Resource-specific payload of a discovered item. The required resource\
-        \ property is the discriminator: it carries the resource's wire code and selects\
-        \ which concrete payload shape this object is. Each concrete shape fixes it\
-        \ to its own value."
-      discriminator:
-        propertyName: resource
-        mapping:
-          certificates: "#/components/schemas/DiscoveredCertificateDto"
-          keys: "#/components/schemas/DiscoveredKeyDto"
-      oneOf:
-      - $ref: "#/components/schemas/DiscoveredCertificateDto"
-      - $ref: "#/components/schemas/DiscoveredKeyDto"
-      required:
-      - resource
-    DiscoveredKeyDto:
-      type: object
-      description: "A connector reports a key's existence, intrinsic metadata, and\
-        \ at most its public part; private, secret and split key material must never\
-        \ be sent. A PRIVATE_KEY, SECRET_KEY or SPLIT_KEY report MUST omit publicKey\
-        \ and publicKeyFormat entirely."
-      properties:
-        resource:
-          $ref: "#/components/schemas/Resource"
-        type:
-          $ref: "#/components/schemas/KeyType"
-          description: "Key type: whether this is a public, private, secret, or split\
-            \ key"
-        algorithm:
-          $ref: "#/components/schemas/KeyAlgorithm"
-          description: Cryptographic algorithm of the key
-        length:
-          type: integer
-          format: int32
-          description: Key length in bits
-        fingerprint:
-          type: string
-          description: "Intrinsic key fingerprint; correlates the same key across\
-            \ runs, connectors, and certificates without exposing key material"
-        publicKeyFormat:
-          $ref: "#/components/schemas/KeyFormat"
-          description: Format of publicKey when present (typically SubjectPublicKeyInfo);
-            absent when publicKey is absent
-        publicKey:
-          type: string
-          description: "Base64-encoded public key material. Absent for PRIVATE_KEY,\
-            \ SECRET_KEY or SPLIT_KEY discoveries, where only existence and intrinsic\
-            \ metadata are ever reported"
-      required:
-      - algorithm
-      - resource
-      - type
-    DiscoveryErrorEvent:
-      type: object
-      properties:
-        type:
-          $ref: "#/components/schemas/DiscoveryEventType"
-        code:
-          type: string
-          description: Connector-defined error code
-          maxLength: 64
-          minLength: 0
-        message:
-          type: string
-          description: Human-readable error message — curated message text (no raw
-            exception messages)
-      required:
-      - code
-      - message
-      - type
-    DiscoveryEvent:
-      type: object
-      description: One flat discovery stream/AMQP event; type selects the concrete
-        shape.
-      discriminator:
-        propertyName: type
-        mapping:
-          progress: "#/components/schemas/DiscoveryProgressEvent"
-          resultBatch: "#/components/schemas/DiscoveryResultBatchEvent"
-          stateChanged: "#/components/schemas/DiscoveryStateChangedEvent"
-          heartbeat: "#/components/schemas/DiscoveryHeartbeatEvent"
-          error: "#/components/schemas/DiscoveryErrorEvent"
-      oneOf:
-      - $ref: "#/components/schemas/DiscoveryProgressEvent"
-      - $ref: "#/components/schemas/DiscoveryResultBatchEvent"
-      - $ref: "#/components/schemas/DiscoveryStateChangedEvent"
-      - $ref: "#/components/schemas/DiscoveryHeartbeatEvent"
-      - $ref: "#/components/schemas/DiscoveryErrorEvent"
-      required:
-      - type
-    DiscoveryEventType:
-      type: string
-      enum:
-      - progress
-      - resultBatch
-      - stateChanged
-      - heartbeat
-      - error
-    DiscoveryHeartbeatEvent:
-      type: object
-      properties:
-        type:
-          $ref: "#/components/schemas/DiscoveryEventType"
-        sentAt:
-          type: string
-          format: date-time
-          description: Timestamp at which the connector sent this heartbeat
-      required:
-      - sentAt
-      - type
-    DiscoveryProgressEvent:
-      type: object
-      properties:
-        targetsProcessed:
-          type: integer
-          format: int64
-          description: "How many targets the provider has attempted so far, including\
-            \ ones that failed. A target is one unit of the provider's work — one\
-            \ address and port, one inventory entry, one keystore alias — and can\
-            \ yield many items or none. Omitted if the provider cannot count its work."
-        targetsTotal:
-          type: integer
-          format: int64
-          description: "How many targets this discovery will attempt in total — exact\
-            \ if the provider knows, an estimate otherwise, and it may change as the\
-            \ run goes on. Use it with targetsProcessed to show progress. Omitted\
-            \ when the provider cannot know the total; there is then no percentage\
-            \ to show, and clients must not guess one."
-        targetsFailed:
-          type: integer
-          format: int64
-          description: "How many targets could not be examined — an unreachable host,\
-            \ a refused connection, a target that answered nothing usable. Included\
-            \ in targetsProcessed, not added to it, so a mostly dark range still reaches\
-            \ its total. Failures here do not make the discovery itself fail."
-        phase:
-          type: string
-          description: "Free-text label for what the provider is doing (e.g. \"scanning\"\
-            , \"enumerating\"); omitted if it has none"
-        byResource:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/DiscoveryResourceProgressDto"
-          description: "How many items were found, broken down by resource type. Present\
-            \ only if the provider reports the breakdown."
-          propertyNames:
-            $ref: "#/components/schemas/Resource"
-        updatedAt:
-          type: string
-          format: date-time
-          description: "When the platform recorded this report. A discovery is polled\
-            \ on a backoff that settles at several minutes, so counters can be older\
-            \ than the response carrying them; this says how much older. Set by the\
-            \ platform — a value sent by a Discovery Provider is ignored."
-          examples:
-          - 2026-09-13T14:32:07.000+02:00
-          readOnly: true
-        type:
-          $ref: "#/components/schemas/DiscoveryEventType"
-      required:
-      - type
-    DiscoveryResourceProgressDto:
-      type: object
-      description: "How many items of one resource type have been found, keyed by\
-        \ resource code inside byResource (e.g. \"certificates\", \"keys\"). Every\
-        \ field is optional, but a provider with nothing to report MUST leave the\
-        \ whole object out rather than send an empty one — a client keeping the last\
-        \ progress it was sent cannot tell an empty report from a missing one."
-      properties:
-        produced:
-          type: integer
-          format: int64
-          description: How many items of this resource type the provider has found
-            so far; omitted if it cannot count them
-        totalEstimate:
-          type: integer
-          format: int64
-          description: Estimated total number of items of this resource type for the
-            whole discovery; omitted if the provider cannot estimate
-        phase:
-          type: string
-          description: Free-text label for what the provider is doing with this resource
-            type; omitted if it has none
-    DiscoveryResultBatchEvent:
-      type: object
-      properties:
-        type:
-          $ref: "#/components/schemas/DiscoveryEventType"
-        items:
-          type: array
-          description: "Discovered items in this batch, each carrying its own per-run\
-            \ sequence. A producer that means \"this batch has no items\" MUST send\
-            \ an explicit empty array; omitting the field is rejected rather than\
-            \ read as \"no discoveries\"."
-          items:
-            $ref: "#/components/schemas/DiscoveredItemDto"
-      required:
-      - items
-      - type
-    DiscoveryRunState:
-      type: string
-      enum:
-      - running
-      - stopped
-      - completed
-      - failed
-      - cancelled
-    DiscoveryStateChangedEvent:
-      type: object
-      properties:
-        type:
-          $ref: "#/components/schemas/DiscoveryEventType"
-        state:
-          $ref: "#/components/schemas/DiscoveryRunState"
-          description: "Run state the connector is reporting; advisory, not authoritative"
-      required:
-      - state
-      - type
-    KeyAlgorithm:
-      type: string
-      enum:
-      - RSA
-      - ECDSA
-      - FALCON
-      - ML-DSA
-      - SLH-DSA
-      - ML-KEM
-      - CRYSTALS-Dilithium
-      - SPHINCS+
-      - AES
-      - Unknown
-    KeyFormat:
-      type: string
-      enum:
-      - Raw
-      - SubjectPublicKeyInfo
-      - PrivateKeyInfo
-      - EncryptedPrivateKeyInfo
-      - Custom
-    KeyType:
-      type: string
-      enum:
-      - Secret
-      - Public
-      - Private
-      - Split
     ErrorCode:
       type: string
       enum:
@@ -2988,58 +2628,15 @@ components:
       - status
       - timestamp
       - type
-    DiscoveryRunRequestDto:
-      type: object
-      properties:
-        runId:
-          type: string
-          format: uuid
-          description: Discovery run identifier assigned by Core when the run was
-            created
-        resources:
-          type: array
-          description: "Resource types this run covers, fixed at initiate and replayed\
-            \ unchanged on every later call. Not derivable from resourceAttributes,\
-            \ which omits a resource that declares no attributes of its own."
-          items:
-            $ref: "#/components/schemas/Resource"
-          minItems: 1
-        checkpoint:
-          type: array
-          description: "Opaque run handle from the initiate, stop or resume response\
-            \ that last carried one, replayed so the stateless connector can resolve\
-            \ its run state. Absent on initiate, which mints it. Serialized size is\
-            \ capped at 64 KB."
-          items:
-            $ref: "#/components/schemas/MetadataAttribute"
-        attributes:
-          type: array
-          description: "Run-level attributes supplied when the run was initiated;\
-            \ optional, since a connector may define none."
-          items:
-            $ref: "#/components/schemas/RequestAttribute"
-        resourceAttributes:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: "#/components/schemas/RequestAttribute"
-          description: "Per-resource attributes keyed by resource code (e.g. \"certificates\"\
-            , \"keys\"); optional, since a connector may define none."
-          propertyNames:
-            $ref: "#/components/schemas/Resource"
-      required:
-      - resources
-      - runId
     DiscoveryStopResponseDto:
       type: object
       properties:
         checkpoint:
           type: array
           description: "Checkpoint to resume from: the opaque run handle as of the\
-            \ stop, replayed by Core on status, results, stream, stop, resume and\
-            \ cancel, and never rendered. Serialized size is capped at 64 KB; over\
-            \ the cap Core fails the run."
+            \ stop, replayed by Core on status, results, stop, resume and cancel,\
+            \ and never rendered. Serialized size is capped at 64 KB; over the cap\
+            \ Core fails the run."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
     DiscoveryProgressDto:
@@ -3091,6 +2688,36 @@ components:
           examples:
           - 2026-09-13T14:32:07.000+02:00
           readOnly: true
+    DiscoveryResourceProgressDto:
+      type: object
+      description: "How many items of one resource type have been found, keyed by\
+        \ resource code inside byResource (e.g. \"certificates\", \"keys\"). Every\
+        \ field is optional, but a provider with nothing to report MUST leave the\
+        \ whole object out rather than send an empty one — a client keeping the last\
+        \ progress it was sent cannot tell an empty report from a missing one."
+      properties:
+        produced:
+          type: integer
+          format: int64
+          description: How many items of this resource type the provider has found
+            so far; omitted if it cannot count them
+        totalEstimate:
+          type: integer
+          format: int64
+          description: Estimated total number of items of this resource type for the
+            whole discovery; omitted if the provider cannot estimate
+        phase:
+          type: string
+          description: Free-text label for what the provider is doing with this resource
+            type; omitted if it has none
+    DiscoveryRunState:
+      type: string
+      enum:
+      - running
+      - stopped
+      - completed
+      - failed
+      - cancelled
     DiscoveryStatusResponseDto:
       type: object
       properties:
@@ -3127,9 +2754,9 @@ components:
         checkpoint:
           type: array
           description: "Opaque run handle the stateless connector resolves its run\
-            \ state from. Core replays it on status, results, stream, stop, resume\
-            \ and cancel, and never renders it. Serialized size is capped at 64 KB;\
-            \ over the cap Core fails the run."
+            \ state from. Core replays it on status, results, stop, resume and cancel,\
+            \ and never renders it. Serialized size is capped at 64 KB; over the cap\
+            \ Core fails the run."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         stoppable:
@@ -3207,6 +2834,104 @@ components:
       required:
       - resources
       - runId
+    DiscoveredCertificateDto:
+      type: object
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+        certificateData:
+          type: string
+          description: Base64-encoded certificate data (DER)
+          minLength: 1
+      required:
+      - certificateData
+      - resource
+    DiscoveredItemDto:
+      type: object
+      properties:
+        sequence:
+          type: integer
+          format: int64
+          description: "Dense per-run item sequence (1, 2, 3, ... with no holes);\
+            \ the drain cursor value after which the next batch starts"
+          minimum: 1
+        uniqueRef:
+          type: string
+          description: Connector-side natural key that Core uses to dedupe this item
+            across drains and retries
+          minLength: 1
+        payload:
+          $ref: "#/components/schemas/DiscoveredItemPayload"
+          description: Resource-specific payload; its concrete type is selected by
+            resource
+        meta:
+          type: array
+          description: "Item metadata (platform convention). Where an item was found\
+            \ (e.g. IP and port, file path, HSM slot) belongs here as typed, labeled\
+            \ entries, never in payload."
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+        discoveredAt:
+          type: string
+          format: date-time
+          description: Timestamp at which the connector discovered this item
+      required:
+      - payload
+      - sequence
+      - uniqueRef
+    DiscoveredItemPayload:
+      type: object
+      description: "Resource-specific payload of a discovered item. The required resource\
+        \ property is the discriminator: it carries the resource's wire code and selects\
+        \ which concrete payload shape this object is. Each concrete shape fixes it\
+        \ to its own value."
+      discriminator:
+        propertyName: resource
+        mapping:
+          certificates: "#/components/schemas/DiscoveredCertificateDto"
+          keys: "#/components/schemas/DiscoveredKeyDto"
+      oneOf:
+      - $ref: "#/components/schemas/DiscoveredCertificateDto"
+      - $ref: "#/components/schemas/DiscoveredKeyDto"
+      required:
+      - resource
+    DiscoveredKeyDto:
+      type: object
+      description: "A connector reports a key's existence, intrinsic metadata, and\
+        \ at most its public part; private, secret and split key material must never\
+        \ be sent. A PRIVATE_KEY, SECRET_KEY or SPLIT_KEY report MUST omit publicKey\
+        \ and publicKeyFormat entirely."
+      properties:
+        resource:
+          $ref: "#/components/schemas/Resource"
+        type:
+          $ref: "#/components/schemas/KeyType"
+          description: "Key type: whether this is a public, private, secret, or split\
+            \ key"
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+          description: Cryptographic algorithm of the key
+        length:
+          type: integer
+          format: int32
+          description: Key length in bits
+        fingerprint:
+          type: string
+          description: "Intrinsic key fingerprint; correlates the same key across\
+            \ runs, connectors, and certificates without exposing key material"
+        publicKeyFormat:
+          $ref: "#/components/schemas/KeyFormat"
+          description: Format of publicKey when present (typically SubjectPublicKeyInfo);
+            absent when publicKey is absent
+        publicKey:
+          type: string
+          description: "Base64-encoded public key material. Absent for PRIVATE_KEY,\
+            \ SECRET_KEY or SPLIT_KEY discoveries, where only existence and intrinsic\
+            \ metadata are ever reported"
+      required:
+      - algorithm
+      - resource
+      - type
     DiscoveryResultsResponseDto:
       type: object
       properties:
@@ -3233,6 +2958,34 @@ components:
       - highestSequence
       - items
       - more
+    KeyAlgorithm:
+      type: string
+      enum:
+      - RSA
+      - ECDSA
+      - FALCON
+      - ML-DSA
+      - SLH-DSA
+      - ML-KEM
+      - CRYSTALS-Dilithium
+      - SPHINCS+
+      - AES
+      - Unknown
+    KeyFormat:
+      type: string
+      enum:
+      - Raw
+      - SubjectPublicKeyInfo
+      - PrivateKeyInfo
+      - EncryptedPrivateKeyInfo
+      - Custom
+    KeyType:
+      type: string
+      enum:
+      - Secret
+      - Public
+      - Private
+      - Split
     DiscoveryInitiateRequestDto:
       type: object
       properties:
@@ -4114,7 +3867,6 @@ components:
       - certificateStatusPolling
       - certificateRequestStructured
       - certificateIdentityOverride
-      - discoveryStreaming
       - discoveryStopResume
     InfoResponse:
       type: object

@@ -2401,7 +2401,6 @@ components:
       - certificateStatusPolling
       - certificateRequestStructured
       - certificateIdentityOverride
-      - discoveryStreaming
       - discoveryStopResume
     NameAndUuidDto:
       type: object

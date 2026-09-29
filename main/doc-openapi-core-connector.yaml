@@ -4431,7 +4431,6 @@ components:
       - certificateStatusPolling
       - certificateRequestStructured
       - certificateIdentityOverride
-      - discoveryStreaming
       - discoveryStopResume
     FunctionGroupCode:
       type: string
