@@ -13,66 +13,66 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
+    version: 1
     required:
-    - type: gauge
+    - unit: "1"
       name: app_build_info
-      unit: "1"
+      type: gauge
       labels:
       - version
       - commit
       - runtime
-    - type: gauge
+    - unit: seconds
       name: process_start_time_seconds
-      unit: seconds
+      type: gauge
       labels: []
-    - type: counter
+    - unit: seconds
       name: process_cpu_seconds_total
-      unit: seconds
+      type: counter
       labels: []
-    - type: gauge
+    - unit: bytes
       name: process_resident_memory_bytes
-      unit: bytes
+      type: gauge
       labels: []
-    - type: counter
+    - unit: requests
       name: http_requests_total
-      unit: requests
+      type: counter
       labels:
       - method
       - route
       - status
-    - type: histogram
+    - buckets_ref: http_server_latency_buckets_seconds
       labels:
       - method
       - route
-      buckets_ref: http_server_latency_buckets_seconds
+      type: histogram
+      unit: seconds
       name: http_request_duration_seconds
-      unit: seconds
-    - type: gauge
+    - unit: requests
       name: http_server_in_flight_requests
-      unit: requests
+      type: gauge
       labels:
       - route
-    - type: counter
+    - unit: requests
       name: http_client_requests_total
-      unit: requests
+      type: counter
       labels:
       - method
       - target
       - status
-    - type: histogram
+    - buckets_ref: http_client_latency_buckets_seconds
       labels:
       - method
       - target
-      buckets_ref: http_client_latency_buckets_seconds
-      name: http_client_request_duration_seconds
+      type: histogram
       unit: seconds
-    - type: counter
+      name: http_client_request_duration_seconds
+    - unit: events
       name: connector_events_total
-      unit: events
+      type: counter
       labels:
       - event
       - outcome
-    version: 1
     histograms:
       http_client_latency_buckets_seconds:
       - 0.01
