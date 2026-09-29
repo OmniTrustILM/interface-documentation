@@ -36392,14 +36392,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        uuid:
-          type: string
-          description: UUID of the Attribute for unique identification
-          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
         description:
           type: string
           description: "Optional description of the Attribute, should contain helper\
             \ text on what is expected"
+        uuid:
+          type: string
+          description: UUID of the Attribute for unique identification
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
       required:
       - name
       - type
@@ -46583,8 +46583,16 @@ components:
         occurrenceCount:
           type: integer
           format: int64
-          description: Total number of occurrence evidence entries recorded across
-            all source CBOMs
+          description: "Number of occurrences of the asset, summed over its source\
+            \ CBOMs. A source that recorded where it found the asset contributes one\
+            \ occurrence per evidence.occurrences entry, counted in full, including\
+            \ entries beyond the cap on the detail's per-source evidence list; a source\
+            \ that recorded no location counts as one occurrence, the report itself.\
+            \ Never lower than sourceCbomCount, and 0 only when sourceCbomCount is\
+            \ 0. Related crypto material with no digest, value or identifier is keyed\
+            \ on its occurrence entries (location, line and offset), so such a row\
+            \ stands for one set of entries and its occurrences count how often sources\
+            \ reported them, not how many keys or locations exist"
         quarantined:
           type: boolean
           description: True when sources make contradicting claims about this asset
@@ -51290,8 +51298,16 @@ components:
         occurrenceCount:
           type: integer
           format: int64
-          description: Total number of occurrence evidence entries recorded across
-            all source CBOMs
+          description: "Number of occurrences of the asset, summed over its source\
+            \ CBOMs. A source that recorded where it found the asset contributes one\
+            \ occurrence per evidence.occurrences entry, counted in full, including\
+            \ entries beyond the cap on the detail's per-source evidence list; a source\
+            \ that recorded no location counts as one occurrence, the report itself.\
+            \ Never lower than sourceCbomCount, and 0 only when sourceCbomCount is\
+            \ 0. Related crypto material with no digest, value or identifier is keyed\
+            \ on its occurrence entries (location, line and offset), so such a row\
+            \ stands for one set of entries and its occurrences count how often sources\
+            \ reported them, not how many keys or locations exist"
         quarantined:
           type: boolean
           description: True when sources make contradicting claims about this asset
@@ -51421,8 +51437,10 @@ components:
         occurrenceCount:
           type: integer
           format: int64
-          description: "Number of occurrences this source recorded for the asset,\
-            \ counted before the served evidence list is capped"
+          description: "Number of evidence.occurrences entries this source recorded\
+            \ for the asset, counted before the served evidence list is capped. 0\
+            \ when the source did not record where it found the asset; the source\
+            \ still counts as one occurrence of the asset on the row"
         source:
           type: string
           description: "Tool or scan that produced the source CBOM (e.g.: CBOM-Lens);\
