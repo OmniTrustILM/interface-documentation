@@ -36402,14 +36402,14 @@ components:
         type:
           $ref: "#/components/schemas/AttributeType"
           description: Type of the Attribute
-        uuid:
-          type: string
-          description: UUID of the Attribute for unique identification
-          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
         description:
           type: string
           description: "Optional description of the Attribute, should contain helper\
             \ text on what is expected"
+        uuid:
+          type: string
+          description: UUID of the Attribute for unique identification
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
       required:
       - name
       - type
@@ -41142,7 +41142,11 @@ components:
           minLength: 0
         columns:
           type: array
-          description: "Columns of the view, in display order"
+          description: "Columns of the view, in display order. A column whose field\
+            \ the resource no longer defines, such as a deleted attribute, or can\
+            \ no longer show as a column is accepted only when editing a view that\
+            \ already holds it; a new view may name only fields the resource defines\
+            \ and can show."
           items:
             $ref: "#/components/schemas/ListViewColumnDto"
           minItems: 1
@@ -41155,7 +41159,9 @@ components:
         filters:
           type: array
           description: Filters the view applies. Absent or empty means the view applies
-            no filter of its own and shows the whole inventory.
+            no filter of its own and shows the whole inventory. A filter on a field
+            the resource no longer defines is accepted only when editing a view that
+            already filters on that field.
           items:
             $ref: "#/components/schemas/SearchFilterRequestDto"
         sort:
@@ -41229,8 +41235,10 @@ components:
           - certificates
         columns:
           type: array
-          description: "Columns of the view, in display order. Columns whose field\
-            \ is no longer in the resource's catalogue are omitted."
+          description: "Columns of the view, in display order. A column whose field\
+            \ the resource no longer defines, such as a deleted attribute, is still\
+            \ returned, so a client can show it as unavailable and offer to remove\
+            \ it."
           items:
             $ref: "#/components/schemas/ListViewColumnDto"
         defaultView:
@@ -46047,7 +46055,11 @@ components:
           minLength: 0
         columns:
           type: array
-          description: "Columns of the view, in display order"
+          description: "Columns of the view, in display order. A column whose field\
+            \ the resource no longer defines, such as a deleted attribute, or can\
+            \ no longer show as a column is accepted only when editing a view that\
+            \ already holds it; a new view may name only fields the resource defines\
+            \ and can show."
           items:
             $ref: "#/components/schemas/ListViewColumnDto"
           minItems: 1
@@ -46060,7 +46072,9 @@ components:
         filters:
           type: array
           description: Filters the view applies. Absent or empty means the view applies
-            no filter of its own and shows the whole inventory.
+            no filter of its own and shows the whole inventory. A filter on a field
+            the resource no longer defines is accepted only when editing a view that
+            already filters on that field.
           items:
             $ref: "#/components/schemas/SearchFilterRequestDto"
         sort:
