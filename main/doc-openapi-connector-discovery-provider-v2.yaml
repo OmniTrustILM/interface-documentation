@@ -15,32 +15,32 @@ info:
   x-metrics-profile:
     version: 1
     required:
-    - name: app_build_info
+    - unit: "1"
+      name: app_build_info
       type: gauge
       labels:
       - version
       - commit
       - runtime
-      unit: "1"
-    - name: process_start_time_seconds
+    - unit: seconds
+      name: process_start_time_seconds
       type: gauge
       labels: []
-      unit: seconds
-    - name: process_cpu_seconds_total
+    - unit: seconds
+      name: process_cpu_seconds_total
       type: counter
       labels: []
-      unit: seconds
-    - name: process_resident_memory_bytes
+    - unit: bytes
+      name: process_resident_memory_bytes
       type: gauge
       labels: []
-      unit: bytes
-    - name: http_requests_total
+    - unit: requests
+      name: http_requests_total
       type: counter
       labels:
       - method
       - route
       - status
-      unit: requests
     - buckets_ref: http_server_latency_buckets_seconds
       labels:
       - method
@@ -48,18 +48,18 @@ info:
       type: histogram
       unit: seconds
       name: http_request_duration_seconds
-    - name: http_server_in_flight_requests
+    - unit: requests
+      name: http_server_in_flight_requests
       type: gauge
       labels:
       - route
-      unit: requests
-    - name: http_client_requests_total
+    - unit: requests
+      name: http_client_requests_total
       type: counter
       labels:
       - method
       - target
       - status
-      unit: requests
     - buckets_ref: http_client_latency_buckets_seconds
       labels:
       - method
@@ -67,12 +67,12 @@ info:
       type: histogram
       unit: seconds
       name: http_client_request_duration_seconds
-    - name: connector_events_total
+    - unit: events
+      name: connector_events_total
       type: counter
       labels:
       - event
       - outcome
-      unit: events
     histograms:
       http_client_latency_buckets_seconds:
       - 0.01

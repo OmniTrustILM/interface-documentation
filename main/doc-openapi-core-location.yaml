@@ -3059,6 +3059,7 @@ components:
       - AttributeVersion
       - ProtectionLevel
       - SchedulerJobExecutionStatus
+      - ScheduledJobScheduleState
       - RecipientType
       - NotificationDataCategory
       - TriggerType
