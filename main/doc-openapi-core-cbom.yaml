@@ -475,6 +475,66 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/cryptoAssets/{uuid}/pqcExplanation:
+    get:
+      tags:
+      - Cryptographic Asset Inventory
+      summary: Explain a cryptographic asset's PQC verdict
+      description: "Recomputes the post-quantum readiness verdict of the asset from\
+        \ its stored properties and returns every rule the evaluation walked, in order,\
+        \ with what each rule did and the properties it read. Nothing is written back:\
+        \ GET /v1/cryptoAssets/{uuid} keeps serving the stored verdict, and matchesStored\
+        \ says whether the two agree. The rule set is fixed by the platform and cannot\
+        \ be configured. Stored verdicts are re-evaluated by the CryptoAssetPqcSweepTask\
+        \ scheduled job, hourly by default and not while the job is disabled in the\
+        \ Scheduler. It re-evaluates an asset whose recorded properties changed, whose\
+        \ referenced assets' verdicts changed, or whose rules changed with a platform\
+        \ upgrade; an asset the rule set could not evaluate keeps that verdict until\
+        \ one of those changes. There is no per-asset re-run of the stored verdict:\
+        \ calling this operation re-runs the evaluation on demand and shows what the\
+        \ next re-evaluation will store."
+      operationId: getCryptographicAssetPqcExplanation
+      parameters:
+      - name: uuid
+        in: path
+        description: Cryptographic asset UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: PQC verdict explanation retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CryptographicAssetPqcExplanationDto"
+        "404":
+          description: Cryptographic asset not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/cryptoAssets/search:
     get:
       tags:
@@ -1300,6 +1360,9 @@ components:
       - uuid
     CryptographicAssetType:
       type: string
+      description: "Type of an asset in the cryptographic asset inventory: the CycloneDX\
+        \ cryptoProperties.assetType vocabulary. An asset that declares none of these\
+        \ types is served with no type"
       enum:
       - algorithm
       - certificate
@@ -1776,6 +1839,7 @@ components:
       - totalPages
     PqcVerdict:
       type: string
+      description: Post-quantum readiness verdict computed by the platform rule set
       enum:
       - ready
       - notReady
@@ -2721,10 +2785,6 @@ components:
     CryptographicAssetVerdictDto:
       type: object
       properties:
-        ruleSetVersion:
-          type: integer
-          format: int32
-          description: Version of the platform rule set that produced the verdict
         ruleId:
           type: string
           description: The rule that decided the verdict; absent when no rule matched
@@ -2737,7 +2797,14 @@ components:
           additionalProperties: {}
           description: "Values of the asset fields the deciding rule evaluated, recorded\
             \ at decision time and as stored, so assetType may be unroutable for an\
-            \ asset served with no type"
+            \ asset served with no type. Values are strings, numbers, booleans or\
+            \ lists of strings, never nested objects"
+        referencedAsset:
+          $ref: "#/components/schemas/PqcReferencedAssetDto"
+          description: "The inventory asset whose own verdict decided this one. Present\
+            \ only when the deciding rule carried a verdict over from an asset this\
+            \ one refers to; absent when the asset's own properties decided, or when\
+            \ the reference could not be resolved"
         decidedAt:
           type: string
           format: date-time
@@ -2750,7 +2817,167 @@ components:
       required:
       - decidedAt
       - evaluatedAt
-      - ruleSetVersion
+    PqcReferencedAssetDto:
+      type: object
+      description: "An inventory asset whose stored verdict was carried over into\
+        \ another asset's: the key a certificate certifies or the algorithm it is\
+        \ signed with, whichever is weaker, or the weakest algorithm a protocol's\
+        \ cipher suites name. The uuid is the one recorded when the verdict was decided;\
+        \ visible says whether the reader may read that asset's detail now. name and\
+        \ type are read from it as currently stored, and are absent when visible is\
+        \ false; type is also absent for an asset declaring no CycloneDX asset type,\
+        \ and name for one with no name to serve"
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: "UUID of the referenced inventory asset, as recorded when the\
+            \ verdict was decided"
+        visible:
+          type: boolean
+          description: "True when the referenced asset is still in the inventory and\
+            \ the reader may read its detail; false when it has been removed or the\
+            \ reader's role does not grant detail access to it. When false, name and\
+            \ type are absent"
+        name:
+          type: string
+          description: "Display name of the referenced asset, so a link can be labelled\
+            \ without a second read; absent when visible is false, or when the asset\
+            \ has no name to serve"
+        type:
+          $ref: "#/components/schemas/CryptographicAssetType"
+          description: Type of the referenced asset
+      required:
+      - uuid
+      - visible
+    CryptographicAssetPqcExplanationDto:
+      type: object
+      description: "A PQC verdict recomputed from the asset as stored, rule by rule;\
+        \ nothing is written back. storedVerdict, storedRuleId and storedEvaluatedAt\
+        \ are absent when the asset has not been evaluated yet, and storedRuleId also\
+        \ for a stored verdict no rule decided. When the rule set cannot evaluate\
+        \ the asset, verdict is unknown, ruleId is EVALUATION-FAILED, inputs is empty\
+        \ and steps holds one failed step"
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the inventory asset the explanation is for
+        verdict:
+          $ref: "#/components/schemas/PqcVerdict"
+          description: Post-quantum readiness verdict recomputed from the asset as
+            stored
+        ruleId:
+          type: string
+          description: The rule that decided the recomputed verdict
+        reason:
+          type: string
+          description: "The deciding rule's finding, in the words a stored verdict\
+            \ carries"
+        inputs:
+          type: object
+          additionalProperties: {}
+          description: "Values of the asset properties the rules read, as derived\
+            \ from the stored asset. A property the asset does not have is omitted;\
+            \ key material and internal deduplication keys are never served. Values\
+            \ are strings, numbers, booleans or lists of strings, never nested objects.\
+            \ Reference properties are served as the bom-ref strings the producing\
+            \ document recorded, under one key whichever CycloneDX version spelt them"
+        steps:
+          type: array
+          description: "Every rule the evaluation consults for an asset of this type,\
+            \ in evaluation order; rules that apply only to other asset types are\
+            \ not listed. Evaluation is first-match-wins: the rules before the deciding\
+            \ one are notMatched, the deciding one is decided or resolved, and the\
+            \ rules after it are notReached. The deciding step's ruleId equals the\
+            \ explanation's ruleId"
+          items:
+            $ref: "#/components/schemas/PqcExplanationStepDto"
+        matchesStored:
+          type: boolean
+          description: "True when the verdict and rule stored on the asset equal the\
+            \ recomputed ones. False when the asset has not been evaluated yet, or\
+            \ when something its stored verdict was decided from has changed since:\
+            \ the asset itself, the verdict of an asset it refers to, or the platform's\
+            \ rules after an upgrade. The stored verdict is served until the asset\
+            \ is next re-evaluated"
+        storedVerdict:
+          $ref: "#/components/schemas/PqcVerdict"
+          description: The verdict stored on the asset
+        storedRuleId:
+          type: string
+          description: "The rule that decided the stored verdict; absent when the\
+            \ asset has not been evaluated yet, or when no rule decided it"
+        storedEvaluatedAt:
+          type: string
+          format: date-time
+          description: When the stored verdict was last evaluated; absent when the
+            asset has not been evaluated yet
+        explainedAt:
+          type: string
+          format: date-time
+          description: When this explanation was computed
+      required:
+      - explainedAt
+      - inputs
+      - matchesStored
+      - reason
+      - ruleId
+      - steps
+      - uuid
+      - verdict
+    PqcExplanationStepDto:
+      type: object
+      description: "One rule of the PQC rule set as the explanation walked it. verdict\
+        \ is present on decided, resolved and failed steps; evaluatedFields is absent\
+        \ on a notReached step; referencedAsset is present on a resolved step only"
+      properties:
+        ruleId:
+          type: string
+          description: "The rule this step reports on. A stable identifier, not display\
+            \ text. Every rule is listed under a fixed id, the name-based and family\
+            \ rules included. The one exception is the hybrid rule, whose id is composed\
+            \ during evaluation: it is listed as PQC-HYBRID on a step it does not\
+            \ decide, and as PQC-HYBRID- followed by the deciding family's rule id\
+            \ on the step it decides"
+        title:
+          type: string
+          description: "What the rule checks, in a few words for display beside the\
+            \ rule id, such as \"Certified key\" or \"Symmetric key size\". The same\
+            \ for every asset that walks the rule"
+        outcome:
+          $ref: "#/components/schemas/PqcExplanationStepOutcome"
+          description: What the rule did for this asset
+        verdict:
+          $ref: "#/components/schemas/PqcVerdict"
+          description: The verdict the rule yields
+        message:
+          type: string
+          description: "Why the rule did what it did, in plain words"
+        evaluatedFields:
+          type: object
+          additionalProperties: {}
+          description: "Values of the asset properties this rule read and, on a resolved\
+            \ step, the reference it decided by. Values are strings, numbers, booleans\
+            \ or lists of strings, never nested objects"
+        referencedAsset:
+          $ref: "#/components/schemas/PqcReferencedAssetDto"
+          description: The inventory asset whose stored verdict this rule carried
+            over
+      required:
+      - message
+      - outcome
+      - ruleId
+      - title
+    PqcExplanationStepOutcome:
+      type: string
+      description: What one rule of the PQC rule set did while the verdict was explained
+      enum:
+      - notMatched
+      - decided
+      - notReached
+      - resolved
+      - failed
     FilterFieldType:
       type: string
       enum:
@@ -2848,6 +3075,7 @@ components:
       - CbomSyncSkipState
       - CryptographicAssetType
       - PqcVerdict
+      - PqcExplanationStepOutcome
     SearchFieldDataByGroupDto:
       type: object
       properties:

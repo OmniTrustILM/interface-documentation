@@ -2078,6 +2078,7 @@ components:
       - CbomSyncSkipState
       - CryptographicAssetType
       - PqcVerdict
+      - PqcExplanationStepOutcome
     SearchFieldDataByGroupDto:
       type: object
       properties:
