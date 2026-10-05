@@ -13,78 +13,7 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
-    version: 1
-    required:
-    - name: app_build_info
-      type: gauge
-      labels:
-      - version
-      - commit
-      - runtime
-      unit: "1"
-    - name: process_start_time_seconds
-      type: gauge
-      labels: []
-      unit: seconds
-    - name: process_cpu_seconds_total
-      type: counter
-      labels: []
-      unit: seconds
-    - name: process_resident_memory_bytes
-      type: gauge
-      labels: []
-      unit: bytes
-    - name: http_requests_total
-      type: counter
-      labels:
-      - method
-      - route
-      - status
-      unit: requests
-    - buckets_ref: http_server_latency_buckets_seconds
-      labels:
-      - method
-      - route
-      type: histogram
-      unit: seconds
-      name: http_request_duration_seconds
-    - name: http_server_in_flight_requests
-      type: gauge
-      labels:
-      - route
-      unit: requests
-    - name: http_client_requests_total
-      type: counter
-      labels:
-      - method
-      - target
-      - status
-      unit: requests
-    - buckets_ref: http_client_latency_buckets_seconds
-      labels:
-      - method
-      - target
-      type: histogram
-      unit: seconds
-      name: http_client_request_duration_seconds
-    - name: connector_events_total
-      type: counter
-      labels:
-      - event
-      - outcome
-      unit: events
     histograms:
-      http_client_latency_buckets_seconds:
-      - 0.01
-      - 0.025
-      - 0.05
-      - 0.1
-      - 0.25
-      - 0.5
-      - 1.0
-      - 2.5
-      - 5.0
-      - 10.0
       http_server_latency_buckets_seconds:
       - 0.005
       - 0.01
@@ -97,6 +26,77 @@ info:
       - 2.5
       - 5.0
       - 10.0
+      http_client_latency_buckets_seconds:
+      - 0.01
+      - 0.025
+      - 0.05
+      - 0.1
+      - 0.25
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      - 10.0
+    required:
+    - unit: "1"
+      labels:
+      - version
+      - commit
+      - runtime
+      type: gauge
+      name: app_build_info
+    - unit: seconds
+      labels: []
+      type: gauge
+      name: process_start_time_seconds
+    - unit: seconds
+      labels: []
+      type: counter
+      name: process_cpu_seconds_total
+    - unit: bytes
+      labels: []
+      type: gauge
+      name: process_resident_memory_bytes
+    - unit: requests
+      labels:
+      - method
+      - route
+      - status
+      type: counter
+      name: http_requests_total
+    - name: http_request_duration_seconds
+      unit: seconds
+      type: histogram
+      labels:
+      - method
+      - route
+      buckets_ref: http_server_latency_buckets_seconds
+    - unit: requests
+      labels:
+      - route
+      type: gauge
+      name: http_server_in_flight_requests
+    - unit: requests
+      labels:
+      - method
+      - target
+      - status
+      type: counter
+      name: http_client_requests_total
+    - name: http_client_request_duration_seconds
+      unit: seconds
+      type: histogram
+      labels:
+      - method
+      - target
+      buckets_ref: http_client_latency_buckets_seconds
+    - unit: events
+      labels:
+      - event
+      - outcome
+      type: counter
+      name: connector_events_total
+    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -377,7 +377,10 @@ paths:
       tags:
       - Cryptographic Operations v2
       summary: Verify data
-      description: Verify signatures with the given key (always synchronous)
+      description: "Verify signatures with the given key (always synchronous). signatureAttributes\
+        \ must include exactly one v3 string attribute named signatureAlgorithm with\
+        \ UUID 9180267f-c82f-4b7b-8160-d2363d813869, selecting exactly one code from\
+        \ the required, single-select, non-extensible list offered by /verify/attributes."
       operationId: verifyData
       requestBody:
         content:
@@ -393,8 +396,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/VerifyDataResponseV2Dto"
         "422":
-          description: Request body was read successfully but violates a field validation
-            rule (errorCode VALIDATION_FAILED)
+          description: "Request body was read successfully but violates a field validation\
+            \ rule (errorCode VALIDATION_FAILED), or a supplied verification parameter\
+            \ is not supported by the connector or key (errorCode PARAMETER_UNSUPPORTED)"
           content:
             application/problem+json:
               schema:
@@ -436,7 +440,12 @@ paths:
       - Cryptographic Operations v2
       summary: List verification attributes
       description: "Returns the verification parameter schema supported by the connector\
-        \ for the supplied token, profile and key context"
+        \ for the supplied token, profile and key context. The schema must include\
+        \ exactly one v3 string data attribute named signatureAlgorithm with UUID\
+        \ 9180267f-c82f-4b7b-8160-d2363d813869, as a required, single-select, non-extensible\
+        \ list offering the signature algorithms the key supports for verification.\
+        \ It must offer at least one value, and every offered value must be a code\
+        \ from the SignatureAlgorithm enum."
       operationId: listVerifyAttributes
       requestBody:
         content:
@@ -496,8 +505,11 @@ paths:
       tags:
       - Cryptographic Operations v2
       summary: Sign data
-      description: Sign a batch using the caller-selected execution mode (synchronous
-        200 or asynchronous 202).
+      description: "Sign a batch using the caller-selected execution mode (synchronous\
+        \ 200 or asynchronous 202). signatureAttributes must include exactly one v3\
+        \ string attribute named signatureAlgorithm with UUID 9180267f-c82f-4b7b-8160-d2363d813869,\
+        \ selecting exactly one code from the required, single-select, non-extensible\
+        \ list offered by /sign/attributes."
       operationId: signData
       requestBody:
         content:
@@ -678,8 +690,12 @@ paths:
       - Cryptographic Operations v2
       summary: List signing attributes
       description: "Returns the signing parameter schema supported by the connector\
-        \ for the supplied token, profile and key context. The schema includes signatureAlgorithm,\
-        \ a v3 data attribute offering the signature algorithms the key supports."
+        \ for the supplied token, profile and key context. The schema must include\
+        \ exactly one v3 string data attribute named signatureAlgorithm with UUID\
+        \ 9180267f-c82f-4b7b-8160-d2363d813869, as a required, single-select, non-extensible\
+        \ list offering the signature algorithms the key supports for signing. It\
+        \ must offer at least one value, and every offered value must be a code from\
+        \ the SignatureAlgorithm enum."
       operationId: listSignAttributes
       requestBody:
         content:
@@ -857,7 +873,11 @@ paths:
       tags:
       - Cryptographic Operations v2
       summary: Encrypt data
-      description: Encrypt data with the given key (always synchronous)
+      description: "Encrypt data with the given key (always synchronous). cipherAttributes\
+        \ must include exactly one v3 string attribute named encryptionAlgorithm with\
+        \ UUID 5e364467-fa95-4253-907b-0c73cdfb2be7, selecting exactly one code from\
+        \ the required, single-select, non-extensible list offered by /encrypt/attributes.\
+        \ RSA OAEP profiles use MGF1 with the same hash as OAEP and an empty label."
       operationId: encryptData
       requestBody:
         content:
@@ -873,8 +893,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/EncryptDataResponseV2Dto"
         "422":
-          description: Request body was read successfully but violates a field validation
-            rule (errorCode VALIDATION_FAILED)
+          description: "Request body was read successfully but violates a field validation\
+            \ rule (errorCode VALIDATION_FAILED), or the encryptionAlgorithm selection\
+            \ names an algorithm the key does not support (errorCode PARAMETER_UNSUPPORTED)"
           content:
             application/problem+json:
               schema:
@@ -916,7 +937,12 @@ paths:
       - Cryptographic Operations v2
       summary: List encryption attributes
       description: "Returns the encryption parameter schema supported by the connector\
-        \ for the supplied token, profile and key context"
+        \ for the supplied token, profile and key context. The schema must include\
+        \ exactly one v3 string data attribute named encryptionAlgorithm with UUID\
+        \ 5e364467-fa95-4253-907b-0c73cdfb2be7, as a required, single-select, non-extensible\
+        \ list. It must offer at least one EncryptionAlgorithm code supported by the\
+        \ key and backend. The codes and profile parameters are documented on CipherDataRequestV2Dto.cipherAttributes.\
+        \ RSA OAEP profiles use MGF1 with the same hash as OAEP and an empty label."
       operationId: listEncryptAttributes
       requestBody:
         content:
@@ -976,7 +1002,11 @@ paths:
       tags:
       - Cryptographic Operations v2
       summary: Decrypt data
-      description: Decrypt data with the given key (always synchronous)
+      description: "Decrypt data with the given key (always synchronous). cipherAttributes\
+        \ must include exactly one v3 string attribute named encryptionAlgorithm with\
+        \ UUID 5e364467-fa95-4253-907b-0c73cdfb2be7, selecting exactly one code from\
+        \ the required, single-select, non-extensible list offered by /decrypt/attributes.\
+        \ RSA OAEP profiles use MGF1 with the same hash as OAEP and an empty label."
       operationId: decryptData
       requestBody:
         content:
@@ -992,8 +1022,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/DecryptDataResponseV2Dto"
         "422":
-          description: Request body was read successfully but violates a field validation
-            rule (errorCode VALIDATION_FAILED)
+          description: "Request body was read successfully but violates a field validation\
+            \ rule (errorCode VALIDATION_FAILED), or the encryptionAlgorithm selection\
+            \ names an algorithm the key does not support (errorCode PARAMETER_UNSUPPORTED)"
           content:
             application/problem+json:
               schema:
@@ -1035,7 +1066,12 @@ paths:
       - Cryptographic Operations v2
       summary: List decryption attributes
       description: "Returns the decryption parameter schema supported by the connector\
-        \ for the supplied token, profile and key context"
+        \ for the supplied token, profile and key context. The schema must include\
+        \ exactly one v3 string data attribute named encryptionAlgorithm with UUID\
+        \ 5e364467-fa95-4253-907b-0c73cdfb2be7, as a required, single-select, non-extensible\
+        \ list. It must offer at least one EncryptionAlgorithm code supported by the\
+        \ key and backend. The codes and profile parameters are documented on CipherDataRequestV2Dto.cipherAttributes.\
+        \ RSA OAEP profiles use MGF1 with the same hash as OAEP and an empty label."
       operationId: listDecryptAttributes
       requestBody:
         content:
@@ -4844,7 +4880,10 @@ components:
           minItems: 1
         signatureAttributes:
           type: array
-          description: Signature attributes
+          description: "Batch-wide signature settings. Must include exactly one v3\
+            \ string attribute named signatureAlgorithm with UUID 9180267f-c82f-4b7b-8160-d2363d813869,\
+            \ selecting exactly one signature algorithm code offered by the verification\
+            \ attribute schema."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         data:
@@ -4961,7 +5000,10 @@ components:
             modes implicitly.
         signatureAttributes:
           type: array
-          description: Signature attributes
+          description: "Batch-wide signature settings. Must include exactly one v3\
+            \ string attribute named signatureAlgorithm with UUID 9180267f-c82f-4b7b-8160-d2363d813869,\
+            \ selecting exactly one signature algorithm code offered by the signing\
+            \ attribute schema."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         data:
@@ -5126,7 +5168,12 @@ components:
           minItems: 1
         cipherAttributes:
           type: array
-          description: Batch-wide cipher settings.
+          description: "Batch-wide cipher settings. Must include exactly one v3 string\
+            \ attribute named encryptionAlgorithm with UUID 5e364467-fa95-4253-907b-0c73cdfb2be7,\
+            \ selecting exactly one code offered by the corresponding encryption or\
+            \ decryption attribute schema. Algorithm codes are values from the EncryptionAlgorithm\
+            \ enum. RSA OAEP profiles use MGF1 with the same hash as OAEP and an empty\
+            \ label. PKCS1 v1.5 and OAEP with SHA-1 are compatibility choices."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         cipherData:
