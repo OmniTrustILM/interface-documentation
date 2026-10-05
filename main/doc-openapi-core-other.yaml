@@ -4516,7 +4516,137 @@ components:
             \ string is preserved as given and shows no visible heading."
           maxLength: 255
           minLength: 0
+        attributeDefinitionUuids:
+          type: array
+          description: "Attribute definitions the column is bound to, set by the server\
+            \ when the column is added or rebound. Absent for a property column. Only\
+            \ definitions of the view's resource count. Empty for an attribute column\
+            \ whose definition was already gone when stored views were first bound.\
+            \ A value sent in a request is ignored."
+          items:
+            type: string
+            format: uuid
+            example: 6f1d2c1e-6c3a-4c5e-9f0a-2b7d8e9f0a1b
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/ListViewFieldStatus"
+          description: "How the column resolves for the caller when the view is read.\
+            \ A client shows only an `available` column as its field; an `unavailable`\
+            \ or `replaced` one is dormant and offered for removal, and a `replaced`\
+            \ one also for rebinding. Returned on every read and write response; a\
+            \ value sent in a request is ignored."
+          readOnly: true
+        rebind:
+          type: boolean
+          default: false
+          description: "Set to true to bind an attribute column the view already holds\
+            \ to the attribute definitions now behind its identifier, which is how\
+            \ a client accepts a `replaced` column. Absent or false carries a column\
+            \ the view already holds over: while it still resolves it follows the\
+            \ definitions currently behind its identifier, and once it no longer does\
+            \ it keeps the binding it had, so a replacement never takes it over. Any\
+            \ other column is bound to the current definitions. Any column sent with\
+            \ rebind is held to the catalogue as a newly added one, property columns\
+            \ included, but only an attribute column has a binding to change. The\
+            \ flag is not stored."
+          writeOnly: true
       required:
+      - fieldIdentifier
+      - fieldSource
+    ListViewFieldStatus:
+      type: string
+      enum:
+      - available
+      - unavailable
+      - replaced
+    ListViewFilterDto:
+      type: object
+      properties:
+        fieldSource:
+          $ref: "#/components/schemas/FilterFieldSource"
+          description: Field group of search filter
+        fieldIdentifier:
+          type: string
+          description: "Field identifier of search filter. List of available fields\
+            \ with their identifiers can be retrieved from the resource's searchable-fields\
+            \ operation, e.g.: [**GET /v1/certificates/search**](../core-certificate/#tag/Certificate-Inventory/operation/getSearchableFieldInformation)"
+          minLength: 1
+        condition:
+          $ref: "#/components/schemas/FilterConditionOperator"
+          description: Condition for the search filter
+        value:
+          description: Value to match
+        attributeDefinitionUuids:
+          type: array
+          description: "Attribute definitions the filter is bound to, set by the server\
+            \ when the filter is added or rebound. Absent for a property filter. Only\
+            \ definitions of the view's resource count. Empty for an attribute filter\
+            \ whose definition was already gone when stored views were first bound.\
+            \ A value sent in a request is ignored."
+          items:
+            type: string
+            format: uuid
+            example: 6f1d2c1e-6c3a-4c5e-9f0a-2b7d8e9f0a1b
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/ListViewFieldStatus"
+          description: "How the filter resolves for the caller when the view is read.\
+            \ A client applies only an `available` filter to the listing; an `unavailable`\
+            \ or `replaced` one is dormant and offered for removal, and a `replaced`\
+            \ one also for rebinding. Returned on every read and write response; a\
+            \ value sent in a request is ignored."
+          readOnly: true
+        rebind:
+          type: boolean
+          default: false
+          description: "Set to true to bind an attribute filter the view already holds\
+            \ to the attribute definitions now behind its identifier, which is how\
+            \ a client accepts a `replaced` filter. Absent or false carries a filter\
+            \ the view already holds over: while it still resolves it follows the\
+            \ definitions currently behind its identifier, and once it no longer does\
+            \ it keeps the binding it had, so a replacement never takes it over. Any\
+            \ other filter is bound to the current definitions. Any filter sent with\
+            \ rebind is held to the catalogue as a newly added one, property filters\
+            \ included, but only an attribute filter has a binding to change. The\
+            \ flag is not stored."
+          writeOnly: true
+      required:
+      - condition
+      - fieldIdentifier
+      - fieldSource
+    ListViewSortRequestDto:
+      type: object
+      properties:
+        fieldSource:
+          $ref: "#/components/schemas/FilterFieldSource"
+          description: Field source of the field to sort by
+        fieldIdentifier:
+          type: string
+          description: "Field identifier of the field to sort by. Available fields\
+            \ with their identifiers can be retrieved from the resource's searchable-fields\
+            \ operation, for example `GET /v1/certificates/search` or `GET /v2/connectors/search`;\
+            \ only fields marked as sortable may be sorted by."
+          minLength: 1
+        direction:
+          $ref: "#/components/schemas/SortDirection"
+          description: Direction of the ordering
+        rebind:
+          type: boolean
+          default: false
+          description: "Set to true when the user chose this ordering now, to bind\
+            \ an attribute ordering to the attribute definitions currently behind\
+            \ its identifier. Absent or false carries an ordering sent exactly as\
+            \ the view stores it - same field and direction - over, provided the listing\
+            \ still offers its field and can order by it: while it still resolves\
+            \ it follows the definitions currently behind its identifier, and once\
+            \ it no longer does, because the attribute was replaced, it keeps the\
+            \ binding it had, so the replacement never takes it over and the view\
+            \ reads back without it. Any other ordering is bound to the current definitions.\
+            \ Only an attribute ordering has a binding to change. The flag is not\
+            \ stored."
+          writeOnly: true
+      required:
+      - direction
       - fieldIdentifier
       - fieldSource
     ListViewUpdateRequestDto:
@@ -4535,7 +4665,9 @@ components:
             \ the resource no longer defines, such as a deleted attribute, or can\
             \ no longer show as a column is accepted only when editing a view that\
             \ already holds it; a new view may name only fields the resource defines\
-            \ and can show."
+            \ and can show. A column the view already holds is never bound to a replacement\
+            \ definition unless it is sent with `rebind`; see the column's `rebind`\
+            \ for how its binding is carried over."
           items:
             $ref: "#/components/schemas/ListViewColumnDto"
           minItems: 1
@@ -4550,57 +4682,24 @@ components:
           description: Filters the view applies. Absent or empty means the view applies
             no filter of its own and shows the whole inventory. A filter on a field
             the resource no longer defines is accepted only when editing a view that
-            already filters on that field.
+            already holds that exact filter. A filter the view already holds is never
+            bound to a replacement definition unless it is sent with `rebind`; see
+            the filter's `rebind` for how its binding is carried over.
           items:
-            $ref: "#/components/schemas/SearchFilterRequestDto"
+            $ref: "#/components/schemas/ListViewFilterDto"
         sort:
-          $ref: "#/components/schemas/SearchSortRequestDto"
-          description: Ordering the view applies. Absent means the view falls back
-            to the endpoint's own default ordering.
+          $ref: "#/components/schemas/ListViewSortRequestDto"
+          description: "Ordering the view applies. Absent means the view falls back\
+            \ to the endpoint's own default ordering. An ordering the view already\
+            \ holds is never bound to a replacement definition unless it is sent with\
+            \ `rebind`; see the ordering's `rebind` for how its binding is carried\
+            \ over. Unlike a column or a filter, an ordering is refused once the listing\
+            \ no longer offers its field or can no longer order by it, even one the\
+            \ view already holds, so a client drops an ordering the view no longer\
+            \ returns rather than sending it back."
       required:
       - columns
       - name
-    SearchFilterRequestDto:
-      type: object
-      properties:
-        fieldSource:
-          $ref: "#/components/schemas/FilterFieldSource"
-          description: Field group of search filter
-        fieldIdentifier:
-          type: string
-          description: "Field identifier of search filter. List of available fields\
-            \ with their identifiers can be retrieved from the resource's searchable-fields\
-            \ operation, e.g.: [**GET /v1/certificates/search**](../core-certificate/#tag/Certificate-Inventory/operation/getSearchableFieldInformation)"
-          minLength: 1
-        condition:
-          $ref: "#/components/schemas/FilterConditionOperator"
-          description: Condition for the search filter
-        value:
-          description: Value to match
-      required:
-      - condition
-      - fieldIdentifier
-      - fieldSource
-    SearchSortRequestDto:
-      type: object
-      properties:
-        fieldSource:
-          $ref: "#/components/schemas/FilterFieldSource"
-          description: Field source of the field to sort by
-        fieldIdentifier:
-          type: string
-          description: "Field identifier of the field to sort by. Available fields\
-            \ with their identifiers can be retrieved from the resource's searchable-fields\
-            \ operation, for example `GET /v1/certificates/search` or `GET /v2/connectors/search`;\
-            \ only fields marked as sortable may be sorted by."
-          minLength: 1
-        direction:
-          $ref: "#/components/schemas/SortDirection"
-          description: Direction of the ordering
-      required:
-      - direction
-      - fieldIdentifier
-      - fieldSource
     SortDirection:
       type: string
       enum:
@@ -4625,9 +4724,10 @@ components:
         columns:
           type: array
           description: "Columns of the view, in display order. A column whose field\
-            \ the resource no longer defines, such as a deleted attribute, is still\
-            \ returned, so a client can show it as unavailable and offer to remove\
-            \ it."
+            \ the resource no longer defines, such as a deleted attribute, or whose\
+            \ attribute identifier is now backed by a different definition, is still\
+            \ returned with its `status` saying so, so a client can show it as dormant\
+            \ and offer to remove or rebind it."
           items:
             $ref: "#/components/schemas/ListViewColumnDto"
         defaultView:
@@ -4637,19 +4737,43 @@ components:
         filters:
           type: array
           description: Filters the view applies. Absent or empty means the view shows
-            the whole inventory.
+            the whole inventory. Only a filter whose `status` is `available` is meant
+            to be applied to the listing.
           items:
-            $ref: "#/components/schemas/SearchFilterRequestDto"
+            $ref: "#/components/schemas/ListViewFilterDto"
         sort:
           $ref: "#/components/schemas/SearchSortRequestDto"
-          description: Ordering the view applies. Absent means the endpoint's own
-            default ordering.
+          description: "Ordering the view applies. Absent means the endpoint's own\
+            \ default ordering, which is also what a stored ordering reads back as\
+            \ once the listing cannot order by its field, or once that field is an\
+            \ attribute no longer backed by the definitions the ordering was bound\
+            \ to when it was saved."
       required:
       - columns
       - defaultView
       - name
       - resource
       - uuid
+    SearchSortRequestDto:
+      type: object
+      properties:
+        fieldSource:
+          $ref: "#/components/schemas/FilterFieldSource"
+          description: Field source of the field to sort by
+        fieldIdentifier:
+          type: string
+          description: "Field identifier of the field to sort by. Available fields\
+            \ with their identifiers can be retrieved from the resource's searchable-fields\
+            \ operation, for example `GET /v1/certificates/search` or `GET /v2/connectors/search`;\
+            \ only fields marked as sortable may be sorted by."
+          minLength: 1
+        direction:
+          $ref: "#/components/schemas/SortDirection"
+          description: Direction of the ordering
+      required:
+      - direction
+      - fieldIdentifier
+      - fieldSource
     CustomOidEntryRequestDto:
       type: object
       properties:
@@ -4694,6 +4818,27 @@ components:
             \ only fields marked as displayable may be requested as a column."
           minLength: 1
       required:
+      - fieldIdentifier
+      - fieldSource
+    SearchFilterRequestDto:
+      type: object
+      properties:
+        fieldSource:
+          $ref: "#/components/schemas/FilterFieldSource"
+          description: Field group of search filter
+        fieldIdentifier:
+          type: string
+          description: "Field identifier of search filter. List of available fields\
+            \ with their identifiers can be retrieved from the resource's searchable-fields\
+            \ operation, e.g.: [**GET /v1/certificates/search**](../core-certificate/#tag/Certificate-Inventory/operation/getSearchableFieldInformation)"
+          minLength: 1
+        condition:
+          $ref: "#/components/schemas/FilterConditionOperator"
+          description: Condition for the search filter
+        value:
+          description: Value to match
+      required:
+      - condition
       - fieldIdentifier
       - fieldSource
     SearchRequestDto:
@@ -4791,7 +4936,9 @@ components:
             \ the resource no longer defines, such as a deleted attribute, or can\
             \ no longer show as a column is accepted only when editing a view that\
             \ already holds it; a new view may name only fields the resource defines\
-            \ and can show."
+            \ and can show. A column the view already holds is never bound to a replacement\
+            \ definition unless it is sent with `rebind`; see the column's `rebind`\
+            \ for how its binding is carried over."
           items:
             $ref: "#/components/schemas/ListViewColumnDto"
           minItems: 1
@@ -4806,13 +4953,21 @@ components:
           description: Filters the view applies. Absent or empty means the view applies
             no filter of its own and shows the whole inventory. A filter on a field
             the resource no longer defines is accepted only when editing a view that
-            already filters on that field.
+            already holds that exact filter. A filter the view already holds is never
+            bound to a replacement definition unless it is sent with `rebind`; see
+            the filter's `rebind` for how its binding is carried over.
           items:
-            $ref: "#/components/schemas/SearchFilterRequestDto"
+            $ref: "#/components/schemas/ListViewFilterDto"
         sort:
-          $ref: "#/components/schemas/SearchSortRequestDto"
-          description: Ordering the view applies. Absent means the view falls back
-            to the endpoint's own default ordering.
+          $ref: "#/components/schemas/ListViewSortRequestDto"
+          description: "Ordering the view applies. Absent means the view falls back\
+            \ to the endpoint's own default ordering. An ordering the view already\
+            \ holds is never bound to a replacement definition unless it is sent with\
+            \ `rebind`; see the ordering's `rebind` for how its binding is carried\
+            \ over. Unlike a column or a filter, an ordering is refused once the listing\
+            \ no longer offers its field or can no longer order by it, even one the\
+            \ view already holds, so a client drops an ordering the view no longer\
+            \ returns rather than sending it back."
         resource:
           $ref: "#/components/schemas/Resource"
           description: Resource whose listing the view applies to
