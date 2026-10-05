@@ -17026,6 +17026,97 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/cboms/{uuid}/assets:
+    post:
+      tags:
+      - CBOM management
+      summary: List the cryptographic assets a CBOM contributed to the inventory
+      description: "One page of the inventory assets this CBOM record contributed.\
+        \ Each row is the inventory row, with the asset's totals across all CBOMs,\
+        \ plus the `bomRefs` that link it to this document's components. The list\
+        \ follows the record's `assetSyncState` and empties once a later version of\
+        \ the document has synced its assets. `filters`, `sort` and `columns` take\
+        \ the fields of `GET /v1/cryptoAssets/search` and behave as on `POST /v1/cryptoAssets`."
+      operationId: listCbomCryptographicAssets
+      parameters:
+      - name: uuid
+        in: path
+        description: CBOM entry UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequestDto"
+            examples:
+              Assets whose name contains aes, by readiness, with columns:
+                description: "Assets whose name contains aes, by readiness, with columns"
+                value:
+                  pageNumber: 1
+                  itemsPerPage: 50
+                  filters:
+                  - fieldSource: property
+                    fieldIdentifier: CBOM_ASSET_NAME
+                    condition: CONTAINS
+                    value:
+                    - aes
+                  sort:
+                    fieldSource: property
+                    fieldIdentifier: CBOM_ASSET_PQC_VERDICT
+                    direction: asc
+                  columns:
+                  - fieldSource: property
+                    fieldIdentifier: CBOM_ASSET_NAME
+                  - fieldSource: property
+                    fieldIdentifier: CBOM_ASSET_TYPE
+                  - fieldSource: property
+                    fieldIdentifier: CBOM_ASSET_PQC_VERDICT
+                  - fieldSource: property
+                    fieldIdentifier: CBOM_ASSET_SOURCE_COUNT
+        required: true
+      responses:
+        "200":
+          description: The cryptographic assets this CBOM contributed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginationResponseDtoCbomContributedAssetDto"
+        "404":
+          description: CBOM not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/cboms/upload:
     post:
       tags:
@@ -47670,6 +47761,107 @@ components:
           description: Items returned
           items:
             $ref: "#/components/schemas/CbomDto"
+        itemsPerPage:
+          type: integer
+          format: int32
+          description: Number of entries per page
+        pageNumber:
+          type: integer
+          format: int32
+          description: Page number for the request
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages available
+        totalItems:
+          type: integer
+          format: int64
+          description: Number of items available
+      required:
+      - items
+      - itemsPerPage
+      - pageNumber
+      - totalItems
+      - totalPages
+    CbomContributedAssetDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the inventory asset
+        name:
+          type: string
+          description: "Normalized display name of the asset: the producers' name,\
+            \ else the recorded OID. Absent when neither exists to serve, because\
+            \ a refuted OID is never presented as the name"
+        type:
+          $ref: "#/components/schemas/CryptographicAssetType"
+          description: "Type of the asset, as the producer declared it in CycloneDX\
+            \ cryptoProperties.assetType. Absent when the producer declared none of\
+            \ the CycloneDX asset types"
+        pqcVerdict:
+          $ref: "#/components/schemas/PqcVerdict"
+          description: Post-quantum readiness verdict computed by the platform rule
+            set
+        sourceCbomCount:
+          type: integer
+          format: int32
+          description: Number of CBOM documents that reference this asset
+        occurrenceCount:
+          type: integer
+          format: int64
+          description: "Number of occurrences of the asset, summed over its source\
+            \ CBOMs. A source that recorded where it found the asset contributes one\
+            \ occurrence per evidence.occurrences entry, counted in full, including\
+            \ entries beyond the cap on the detail's per-source evidence list; a source\
+            \ that recorded no location counts as one occurrence, the report itself.\
+            \ Never lower than sourceCbomCount, and 0 only when sourceCbomCount is\
+            \ 0. Related crypto material with no digest, value or identifier is keyed\
+            \ on its occurrence entries (location, line and offset), so such a row\
+            \ stands for one set of entries and its occurrences count how often sources\
+            \ reported them, not how many keys or locations exist"
+        quarantined:
+          type: boolean
+          description: True when sources make contradicting claims about this asset
+            that are quarantined pending reconciliation
+        attributeValues:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                $ref: "#/components/schemas/BaseAttributeContentDtoV3"
+          description: "Values of the attribute-sourced fields requested as columns,\
+            \ keyed by field source and then by field identifier. Present only when\
+            \ the listing request asked for attribute-sourced columns; a field the\
+            \ object has no value for is absent rather than empty, and a multi-valued\
+            \ attribute arrives in its stored item_order."
+        bomRefs:
+          type: array
+          description: "The bom-ref values of this document's components folded into\
+            \ this asset, in document order, at most 256. A value that is empty, not\
+            \ a string, not well-formed Unicode, contains NUL or is longer than 1024\
+            \ characters is left out, and the asset is still listed. A document that\
+            \ repeats a bom-ref is not synced."
+          items:
+            type: string
+      required:
+      - bomRefs
+      - occurrenceCount
+      - pqcVerdict
+      - quarantined
+      - sourceCbomCount
+      - uuid
+    PaginationResponseDtoCbomContributedAssetDto:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Items returned
+          items:
+            $ref: "#/components/schemas/CbomContributedAssetDto"
         itemsPerPage:
           type: integer
           format: int32
