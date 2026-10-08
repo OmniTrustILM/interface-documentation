@@ -2,12 +2,12 @@ package com.otilm.openapi.e2e;
 
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.yaml.snakeyaml.Yaml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,8 +33,7 @@ class EndToEndIT {
     @LocalServerPort
     int port;
 
-    @Autowired
-    TestRestTemplate restTemplate;
+    private final RestTestClient restClient = RestTestClient.bindToServer().build();
 
     // -------------------------------------------------------------------------
     // Widgets group (TestWidgetController → TestAuthProtectedController)
@@ -150,7 +149,8 @@ class EndToEndIT {
 
     private ResponseEntity<String> fetchGroupYaml(String groupName) {
         String url = "http://localhost:" + port + "/v3/api-docs.yaml/" + groupName;
-        return restTemplate.getForEntity(url, String.class);
+        EntityExchangeResult<String> result = restClient.get().uri(url).exchange().returnResult(String.class);
+        return ResponseEntity.status(result.getStatus()).body(result.getResponseBody());
     }
 
     private String fetchGroupYamlBody(String groupName) {

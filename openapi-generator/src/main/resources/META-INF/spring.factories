@@ -1,3 +1,2 @@
-# Migrate to the new directory-style format when Spring Boot is migrated to 4.0.
 org.springframework.boot.diagnostics.FailureAnalyzer=\
   com.otilm.openapi.diagnostics.AmbiguousMappingFailureAnalyzer
