@@ -1,8 +1,12 @@
+# The Maven repository the build reads; empty unless one is passed as the m2 build context.
+FROM scratch AS m2
+
 # build environment
 FROM maven:3.9.16-eclipse-temurin-21 AS build
 COPY ./ /home/app
 COPY settings.xml /root/.m2/settings.xml
-RUN mvn -f /home/app/pom.xml clean verify -Dmaven.compiler.proc=full
+# Spotless's Eclipse cache in a host repository records host paths, so the format check stays with the host build.
+RUN --mount=type=bind,from=m2,target=/root/.m2/repository,rw mvn -f /home/app/pom.xml clean verify -Dmaven.compiler.proc=full -Dspotless.skip=true
 
 # build documentation
 FROM node:alpine AS docs
