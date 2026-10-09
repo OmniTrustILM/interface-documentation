@@ -117,7 +117,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -169,7 +169,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -283,7 +283,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/NotificationInstanceDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -462,7 +462,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -558,7 +558,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

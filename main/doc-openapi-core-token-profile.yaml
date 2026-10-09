@@ -106,7 +106,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenProfileDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -323,7 +323,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -825,7 +825,7 @@ paths:
         "204":
           description: Token Profiles deleted
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

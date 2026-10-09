@@ -289,7 +289,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConnectorDetailDtoV2"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -465,7 +465,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ComplianceProfileDtoV2"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -587,7 +587,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ComplianceRuleListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -1989,7 +1989,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -2155,7 +2155,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -2330,7 +2330,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -2532,7 +2532,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenProfileDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -2830,7 +2830,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -3000,7 +3000,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -4289,7 +4289,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProxyDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -4547,7 +4547,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -4595,7 +4595,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -4701,7 +4701,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/NotificationInstanceDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -4833,7 +4833,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -4982,7 +4982,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -5403,7 +5403,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/EntityInstanceDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -5588,7 +5588,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/LocationDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -6029,7 +6029,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CredentialDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -6089,7 +6089,7 @@ paths:
         "204":
           description: Credential deleted
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -6213,7 +6213,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConnectorDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -6329,7 +6329,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ConnectDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -6502,7 +6502,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ConnectDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -6809,7 +6809,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AuthorityInstanceDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -6994,7 +6994,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -7492,7 +7492,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -7540,7 +7540,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -7780,7 +7780,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -7867,7 +7867,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -7938,7 +7938,7 @@ paths:
         "204":
           description: Revocation confirmed
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -8030,7 +8030,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8119,7 +8119,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8210,7 +8210,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ClientCertificateDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8315,7 +8315,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8401,7 +8401,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CertificateDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8561,7 +8561,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8639,7 +8639,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8703,7 +8703,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConnectorDetailDtoV2"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8771,7 +8771,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8837,7 +8837,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConnectInfoDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -8932,7 +8932,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9058,7 +9058,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoConnectorDtoV2"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9127,7 +9127,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9193,7 +9193,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ConnectInfoDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9473,7 +9473,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ComplianceProfileDtoV2"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9544,7 +9544,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9633,7 +9633,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ComplianceRuleListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9696,7 +9696,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ComplianceRuleListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -9976,7 +9976,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -10719,7 +10719,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoVaultInstanceDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -10783,7 +10783,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoVaultProfileDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -10965,7 +10965,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11025,7 +11025,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11141,7 +11141,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11193,7 +11193,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoTspProfileListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11281,7 +11281,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11375,7 +11375,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11440,7 +11440,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11541,7 +11541,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11634,7 +11634,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11686,7 +11686,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11746,7 +11746,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11798,7 +11798,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoTimeQualityConfigurationListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11876,7 +11876,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoSigningRecordListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -11935,7 +11935,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -12005,7 +12005,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -12064,7 +12064,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -12133,7 +12133,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -12179,7 +12179,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoSigningProfileListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -12257,7 +12257,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoSecretDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -12745,7 +12745,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -13363,7 +13363,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CustomOidEntryListResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -13463,7 +13463,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -13551,7 +13551,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -13615,7 +13615,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/LocationsResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -13749,7 +13749,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -13821,7 +13821,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CryptographicKeyResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -13969,7 +13969,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/octet-stream:
               schema:
@@ -14035,7 +14035,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: "Unprocessable Entity, including a file no supported container\
+          description: "Unprocessable Content, including a file no supported container\
             \ format explains, a file the supplied passphrase does not open, and a\
             \ file beyond the platform's limits"
           content:
@@ -14190,7 +14190,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14261,7 +14261,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14396,7 +14396,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -14462,7 +14462,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/EntityInstanceResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14520,7 +14520,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14638,7 +14638,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14728,7 +14728,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/DiscoveryResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14816,7 +14816,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoCryptographicAssetDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14910,7 +14910,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -14975,7 +14975,7 @@ paths:
         "200":
           description: Credentials deleted
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15109,7 +15109,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15180,7 +15180,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15356,7 +15356,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15635,7 +15635,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15706,7 +15706,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15777,7 +15777,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ComplianceProfileRuleDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15843,7 +15843,7 @@ paths:
         "204":
           description: New group is added to the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15910,7 +15910,7 @@ paths:
         "204":
           description: New group is deleted from the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -15976,7 +15976,7 @@ paths:
         "204":
           description: New rule is added to the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -16142,7 +16142,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommentResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -16209,7 +16209,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommentDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -16364,7 +16364,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CertificateResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -16515,7 +16515,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/x-pkcs12:
               schema:
@@ -16834,7 +16834,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/CertificateContentDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -16950,7 +16950,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoCbomDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17000,7 +17000,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17091,7 +17091,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17217,7 +17217,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginationResponseDtoCbomSyncSkipDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17358,7 +17358,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17429,7 +17429,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17498,7 +17498,7 @@ paths:
         "200":
           description: Attribute information validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17569,7 +17569,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -17633,7 +17633,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AuditLogResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -18095,7 +18095,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -18396,7 +18396,7 @@ paths:
         "204":
           description: Rule added/removed to/from the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -18464,7 +18464,7 @@ paths:
         "204":
           description: Group is added/removed to/from the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -18540,7 +18540,7 @@ paths:
         "204":
           description: Resource object disassociation successful
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -18615,7 +18615,7 @@ paths:
         "204":
           description: Resource object association successful
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -19063,7 +19063,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -19124,7 +19124,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -19914,7 +19914,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -19974,7 +19974,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -21007,7 +21007,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -22113,7 +22113,7 @@ paths:
         "200":
           description: RA Profile disassociation successful
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -22182,7 +22182,7 @@ paths:
         "200":
           description: RA Profile association successful
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -22247,7 +22247,7 @@ paths:
         "204":
           description: Comment thread reopened
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -22298,7 +22298,7 @@ paths:
         "204":
           description: Comment thread resolved
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -22945,7 +22945,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -23013,7 +23013,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -23077,7 +23077,7 @@ paths:
         "204":
           description: SCEP deactivated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -23160,7 +23160,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileScepDetailResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -23227,7 +23227,7 @@ paths:
         "204":
           description: CMP deactivated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -23310,7 +23310,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileCmpDetailResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -23377,7 +23377,7 @@ paths:
         "204":
           description: ACME deactivated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -23460,7 +23460,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileAcmeDetailResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -24307,7 +24307,7 @@ paths:
         "204":
           description: Resource object association successful
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -25432,7 +25432,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ComplianceGroupListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -25510,7 +25510,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ComplianceRuleListDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -27004,7 +27004,7 @@ paths:
         "204":
           description: Token Profiles deleted
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -27650,7 +27650,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -28353,7 +28353,7 @@ paths:
         "204":
           description: RA Profiles deleted
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -31248,7 +31248,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ComplianceRulesListResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -31319,7 +31319,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ComplianceGroupsListResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -31423,7 +31423,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommentResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -31977,7 +31977,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BaseAttributeDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -32504,7 +32504,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BaseAttributeDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -32575,7 +32575,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileScepDetailResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -32646,7 +32646,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileCmpDetailResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -32717,7 +32717,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RaProfileAcmeDetailResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -33675,7 +33675,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -33871,7 +33871,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -33974,7 +33974,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -34042,7 +34042,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -34203,7 +34203,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -34259,7 +34259,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -34374,7 +34374,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -37904,9 +37904,12 @@ components:
             $ref: "#/components/schemas/RequestAttribute"
         certificateCustomAttributes:
           type: array
-          description: "List of Custom Attributes set for the user certificate, if\
-            \ a new certificate is uploaded. Ignored if the certificate already exists\
-            \ in the inventory (matched by UUID or fingerprint)."
+          description: "List of Custom Attributes set for the user certificate. Applied\
+            \ whether the certificate is newly uploaded or already present in the\
+            \ inventory (matched by UUID or fingerprint). Omitting the field, or sending\
+            \ an empty list, leaves the certificate's existing custom attributes unchanged.\
+            \ A non-empty list replaces them, so an attribute missing from that list\
+            \ is cleared. Requires permission to update the certificate."
           items:
             $ref: "#/components/schemas/RequestAttribute"
     RoleDto:
@@ -41749,9 +41752,13 @@ components:
           type: string
           description: Key Data
         length:
-          type: integer
+          type:
+          - integer
+          - "null"
           format: int32
-          description: Key Length
+          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
+            \ otherwise."
+          minimum: 1
         metadata:
           type: array
           description: Metadata for the key
@@ -41785,7 +41792,6 @@ components:
       - exportable
       - format
       - keyAlgorithm
-      - length
       - name
       - state
       - type
@@ -44008,9 +44014,13 @@ components:
           $ref: "#/components/schemas/KeyFormat"
           description: Key Format
         length:
-          type: integer
+          type:
+          - integer
+          - "null"
           format: int32
-          description: Key Length
+          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
+            \ otherwise."
+          minimum: 1
         usage:
           type: array
           description: Key Usages
@@ -44059,7 +44069,6 @@ components:
       - format
       - keyAlgorithm
       - keyWrapperUuid
-      - length
       - name
       - state
       - type
@@ -45223,9 +45232,12 @@ components:
             $ref: "#/components/schemas/RequestAttribute"
         certificateCustomAttributes:
           type: array
-          description: "List of Custom Attributes set for the user certificate, if\
-            \ a new certificate is uploaded. Ignored if the certificate already exists\
-            \ in the inventory (matched by UUID or fingerprint)."
+          description: "List of Custom Attributes set for the user certificate. Applied\
+            \ whether the certificate is newly uploaded or already present in the\
+            \ inventory (matched by UUID or fingerprint). Omitting the field, or sending\
+            \ an empty list, leaves the certificate's existing custom attributes unchanged.\
+            \ A non-empty list replaces them, so an attribute missing from that list\
+            \ is cleared. Requires permission to update the certificate."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         username:

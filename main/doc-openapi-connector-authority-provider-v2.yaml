@@ -69,7 +69,7 @@ paths:
             \ operation by transactionId / certificate identity, not by connector-emitted\
             \ metadata."
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -259,7 +259,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -335,7 +335,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CertificateDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -411,7 +411,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CertificateDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -605,7 +605,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -675,7 +675,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity. Certificate is found but not valid according
+          description: Unprocessable Content. Certificate is found but not valid according
             to supplied RA attributes
           content:
             application/json:
@@ -1194,7 +1194,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BaseAttributeDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

@@ -13,6 +13,7 @@ info:
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
+    version: 1
     histograms:
       http_server_latency_buckets_seconds:
       - 0.005
@@ -38,65 +39,64 @@ info:
       - 5.0
       - 10.0
     required:
-    - unit: "1"
+    - type: gauge
+      name: app_build_info
+      unit: "1"
       labels:
       - version
       - commit
       - runtime
-      type: gauge
-      name: app_build_info
-    - unit: seconds
-      labels: []
-      type: gauge
+    - type: gauge
       name: process_start_time_seconds
-    - unit: seconds
+      unit: seconds
       labels: []
-      type: counter
+    - type: counter
       name: process_cpu_seconds_total
-    - unit: bytes
+      unit: seconds
       labels: []
-      type: gauge
+    - type: gauge
       name: process_resident_memory_bytes
-    - unit: requests
+      unit: bytes
+      labels: []
+    - type: counter
+      name: http_requests_total
+      unit: requests
       labels:
       - method
       - route
       - status
-      type: counter
-      name: http_requests_total
-    - name: http_request_duration_seconds
-      unit: seconds
-      type: histogram
-      labels:
+    - labels:
       - method
       - route
       buckets_ref: http_server_latency_buckets_seconds
-    - unit: requests
+      name: http_request_duration_seconds
+      unit: seconds
+      type: histogram
+    - type: gauge
+      name: http_server_in_flight_requests
+      unit: requests
       labels:
       - route
-      type: gauge
-      name: http_server_in_flight_requests
-    - unit: requests
+    - type: counter
+      name: http_client_requests_total
+      unit: requests
       labels:
       - method
       - target
       - status
-      type: counter
-      name: http_client_requests_total
-    - name: http_client_request_duration_seconds
-      unit: seconds
-      type: histogram
-      labels:
+    - labels:
       - method
       - target
       buckets_ref: http_client_latency_buckets_seconds
-    - unit: events
+      name: http_client_request_duration_seconds
+      unit: seconds
+      type: histogram
+    - type: counter
+      name: connector_events_total
+      unit: events
       labels:
       - event
       - outcome
-      type: counter
-      name: connector_events_total
-    version: 1
 externalDocs:
   description: ILM Documentation
   url: https://docs.otilm.com
@@ -5032,10 +5032,11 @@ components:
           minItems: 1
         operationMeta:
           type: array
-          description: Connector-defined signing operation metadata. Present on async
-            202 as the tracking handle for the whole batch. Supply it by itself to
-            /operations/sign/status and /operations/sign/cancel. It must remain valid
-            for the operation's entire tracking lifetime.
+          description: Connector-defined signing operation metadata. Required and
+            non-empty on asynchronous 202 as the tracking handle for the whole batch;
+            must be absent on synchronous 200. Supply it by itself to /operations/sign/status
+            and /operations/sign/cancel. It must remain valid for the operation's
+            entire tracking lifetime.
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -5298,12 +5299,12 @@ components:
       - $ref: "#/components/schemas/SecretKeyDataResponseV2Dto"
       - $ref: "#/components/schemas/KeyPairDataResponseV2Dto"
       properties:
+        keyRequestType:
+          $ref: "#/components/schemas/KeyRequestType"
         operationMeta:
           type: array
           items:
             $ref: "#/components/schemas/MetadataAttribute"
-        keyRequestType:
-          $ref: "#/components/schemas/KeyRequestType"
     KeyPairDataResponseV2Dto:
       type: object
       additionalProperties: false
@@ -5376,7 +5377,8 @@ components:
         length:
           type: integer
           format: int32
-          description: Bit length of the key
+          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
+            \ otherwise."
           minimum: 1
         metadata:
           type: array
@@ -5385,7 +5387,6 @@ components:
             $ref: "#/components/schemas/MetadataAttribute"
       required:
       - algorithm
-      - length
       - type
     PublicKeyDataResponseV2Dto:
       type: object
@@ -5424,7 +5425,8 @@ components:
         length:
           type: integer
           format: int32
-          description: Bit length of the key
+          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
+            \ otherwise."
           minimum: 1
         metadata:
           type: array
@@ -5437,7 +5439,6 @@ components:
           description: Base64-encoded DER SubjectPublicKeyInfo.
       required:
       - algorithm
-      - length
       - publicKeySpki
       - type
     SecretKeyDataResponseV2Dto:
@@ -5491,7 +5492,8 @@ components:
         length:
           type: integer
           format: int32
-          description: Bit length of the key
+          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
+            \ otherwise."
           minimum: 1
         metadata:
           type: array
@@ -5500,7 +5502,6 @@ components:
             $ref: "#/components/schemas/MetadataAttribute"
       required:
       - algorithm
-      - length
       - type
     EncryptedKeyMaterialV2Dto:
       type: object

@@ -173,7 +173,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -264,7 +264,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -339,7 +339,7 @@ paths:
         "204":
           description: Revocation confirmed
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -435,7 +435,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -528,7 +528,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -623,7 +623,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ClientCertificateDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -732,7 +732,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -822,7 +822,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CertificateDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -990,7 +990,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -1072,7 +1072,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -4416,9 +4416,13 @@ components:
           $ref: "#/components/schemas/KeyFormat"
           description: Key Format
         length:
-          type: integer
+          type:
+          - integer
+          - "null"
           format: int32
-          description: Key Length
+          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
+            \ otherwise."
+          minimum: 1
         usage:
           type: array
           description: Key Usages
@@ -4467,7 +4471,6 @@ components:
       - format
       - keyAlgorithm
       - keyWrapperUuid
-      - length
       - name
       - state
       - type

@@ -106,7 +106,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AuthorityInstanceDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -279,7 +279,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -354,7 +354,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -427,7 +427,7 @@ paths:
         "200":
           description: Attribute information validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -760,7 +760,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BaseAttributeDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -832,7 +832,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

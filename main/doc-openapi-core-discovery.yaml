@@ -42,7 +42,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -168,7 +168,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -262,7 +262,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/DiscoveryResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

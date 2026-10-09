@@ -953,7 +953,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

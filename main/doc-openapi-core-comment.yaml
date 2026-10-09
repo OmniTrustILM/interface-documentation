@@ -89,7 +89,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommentResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -160,7 +160,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommentDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -215,7 +215,7 @@ paths:
         "204":
           description: Comment thread reopened
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -270,7 +270,7 @@ paths:
         "204":
           description: Comment thread resolved
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -366,7 +366,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommentResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

@@ -131,7 +131,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/DiscoveryProviderDto"
         "422":
-          description: Unprocessable entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

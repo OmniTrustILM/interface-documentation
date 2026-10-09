@@ -118,7 +118,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -318,7 +318,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/TokenInstanceDetailDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

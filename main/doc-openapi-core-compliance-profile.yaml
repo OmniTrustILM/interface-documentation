@@ -94,7 +94,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UuidDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -169,7 +169,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -244,7 +244,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ComplianceProfileRuleDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -314,7 +314,7 @@ paths:
         "204":
           description: New group is added to the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -385,7 +385,7 @@ paths:
         "204":
           description: New group is deleted from the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -455,7 +455,7 @@ paths:
         "204":
           description: New rule is added to the profile
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -585,7 +585,7 @@ paths:
         "200":
           description: RA Profile disassociation successful
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -658,7 +658,7 @@ paths:
         "200":
           description: RA Profile association successful
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -913,7 +913,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ComplianceRulesListResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -988,7 +988,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ComplianceGroupsListResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -1060,7 +1060,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/BulkActionMessageDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:

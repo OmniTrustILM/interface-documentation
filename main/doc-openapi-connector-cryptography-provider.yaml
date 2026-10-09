@@ -430,7 +430,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/VerifyDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -500,7 +500,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SignDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -570,7 +570,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/EncryptDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -640,7 +640,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/DecryptDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -704,7 +704,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/KeyDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -766,7 +766,7 @@ paths:
         "204":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -830,7 +830,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RandomDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -892,7 +892,7 @@ paths:
         "204":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -956,7 +956,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/KeyPairDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -1018,7 +1018,7 @@ paths:
         "204":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -1459,7 +1459,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/KeyDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -1523,7 +1523,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/KeyDataResponseDto"
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             application/json:
               schema:
@@ -1582,7 +1582,7 @@ paths:
         "204":
           description: Key destroyed
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:

@@ -547,7 +547,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
@@ -666,7 +666,7 @@ paths:
         "200":
           description: Attributes validated
         "422":
-          description: Unprocessable Entity
+          description: Unprocessable Content
           content:
             '*/*':
               schema:
