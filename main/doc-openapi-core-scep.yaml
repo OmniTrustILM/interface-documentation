@@ -750,15 +750,15 @@ components:
       - $ref: "#/components/schemas/DateTimeAttributeConstraint"
       - $ref: "#/components/schemas/JsonSchemaAttributeConstraint"
       properties:
-        type:
-          $ref: "#/components/schemas/AttributeConstraintType"
-          description: Attribute Constraint Type
-        errorMessage:
-          type: string
-          description: Error message to be displayed for wrong data
         description:
           type: string
           description: Description of the constraint
+        errorMessage:
+          type: string
+          description: Error message to be displayed for wrong data
+        type:
+          $ref: "#/components/schemas/AttributeConstraintType"
+          description: Attribute Constraint Type
       required:
       - type
     BaseAttributeContentDtoV2:
