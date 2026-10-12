@@ -2896,6 +2896,15 @@ components:
           format: int32
           default: 0
           description: Number of certificates that are discovered
+        totalItemsDiscovered:
+          type: integer
+          format: int64
+          description: "Number of items discovered, across all resource types"
+        resources:
+          type: array
+          description: Resource types the discovery targets
+          items:
+            $ref: "#/components/schemas/Resource"
         connectorUuid:
           type: string
           description: UUID of the Discovery Provider
@@ -2937,7 +2946,9 @@ components:
       - connectorName
       - connectorUuid
       - name
+      - resources
       - status
+      - totalItemsDiscovered
       - uuid
     DiscoveryResponseDto:
       type: object
