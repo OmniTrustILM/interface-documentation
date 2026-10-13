@@ -17892,6 +17892,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Global Metadata with the same name already exists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Global metadata named 'discoverySource' already exists
         "400":
           description: Bad Request
           content:
@@ -51356,8 +51366,8 @@ components:
           description: "How many distinct advisory messages this run collected, as\
             \ counted by the run messages listing. Repeated problems are aggregated,\
             \ so this counts kinds of problem rather than occurrences. A non-zero\
-            \ count does not imply the run failed. Always 0 for runs against a v1\
-            \ Discovery Provider."
+            \ count does not imply the run failed. For a run against a v1 Discovery\
+            \ Provider it is 0 unless the run's metadata could not be stored."
         itemsDiscovered:
           type: integer
           format: int64

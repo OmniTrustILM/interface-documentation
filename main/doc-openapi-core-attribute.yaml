@@ -477,6 +477,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Global Metadata with the same name already exists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Global metadata named 'discoverySource' already exists
         "400":
           description: Bad Request
           content:
