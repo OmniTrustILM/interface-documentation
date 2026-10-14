@@ -3288,6 +3288,8 @@ components:
       - approval_closed
       - comment_created
       - comment_resolved
+      - cbom_synced
+      - crypto_asset_pqc_not_ready
       - scheduled_job_finished
     ResponseMetadataDto:
       type: object

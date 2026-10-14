@@ -1447,6 +1447,19 @@ components:
             \ the listing request asked for attribute-sourced columns; a field the\
             \ object has no value for is absent rather than empty, and a multi-valued\
             \ attribute arrives in its stored item_order."
+          example:
+            custom:
+              businessUnit|STRING:
+              - contentType: string
+                reference: Payments
+                data: payments
+              environment|STRING:
+              - contentType: string
+                reference: Production
+                data: production
+              - contentType: string
+                reference: Disaster recovery
+                data: disaster-recovery
       required:
       - occurrenceCount
       - pqcVerdict
@@ -2516,6 +2529,19 @@ components:
             \ the listing request asked for attribute-sourced columns; a field the\
             \ object has no value for is absent rather than empty, and a multi-valued\
             \ attribute arrives in its stored item_order."
+          example:
+            custom:
+              businessUnit|STRING:
+              - contentType: string
+                reference: Payments
+                data: payments
+              environment|STRING:
+              - contentType: string
+                reference: Production
+                data: production
+              - contentType: string
+                reference: Disaster recovery
+                data: disaster-recovery
       required:
       - algorithms
       - certificates
@@ -2614,6 +2640,19 @@ components:
             \ the listing request asked for attribute-sourced columns; a field the\
             \ object has no value for is absent rather than empty, and a multi-valued\
             \ attribute arrives in its stored item_order."
+          example:
+            custom:
+              businessUnit|STRING:
+              - contentType: string
+                reference: Payments
+                data: payments
+              environment|STRING:
+              - contentType: string
+                reference: Production
+                data: production
+              - contentType: string
+                reference: Disaster recovery
+                data: disaster-recovery
         bomRefs:
           type: array
           description: "The bom-ref values of this document's components folded into\
@@ -2667,8 +2706,89 @@ components:
           type: object
           additionalProperties: {}
           description: Raw JSON content of CBOM document
+        customAttributes:
+          type: array
+          description: Custom attribute content assigned to the uploaded CBOM
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
       required:
       - content
+    RequestAttribute:
+      type: object
+      description: Request attribute to send attribute content for object
+      discriminator:
+        propertyName: version
+        mapping:
+          v2: "#/components/schemas/RequestAttributeV2"
+          v3: "#/components/schemas/RequestAttributeV3"
+      oneOf:
+      - $ref: "#/components/schemas/RequestAttributeV3"
+      - $ref: "#/components/schemas/RequestAttributeV2"
+      required:
+      - contentType
+      - name
+      - uuid
+      - version
+    RequestAttributeV2:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the Attribute
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        name:
+          type: string
+          description: Name of the Attribute
+          examples:
+          - Attribute
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
+          description: Content Type of the Attribute
+          examples:
+          - Attribute
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV2"
+        version:
+          $ref: "#/components/schemas/AttributeVersion"
+          description: Version of the Attribute
+      required:
+      - contentType
+      - name
+      - uuid
+      - version
+    RequestAttributeV3:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the Attribute
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        name:
+          type: string
+          description: Name of the Attribute
+          examples:
+          - Attribute
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
+          description: Content Type of the Attribute
+          examples:
+          - Attribute
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
+        version:
+          $ref: "#/components/schemas/AttributeVersion"
+          description: Version of the Attribute
+      required:
+      - contentType
+      - name
+      - uuid
+      - version
     CbomSyncSkipDto:
       type: object
       properties:
@@ -2838,6 +2958,24 @@ components:
             \ the listing request asked for attribute-sourced columns; a field the\
             \ object has no value for is absent rather than empty, and a multi-valued\
             \ attribute arrives in its stored item_order."
+          example:
+            custom:
+              businessUnit|STRING:
+              - contentType: string
+                reference: Payments
+                data: payments
+              environment|STRING:
+              - contentType: string
+                reference: Production
+                data: production
+              - contentType: string
+                reference: Disaster recovery
+                data: disaster-recovery
+        customAttributes:
+          type: array
+          description: Custom attribute content assigned to this asset
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
         verdict:
           $ref: "#/components/schemas/CryptographicAssetVerdictDto"
           description: Provenance of the asset's PQC verdict. Absent until the first
@@ -2867,6 +3005,7 @@ components:
           items:
             $ref: "#/components/schemas/CryptographicAssetOidDto"
       required:
+      - customAttributes
       - occurrenceCount
       - oids
       - pqcVerdict
@@ -3410,16 +3549,35 @@ components:
             \ the listing request asked for attribute-sourced columns; a field the\
             \ object has no value for is absent rather than empty, and a multi-valued\
             \ attribute arrives in its stored item_order."
+          example:
+            custom:
+              businessUnit|STRING:
+              - contentType: string
+                reference: Payments
+                data: payments
+              environment|STRING:
+              - contentType: string
+                reference: Production
+                data: production
+              - contentType: string
+                reference: Disaster recovery
+                data: disaster-recovery
         content:
           type: object
           additionalProperties: {}
           description: Raw JSON content of CBOM document
+        customAttributes:
+          type: array
+          description: Custom attribute content assigned to this CBOM
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
       required:
       - algorithms
       - certificates
       - content
       - createdAt
       - cryptoMaterial
+      - customAttributes
       - protocols
       - serialNumber
       - source
