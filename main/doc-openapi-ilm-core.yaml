@@ -52040,9 +52040,8 @@ components:
           type: object
           additionalProperties: {}
           description: "Values of the asset fields the deciding rule evaluated, recorded\
-            \ at decision time and as stored, so assetType may be unroutable for an\
-            \ asset served with no type. Values are strings, numbers, booleans or\
-            \ lists of strings, never nested objects"
+            \ at decision time and as stored. Values are strings, numbers, booleans\
+            \ or lists of strings, never nested objects"
         referencedAsset:
           $ref: "#/components/schemas/PqcReferencedAssetDto"
           description: "The inventory asset whose own verdict decided this one. Present\
@@ -52130,11 +52129,14 @@ components:
         steps:
           type: array
           description: "Every rule the evaluation consults for an asset of this type,\
-            \ in evaluation order; rules that apply only to other asset types are\
-            \ not listed. Evaluation is first-match-wins: the rules before the deciding\
-            \ one are notMatched, the deciding one is decided or resolved, and the\
-            \ rules after it are notReached. The deciding step's ruleId equals the\
-            \ explanation's ruleId"
+            \ in catalogue order; rules that apply only to other asset types are not\
+            \ listed. Every rule is evaluated: a step is matched or notMatched, and\
+            \ the one the rule order selects is decided or resolved instead. The order\
+            \ is: a rule that places the asset outside the question decides first;\
+            \ otherwise the weakest matched verdict, notReady before unknown before\
+            \ ready, with catalogue position breaking a tie; a fallback decides only\
+            \ when nothing else matched. The deciding step's ruleId equals the explanation's\
+            \ ruleId"
           items:
             $ref: "#/components/schemas/PqcExplanationStepDto"
         matchesStored:
@@ -52172,9 +52174,11 @@ components:
       - verdict
     PqcExplanationStepDto:
       type: object
-      description: "One rule of the PQC rule set as the explanation walked it. verdict\
-        \ is present on decided, resolved and failed steps; evaluatedFields is absent\
-        \ on a notReached step; referencedAsset is present on a resolved step only"
+      description: "One rule of the PQC rule set as the explanation evaluated it.\
+        \ verdict is present on matched, decided, resolved and failed steps and absent\
+        \ on a notMatched one; evaluatedFields is present on every evaluated step;\
+        \ referencedAsset is present on a resolved step, and on a matched step whose\
+        \ rule carried another asset's verdict"
       properties:
         ruleId:
           type: string
@@ -52218,8 +52222,8 @@ components:
       description: What one rule of the PQC rule set did while the verdict was explained
       enum:
       - notMatched
+      - matched
       - decided
-      - notReached
       - resolved
       - failed
     HealthDto:
