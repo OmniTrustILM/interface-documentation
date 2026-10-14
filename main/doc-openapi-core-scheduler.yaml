@@ -435,11 +435,11 @@ components:
             \ scheduler could not fire the trigger and stopped trying. 'complete':\
             \ the trigger has no fire time left. 'notScheduled': the scheduler holds\
             \ no trigger for this job -- the normal end of a one-time job once its\
-            \ run has succeeded, since the platform then removes it from the scheduler;\
-            \ any other job will not fire until it is registered again. 'unknown':\
-            \ the scheduler could not be read for this response, or it reported no\
-            \ state for the trigger (a scheduler that predates this field); nextFireTime\
-            \ and previousFireTime are then absent."
+            \ run has succeeded or was cancelled, since the platform then removes\
+            \ it from the scheduler; any other job will not fire until it is registered\
+            \ again. 'unknown': the scheduler could not be read for this response,\
+            \ or it reported no state for the trigger (a scheduler that predates this\
+            \ field); nextFireTime and previousFireTime are then absent."
         nextFireTime:
           type: string
           format: date-time
@@ -509,6 +509,7 @@ components:
       - started
       - succeeded
       - failed
+      - cancelled
     ScheduledJobDto:
       type: object
       properties:
@@ -547,11 +548,11 @@ components:
             \ scheduler could not fire the trigger and stopped trying. 'complete':\
             \ the trigger has no fire time left. 'notScheduled': the scheduler holds\
             \ no trigger for this job -- the normal end of a one-time job once its\
-            \ run has succeeded, since the platform then removes it from the scheduler;\
-            \ any other job will not fire until it is registered again. 'unknown':\
-            \ the scheduler could not be read for this response, or it reported no\
-            \ state for the trigger (a scheduler that predates this field); nextFireTime\
-            \ and previousFireTime are then absent."
+            \ run has succeeded or was cancelled, since the platform then removes\
+            \ it from the scheduler; any other job will not fire until it is registered\
+            \ again. 'unknown': the scheduler could not be read for this response,\
+            \ or it reported no state for the trigger (a scheduler that predates this\
+            \ field); nextFireTime and previousFireTime are then absent."
         nextFireTime:
           type: string
           format: date-time

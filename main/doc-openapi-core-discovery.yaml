@@ -309,9 +309,8 @@ paths:
       tags:
       - Discovery Management
       summary: Stop Discovery
-      description: "Asks the Discovery Provider to suspend an in-progress run, keeping\
-        \ everything already staged and the Provider-side checkpoint needed to resume\
-        \ it. Legal only while the run is in progress."
+      description: "Suspends an in-progress discovery so it can be resumed, keeping\
+        \ what it has staged."
       operationId: stopDiscovery
       parameters:
       - name: uuid
@@ -378,10 +377,9 @@ paths:
       tags:
       - Discovery Management
       summary: Resume Discovery
-      description: "Asks the Discovery Provider to continue a stopped run from its\
-        \ checkpoint. Legal only from the stopped status. A Provider that has since\
-        \ lost the checkpoint fails the run instead of restarting it, so a resume\
-        \ is never silently a fresh scan."
+      description: "Continues a stopped discovery where it stopped. If the Discovery\
+        \ Provider has lost its checkpoint, the discovery fails rather than starting\
+        \ over."
       operationId: resumeDiscovery
       parameters:
       - name: uuid
@@ -448,9 +446,8 @@ paths:
       tags:
       - Discovery Management
       summary: Cancel Discovery
-      description: "Abandons a run for good: the Discovery Provider releases it and\
-        \ the items already staged are never processed. Legal while the run is in\
-        \ progress or stopped. This is irreversible - a cancelled run cannot be resumed."
+      description: Ends an in-progress or stopped discovery for good; the items it
+        staged are not processed.
       operationId: cancelDiscovery
       parameters:
       - name: uuid
@@ -640,10 +637,9 @@ paths:
       tags:
       - Discovery Management
       summary: List Discovery Run Messages
-      description: "Returns one page of the advisory messages a Discovery run collected,\
-        \ oldest first and stable across pages. Repeated problems are aggregated into\
-        \ a single entry carrying an occurrence count rather than repeated per occurrence.\
-        \ Messages are advisory: collecting them does not imply the run failed."
+      description: "Returns one page of the discovery's run messages, oldest first\
+        \ and stable across pages. A repeated problem is one entry with an occurrence\
+        \ count, and messages alone do not mean the run failed."
       operationId: getDiscoveryRunMessages
       parameters:
       - name: uuid
@@ -716,13 +712,9 @@ paths:
       tags:
       - Discovery Management
       summary: List Discovered Items
-      description: "Returns one page of the items this Discovery staged, ordered by\
-        \ their run sequence, optionally narrowed to a single resource type. Certificates\
-        \ are included: a run against a v1 Discovery Provider stages certificates\
-        \ only, so its unfiltered listing contains exactly what the certificate listing\
-        \ contains, with sequence and uniqueRef synthesized by the platform (staging\
-        \ order and certificate fingerprint) because a v1 provider never numbered\
-        \ its items."
+      description: "Returns one page of the items the discovery staged, in run sequence,\
+        \ optionally narrowed to one resource type. For a v1 run it lists the same\
+        \ certificates as the certificate listing."
       operationId: getDiscoveryItems
       parameters:
       - name: uuid
@@ -733,8 +725,8 @@ paths:
           type: string
       - name: resource
         in: query
-        description: "Resource type to list, identified by its wire code (e.g. \"\
-          certificates\", \"keys\"); omit to list every resource type this run discovered"
+        description: "Resource code to list, e.g. \"certificates\" or \"keys\"; omit\
+          \ for every resource type"
         required: false
         schema:
           $ref: "#/components/schemas/Resource"
@@ -806,7 +798,7 @@ paths:
     get:
       tags:
       - Discovery Management
-      summary: Discovery Details
+      summary: List Discovered Certificates
       operationId: getDiscoveryCertificates
       parameters:
       - name: uuid
@@ -836,7 +828,7 @@ paths:
           default: 0
       responses:
         "200":
-          description: Discovery details retrieved
+          description: Discovered certificates retrieved
           content:
             application/json:
               schema:
@@ -884,8 +876,8 @@ paths:
       tags:
       - Discovery Management
       summary: Get per-resource Discovery Attributes from a Discovery Provider
-      description: Relays the attribute definitions that refine discovery of one resource
-        type from the Connector's discovery interface.
+      description: "Returns the attributes that refine discovery of one resource type,\
+        \ from a v2 Discovery Provider."
       operationId: getDiscoveryResourceAttributes
       parameters:
       - name: connectorUuid
@@ -896,8 +888,7 @@ paths:
           type: string
       - name: resource
         in: path
-        description: "Resource type, identified by its wire code (e.g. \"certificates\"\
-          , \"keys\")"
+        description: "Resource code, e.g. \"certificates\" or \"keys\""
         required: true
         schema:
           $ref: "#/components/schemas/Resource"
@@ -965,10 +956,9 @@ paths:
       tags:
       - Discovery Management
       summary: Get discoverable resources of a Discovery Provider
-      description: "Returns the resource types this Connector's discovery interface\
-        \ supports, relayed live from the Connector. For a Connector implementing\
-        \ only the v1 discovery interface, Core synthesizes the single entry \"certificates\"\
-        \ without calling the Connector — a client renders one shape for both generations."
+      description: "Returns the resource types the Connector can discover, asked live.\
+        \ For a v1 Connector, Core answers a single certificates entry without calling\
+        \ it."
       operationId: listDiscoveryResources
       parameters:
       - name: connectorUuid
@@ -1029,11 +1019,9 @@ paths:
       tags:
       - Discovery Management
       summary: Get run-level Discovery Attributes from a Discovery Provider
-      description: "Relays the run-level attribute definitions from the Connector's\
-        \ discovery interface: the schema that configures a discovery run as a whole\
-        \ and applies to every resource type the run targets. Exists only for Connectors\
-        \ implementing discovery v2; for a v1 Connector, use the kind-scoped Connector\
-        \ attribute endpoint, exactly as today."
+      description: "Returns the attributes that configure a run as a whole, from a\
+        \ v2 Discovery Provider. For a v1 Connector, use the kind-scoped Connector\
+        \ attribute endpoint."
       operationId: getDiscoveryAttributes
       parameters:
       - name: connectorUuid
@@ -1725,30 +1713,24 @@ components:
         interfaceUuid:
           type: string
           format: uuid
-          description: UUID of the DISCOVERY Connector Interface to bind this run
-            to. Required when the Connector exposes more than one; selected automatically
-            when it exposes exactly one. A Connector with no DISCOVERY interface yields
-            a legacy v1 run.
+          description: "Discovery interface of the Connector to run through. Required\
+            \ when the Connector has more than one, selected automatically when it\
+            \ has one; a Connector with none runs a v1 discovery."
         kind:
           type: string
-          description: "Discovery Kind. Required for a run against a v1 Discovery\
-            \ Provider, whose function group is kind-scoped. A v2 Discovery Provider\
-            \ has no kinds — omit it for a run bound to a DISCOVERY interface."
+          description: "Discovery kind. Required for a v1 Discovery Provider; omit\
+            \ it for a v2 one, which has no kinds."
         triggers:
           type: array
-          description: "List of triggers to be triggered after the discovery is finished,\
-            \ triggers will be evaluated in given order"
+          description: "Triggers to evaluate, in this order, when the discovery finishes"
           items:
             type: string
             format: uuid
         resources:
           type: array
-          description: "Resource types this run should discover, as resource wire\
-            \ codes (e.g. \"certificates\", \"keys\"). Omit only for a run against\
-            \ a v1 connector, which keeps exactly today's semantics: the run discovers\
-            \ certificates. A v2 connector requires the field — Core rejects a request\
-            \ that omits it — and a v1 connector rejects a request that supplies it:\
-            \ discovery has no resource dimension in v1."
+          description: "Resource types to discover, as resource codes. Required for\
+            \ a v2 Discovery Provider; omit it for a v1 one, which discovers certificates\
+            \ and refuses the field."
           items:
             $ref: "#/components/schemas/Resource"
           maxItems: 2147483647
@@ -1759,12 +1741,10 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/RequestAttribute"
-          description: "Per-resource attributes, keyed by resource wire code, collected\
-            \ against the per-resource attribute definitions the connector advertises.\
-            \ Omit for exactly today's v1 semantics: only the run-level attributes\
-            \ above are sent to the connector. A key absent from this map means that\
-            \ resource is discovered with no refinement of its own, not that it is\
-            \ excluded — resources alone decides what a run targets."
+          description: "Per-resource attributes, keyed by resource code, against the\
+            \ definitions the Connector advertises per resource. A resource with no\
+            \ entry is still discovered, unrefined: resources alone decides what the\
+            \ run targets. Omit for a v1 Discovery Provider."
           propertyNames:
             $ref: "#/components/schemas/Resource"
       required:
@@ -2873,8 +2853,7 @@ components:
           - Name
         kind:
           type: string
-          description: "Discovery Kind. Absent for a run against a v2 Discovery Provider,\
-            \ which has no kinds."
+          description: "Discovery kind. Absent for a v2 run, which has none."
           examples:
           - IP-HostName
         status:
@@ -2884,18 +2863,18 @@ components:
           - string
           - "null"
           format: date-time
-          description: Date and time when Discovery started
+          description: When the discovery started
         endTime:
           type:
           - string
           - "null"
           format: date-time
-          description: Date and time when Discovery finished
+          description: When the discovery finished
         totalCertificatesDiscovered:
           type: integer
           format: int32
           default: 0
-          description: Number of certificates that are discovered
+          description: Certificates this discovery found and saved
         totalItemsDiscovered:
           type: integer
           format: int64
@@ -2913,9 +2892,8 @@ components:
           description: Name of the Discovery Provider
         connectorInterface:
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: "The connector interface this run is driven through, and so\
-            \ which generation drives it. Absent for a run against a legacy v1 connector,\
-            \ which declares no connector interface."
+          description: "The connector interface the run is driven through. Absent\
+            \ for a v1 run, and for an ended run whose connector was deleted."
         attributeValues:
           type: object
           additionalProperties:
@@ -3025,8 +3003,7 @@ components:
           - Name
         kind:
           type: string
-          description: "Discovery Kind. Absent for a run against a v2 Discovery Provider,\
-            \ which has no kinds."
+          description: "Discovery kind. Absent for a v2 run, which has none."
           examples:
           - IP-HostName
         status:
@@ -3035,7 +3012,7 @@ components:
           $ref: "#/components/schemas/DiscoveryStatus"
         message:
           type: string
-          description: Failure/Success Messages
+          description: Why the discovery is in its current status
           examples:
           - Failed due to network connectivity issues
         startTime:
@@ -3043,25 +3020,24 @@ components:
           - string
           - "null"
           format: date-time
-          description: Date and time when Discovery started
+          description: When the discovery started
         endTime:
           type:
           - string
           - "null"
           format: date-time
-          description: Date and time when Discovery finished
+          description: When the discovery finished
         totalCertificatesDiscovered:
           type: integer
           format: int32
           default: 0
-          description: How many certificates this discovery found and saved.
+          description: Certificates this discovery found and saved
         connectorTotalCertificatesDiscovered:
           type: integer
           format: int32
           default: 0
-          description: "How many certificate items the Discovery Provider reported.\
-            \ Counts items, so a certificate found on several hosts counts once per\
-            \ host; totalCertificatesDiscovered counts it once."
+          description: "Certificate items the Discovery Provider reported: a certificate\
+            \ found on several hosts counts once per host, unlike in totalCertificatesDiscovered."
         connectorUuid:
           type: string
           description: UUID of the Discovery Provider
@@ -3070,9 +3046,8 @@ components:
           description: Name of the Discovery Provider
         connectorInterface:
           $ref: "#/components/schemas/ConnectorInterfaceDto"
-          description: "The connector interface this run is driven through, and so\
-            \ which generation drives it. Absent for a run against a legacy v1 connector,\
-            \ which declares no connector interface."
+          description: "The connector interface the run is driven through. Absent\
+            \ for a v1 run, and for an ended run whose connector was deleted."
         attributes:
           type: array
           description: List of Discovery Attributes
@@ -3095,62 +3070,50 @@ components:
             $ref: "#/components/schemas/TriggerDto"
         resources:
           type: array
-          description: "Resource types this run targets, as resource wire codes (e.g.\
-            \ \"certificates\", \"keys\"). Always present: a run against a v1 connector\
-            \ reports [\"certificates\"], synthesized by Core, so a client never inspects\
-            \ the connector to learn what a run was after."
+          description: "Resource types the run targets, as resource codes. Always\
+            \ present; a v1 run reports [\"certificates\"]."
           items:
             $ref: "#/components/schemas/Resource"
         progress:
           $ref: "#/components/schemas/DiscoveryProgressDto"
-          description: "Progress counters reported by the connector, with an optional\
-            \ per-resource breakdown. Omitted for a v1 run and when the connector\
-            \ reports no progress. The counters inside are independently optional."
+          description: Progress the Discovery Provider last reported. Omitted for
+            a v1 run and until the provider reports any.
         runMessageCount:
           type: integer
           format: int64
-          description: "How many distinct advisory messages this run collected, as\
-            \ counted by the run messages listing. Repeated problems are aggregated,\
-            \ so this counts kinds of problem rather than occurrences. A non-zero\
-            \ count does not imply the run failed. For a run against a v1 Discovery\
-            \ Provider it is 0 unless the run's metadata could not be stored."
+          description: "Number of entries in the run messages listing. Repeats are\
+            \ aggregated, so it counts kinds of problem, and a non-zero count does\
+            \ not mean the run failed. For a v1 run it is 0 unless the run's metadata\
+            \ could not be stored."
         itemsDiscovered:
           type: integer
           format: int64
-          description: "How many items this discovery has received from the Discovery\
-            \ Provider, across all resource types. Usually the same as the number\
-            \ the items listing returns, and larger when an item could not be kept\
-            \ — a malformed payload, or one already collected earlier in the run.\
-            \ Whatever the provider has produced but not yet handed over shows in\
-            \ progress, not here. Not set for a discovery run against a v1 Discovery\
-            \ Provider."
+          description: "Items received from the Discovery Provider, across all resource\
+            \ types. Usually what the items listing returns; larger when an item could\
+            \ not be kept, being malformed or already collected. Absent for a v1 run,\
+            \ and for one whose connector was deleted before any item arrived."
         itemsNewlyDiscovered:
           type: integer
           format: int64
-          description: "How many of the items collected were not already in the inventory\
-            \ when this run staged them. Counted per item rather than per object,\
-            \ so the same certificate found on two hosts counts twice."
+          description: "Items that were new to the inventory when staged. Counted\
+            \ per item, so a certificate found on two hosts counts twice."
         itemsProcessed:
           type: integer
           format: int64
-          description: How many of the newly discovered items are now in the inventory.
-            Counts only items that were imported cleanly; one the platform could not
-            import is counted by itemsFailed instead. itemsNewlyDiscovered less this
-            and itemsFailed is what the run has still to import.
+          description: Newly discovered items imported cleanly. itemsNewlyDiscovered
+            minus this and itemsFailed is what is still to import.
         itemsFailed:
           type: integer
           format: int64
-          description: "How many of the newly discovered items the platform could\
-            \ not import, each for a reason recorded against the item in the items\
-            \ listing. A discovery can finish with a non-zero count here — it ends\
-            \ with a warning rather than a failure."
+          description: "Newly discovered items the platform could not import, each\
+            \ with its reason in the items listing. A discovery with failed items\
+            \ ends with a warning, not a failure."
         stoppable:
           type: boolean
-          description: "Whether this run can be stopped and later resumed. Always\
-            \ present; false for runs against v1 connectors. This flag says whether\
-            \ the run has the capability; the run status decides which control is\
-            \ currently valid (stop while in progress, resume while stopped). The\
-            \ connector may still refuse a stop at runtime past the point of no return."
+          description: "Whether the run can be stopped and resumed; false for a v1\
+            \ run. The status decides which applies now: stop while in progress, resume\
+            \ while stopped. The connector can still refuse a stop past the point\
+            \ of no return."
       required:
       - attributes
       - connectorName
@@ -3168,75 +3131,83 @@ components:
       - uuid
     DiscoveryProgressDto:
       type: object
-      description: "How far a discovery has got: how much of the provider's work is\
-        \ done, and optionally how many items it has found per resource type."
+      description: "How far a discovery has got: the provider's work done so far,\
+        \ and optionally the items found per resource type."
       properties:
         targetsProcessed:
           type: integer
           format: int64
-          description: "How many targets the provider has attempted so far, including\
-            \ ones that failed. A target is one unit of the provider's work — one\
-            \ address and port, one inventory entry, one keystore alias — and can\
-            \ yield many items or none. Omitted if the provider cannot count its work."
+          description: "Targets attempted so far, whatever their outcome. A target\
+            \ is a unit of work a person would recognise, such as an address and port,\
+            \ a CA, a CA and template, a mount or a report. Targets that yielded items\
+            \ are the remainder after targetsEmpty and targetsFailed. Omitted if the\
+            \ provider cannot count its work. A provider whose unit would only be\
+            \ a page of search results omits all target counters and reports byResource\
+            \ and phase instead."
         targetsTotal:
           type: integer
           format: int64
-          description: "How many targets this discovery will attempt in total — exact\
-            \ if the provider knows, an estimate otherwise, and it may change as the\
-            \ run goes on. Use it with targetsProcessed to show progress. Omitted\
-            \ when the provider cannot know the total; there is then no percentage\
-            \ to show, and clients must not guess one."
+          description: "Targets the discovery will attempt in total: exact, or an\
+            \ estimate that may change. Omitted when unknown, and a client must then\
+            \ not guess a percentage."
         targetsFailed:
           type: integer
           format: int64
-          description: "How many targets could not be examined — an unreachable host,\
-            \ a refused connection, a target that answered nothing usable. Included\
-            \ in targetsProcessed, not added to it, so a mostly dark range still reaches\
-            \ its total. Failures here do not make the discovery itself fail."
+          description: "Targets the provider expected to read and could not, such\
+            \ as access refused, a source it was configured to read being unreachable,\
+            \ or an unreadable answer. Part of targetsProcessed, never also counted\
+            \ as empty. The discovery does not fail for them, but a run that otherwise\
+            \ completes ends with a warning."
+        targetsEmpty:
+          type: integer
+          format: int64
+          description: "Targets attempted that held nothing to discover, such as an\
+            \ empty mount, template or report, or a target the provider only guessed\
+            \ at, like an address in a swept range, that does not answer. Part of\
+            \ targetsProcessed, never also counted as failed: an empty target is a\
+            \ normal outcome. Omitted if the provider does not tell empty targets\
+            \ apart; the remainder in targetsProcessed then mixes empty targets with\
+            \ those that yielded items."
         phase:
           type: string
-          description: "Free-text label for what the provider is doing (e.g. \"scanning\"\
-            , \"enumerating\"); omitted if it has none"
+          description: "What the provider is doing, as free text (e.g. \"scanning\"\
+            ). Omitted if it has none."
         byResource:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/DiscoveryResourceProgressDto"
-          description: "How many items were found, broken down by resource type. Present\
-            \ only if the provider reports the breakdown."
+          description: Items found per resource type. Present only if the provider
+            reports the breakdown.
           propertyNames:
             $ref: "#/components/schemas/Resource"
         updatedAt:
           type: string
           format: date-time
-          description: "When the platform recorded this report. A discovery is polled\
-            \ on a backoff that settles at several minutes, so counters can be older\
-            \ than the response carrying them; this says how much older. Set by the\
-            \ platform — a value sent by a Discovery Provider is ignored."
+          description: "When the platform recorded this report. Polling backs off\
+            \ to several minutes, so the counters can be older than the response carrying\
+            \ them. Set by the platform; a value sent by the provider is ignored."
           examples:
           - 2026-09-13T14:32:07.000+02:00
           readOnly: true
     DiscoveryResourceProgressDto:
       type: object
-      description: "How many items of one resource type have been found, keyed by\
-        \ resource code inside byResource (e.g. \"certificates\", \"keys\"). Every\
-        \ field is optional, but a provider with nothing to report MUST leave the\
-        \ whole object out rather than send an empty one — a client keeping the last\
-        \ progress it was sent cannot tell an empty report from a missing one."
+      description: "Items found for one resource type, keyed by resource code in byResource.\
+        \ Every field is optional, but a provider with nothing to report MUST leave\
+        \ the entry out rather than send an empty object."
       properties:
         produced:
           type: integer
           format: int64
-          description: How many items of this resource type the provider has found
-            so far; omitted if it cannot count them
+          description: Items found so far. Omitted if the provider cannot count them.
         totalEstimate:
           type: integer
           format: int64
-          description: Estimated total number of items of this resource type for the
-            whole discovery; omitted if the provider cannot estimate
+          description: Estimated total for the whole discovery. Omitted if the provider
+            cannot estimate it.
         phase:
           type: string
-          description: Free-text label for what the provider is doing with this resource
-            type; omitted if it has none
+          description: "What the provider is doing with this resource type, as free\
+            \ text. Omitted if it has none."
     MetadataResponseDto:
       type: object
       description: Metadata response attributes with their source connector
@@ -3448,24 +3419,20 @@ components:
       - manual
     DiscoveryMessageDto:
       type: object
-      description: "One kind of problem a Discovery run reported, with how often it\
-        \ happened. Repeats aggregate onto the entry already carrying them rather\
-        \ than adding a new one."
+      description: One kind of problem a discovery run recorded and how often it happened.
+        Repeats are counted on the existing entry.
       properties:
         severity:
           $ref: "#/components/schemas/DiscoveryMessageSeverity"
         code:
           type: string
-          description: "Identifier for the kind of problem, from a closed vocabulary\
-            \ — what an operator or a support engineer matches on. Entries are aggregated\
-            \ by code together with the message text, so several entries in one run\
-            \ may share a code."
+          description: "Kind of problem, from a closed vocabulary. Entries aggregate\
+            \ by code and message, so several entries can share a code."
           maxLength: 64
         message:
           type: string
-          description: "Human-readable description of the problem. Curated text written\
-            \ for a person to read; never a raw exception message, and never text\
-            \ a Discovery Provider authored."
+          description: "The problem, written by the platform for a person to read;\
+            \ never a raw exception message or text from the Discovery Provider."
         occurrences:
           type: integer
           format: int64
@@ -3479,7 +3446,8 @@ components:
         lastSeenAt:
           type: string
           format: date-time
-          description: When this problem was most recently seen during the run.
+          description: When this problem was last seen during the run; equal to firstSeenAt
+            if it happened once.
       required:
       - code
       - firstSeenAt
@@ -3537,10 +3505,8 @@ components:
       - resource
     DiscoveredItemPayload:
       type: object
-      description: "Resource-specific payload of a discovered item. The required resource\
-        \ property is the discriminator: it carries the resource's wire code and selects\
-        \ which concrete payload shape this object is. Each concrete shape fixes it\
-        \ to its own value."
+      description: "Resource-specific payload of a discovered item. Its required resource\
+        \ property is the discriminator: the resource code selects the payload shape."
       discriminator:
         propertyName: resource
         mapping:
@@ -3553,17 +3519,15 @@ components:
       - resource
     DiscoveredKeyDto:
       type: object
-      description: "A connector reports a key's existence, intrinsic metadata, and\
-        \ at most its public part; private, secret and split key material must never\
-        \ be sent. A PRIVATE_KEY, SECRET_KEY or SPLIT_KEY report MUST omit publicKey\
-        \ and publicKeyFormat entirely."
+      description: "A discovered key: its existence, intrinsic metadata and at most\
+        \ its public part. Private, secret and split key material MUST NOT be sent,\
+        \ and a PRIVATE_KEY, SECRET_KEY or SPLIT_KEY key MUST omit publicKey and publicKeyFormat."
       properties:
         resource:
           $ref: "#/components/schemas/Resource"
         type:
           $ref: "#/components/schemas/KeyType"
-          description: "Key type: whether this is a public, private, secret, or split\
-            \ key"
+          description: "Key type: public, private, secret or split"
         algorithm:
           $ref: "#/components/schemas/KeyAlgorithm"
           description: Cryptographic algorithm of the key
@@ -3573,17 +3537,16 @@ components:
           description: Key length in bits
         fingerprint:
           type: string
-          description: "Intrinsic key fingerprint; correlates the same key across\
-            \ runs, connectors, and certificates without exposing key material"
+          description: "Intrinsic fingerprint identifying the same key across runs,\
+            \ connectors and certificates, without exposing key material"
         publicKeyFormat:
           $ref: "#/components/schemas/KeyFormat"
-          description: Format of publicKey when present (typically SubjectPublicKeyInfo);
-            absent when publicKey is absent
+          description: "Format of publicKey, typically SubjectPublicKeyInfo. Present\
+            \ only with publicKey."
         publicKey:
           type: string
-          description: "Base64-encoded public key material. Absent for PRIVATE_KEY,\
-            \ SECRET_KEY or SPLIT_KEY discoveries, where only existence and intrinsic\
-            \ metadata are ever reported"
+          description: "Base64-encoded public key. Absent for a PRIVATE_KEY, SECRET_KEY\
+            \ or SPLIT_KEY key."
       required:
       - algorithm
       - resource
@@ -3593,27 +3556,23 @@ components:
       properties:
         uuid:
           type: string
-          description: UUID of the staged Discovery item
+          description: UUID of the staged item
         inventory:
           $ref: "#/components/schemas/NameAndUuidDto"
-          description: "The inventory object this item became. For a certificate,\
-            \ present as soon as one with the same content exists, including from\
-            \ an earlier run, so it may be present while processed is false. For other\
-            \ resources, absent until processed and permanently absent if processing\
-            \ failed. Its resource is the item's resource."
+          description: "The inventory object the item became, of the item's resource.\
+            \ A certificate links as soon as one with the same content exists, even\
+            \ before processing; other resources link once processed, and never if\
+            \ processing failed."
         sequence:
           type: integer
           format: int64
-          description: "Position of this item in the run. For runs against a v2 Discovery\
-            \ Provider this is the provider's run-wide sequence; for runs against\
-            \ a v1 provider, which never numbered its items, Core synthesizes it from\
-            \ staging order."
+          description: "Position of the item in the run: the provider's sequence in\
+            \ a v2 run, the staging order in a v1 run."
         uniqueRef:
           type: string
-          description: "Reference identifying this item within the run, unique per\
-            \ resource type. Provider-assigned for v2-staged items; for certificates\
-            \ staged by a v1 provider Core uses the certificate fingerprint, which\
-            \ is the identity it deduplicates on."
+          description: "Identifies the item within the run, unique per resource type:\
+            \ assigned by the provider in a v2 run, the certificate fingerprint in\
+            \ a v1 run."
         discoveredAt:
           type: string
           format: date-time
@@ -3622,29 +3581,25 @@ components:
           $ref: "#/components/schemas/Resource"
         payload:
           $ref: "#/components/schemas/DiscoveredItemPayload"
-          description: "Resource-specific data the Discovery Provider reported, discriminated\
-            \ by resource, which is always the item's own resource. Absent when the\
-            \ stored payload could no longer be decoded; the item is still listed,\
-            \ so the run's counts hold"
+          description: "What the Discovery Provider reported for the item, typed by\
+            \ its resource. Absent when the stored payload can no longer be decoded;\
+            \ the item is still listed."
         newlyDiscovered:
           type: boolean
-          description: "True when the object was not already in the inventory at the\
-            \ time this run staged it, false when the run rediscovered something the\
-            \ inventory already held."
+          description: Whether the object was new to the inventory when this run staged
+            it
         processed:
           type: boolean
-          description: Indicator whether processing of the staged item has been attempted;
-            processedError and inventory convey the outcome.
+          description: Whether processing of the item has been attempted; processedError
+            and inventory give the outcome.
         processedError:
           type: string
-          description: "Reason recorded against this item, if any — not only a failure,\
-            \ and not tied to processed. An item that was handled can carry one, and\
-            \ an item that was never attempted carries one while processed stays false."
+          description: "A reason recorded against the item, not necessarily a failure.\
+            \ A processed item can carry one, and so can one never attempted."
         meta:
           type: array
-          description: Item metadata as reported by the Discovery Provider — where
-            the item was found (e.g. IP address and port). Absent when the provider
-            reported none.
+          description: "Metadata the Discovery Provider reported, such as where the\
+            \ item was found. Absent when there is none."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
       required:
@@ -3876,21 +3831,17 @@ components:
           description: Base64 encoded Certificate content
         newlyDiscovered:
           type: boolean
-          description: Boolean representing if the certificate is newly discovered.
-            True - Certificate is newly discoveredfalse - Certificate was already
-            available in the inventory
+          description: Whether the certificate was new to the inventory when this
+            discovery found it
         processed:
           type: boolean
-          description: "Whether processing of this row has been attempted; processedError\
-            \ conveys the outcome. False means the platform reached no verdict for\
-            \ the row, which may still carry a reason."
+          description: Whether processing of the certificate has been attempted; processedError
+            gives the outcome.
         processedError:
           type: string
-          description: "Reason recorded against this row, if any — not only a failure,\
-            \ and not tied to processed. A row that imported cleanly can carry one\
-            \ (a certificate imported without all of its public keys associated, say),\
-            \ and a row that was never attempted carries one while processed stays\
-            \ false."
+          description: "A reason recorded against the certificate, not necessarily\
+            \ a failure: an imported certificate can carry one (its keys not all associated),\
+            \ and so can one never attempted."
       required:
       - certificateContent
       - commonName
