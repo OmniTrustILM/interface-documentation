@@ -14536,6 +14536,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "409":
+          description: Discovery of that name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "400":
           description: Bad Request
           content:
@@ -14650,6 +14656,13 @@ paths:
               - Error Message 2
         "404":
           description: Connector not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "409":
+          description: "A Discovery or a scheduled job of that name already exists,\
+            \ including a one-time job that has already run"
           content:
             application/json:
               schema:
@@ -26882,9 +26895,7 @@ paths:
           the connector framework.
         required: false
         schema:
-          type:
-          - string
-          - "null"
+          type: string
       responses:
         "502":
           description: Connector Error
@@ -40041,6 +40052,8 @@ components:
           description: Disable using localhost user for requests from localhost
         oauth2Providers:
           type: array
+          description: "List of OAuth2 providers settings to be registered. If null,\
+            \ keep providers as they are, otherwise replace with providers from list"
           items:
             $ref: "#/components/schemas/OAuth2ProviderSettingsDto"
       required:
@@ -50559,8 +50572,10 @@ components:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/OAuth2ProviderSettingsDto"
+          description: Map of OAuth2 providers settings where key is provider name
       required:
       - disableLocalhostUser
+      - oauth2Providers
     JwkDto:
       type: object
       properties:

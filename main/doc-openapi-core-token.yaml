@@ -551,9 +551,7 @@ paths:
           the connector framework.
         required: false
         schema:
-          type:
-          - string
-          - "null"
+          type: string
       responses:
         "502":
           description: Connector Error

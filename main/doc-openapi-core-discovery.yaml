@@ -58,6 +58,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "409":
+          description: Discovery of that name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "400":
           description: Bad Request
           content:
@@ -180,6 +186,13 @@ paths:
               - Error Message 2
         "404":
           description: Connector not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "409":
+          description: "A Discovery or a scheduled job of that name already exists,\
+            \ including a one-time job that has already run"
           content:
             application/json:
               schema:

@@ -4212,6 +4212,8 @@ components:
           description: Disable using localhost user for requests from localhost
         oauth2Providers:
           type: array
+          description: "List of OAuth2 providers settings to be registered. If null,\
+            \ keep providers as they are, otherwise replace with providers from list"
           items:
             $ref: "#/components/schemas/OAuth2ProviderSettingsDto"
       required:
@@ -5703,8 +5705,10 @@ components:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/OAuth2ProviderSettingsDto"
+          description: Map of OAuth2 providers settings where key is provider name
       required:
       - disableLocalhostUser
+      - oauth2Providers
     JwkDto:
       type: object
       properties:
