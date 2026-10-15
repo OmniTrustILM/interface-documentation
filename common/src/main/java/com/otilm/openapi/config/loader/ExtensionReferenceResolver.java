@@ -3,9 +3,12 @@ package com.otilm.openapi.config.loader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SequencedMap;
 
 /**
  * Resolves top-level extension values that are wrapped in backticks as static field references.
@@ -118,7 +121,7 @@ public class ExtensionReferenceResolver {
 
         if (value instanceof Map<?, ?> mapValue) {
             Map<Object, Object> sanitized = new LinkedHashMap<>();
-            for (Map.Entry<?, ?> entry : mapValue.entrySet()) {
+            for (Map.Entry<?, ?> entry : inStableOrder(mapValue)) {
                 if (!isYamlSafeScalar(entry.getKey())) {
                     throw new IllegalStateException(String
                             .format("Invalid extension reference for key '%s' in %s. Map key at path '%s' has unsupported type '%s'.",
@@ -144,6 +147,17 @@ public class ExtensionReferenceResolver {
                 .format("Invalid extension reference for key '%s' in %s. Value at path '%s' has unsupported type '%s'. "
                         + "Only YAML-safe scalars/maps/lists are supported.", extensionKey, contextLabel, path,
                         value.getClass().getName()));
+    }
+
+    /**
+     * A map without a defined order, such as {@code Map.of}, iterates differently in every JVM, so its entries are
+     * sorted by key to keep the generated documents identical from run to run.
+     */
+    private static Collection<? extends Map.Entry<?, ?>> inStableOrder(Map<?, ?> map) {
+        if (map instanceof SequencedMap<?, ?>) {
+            return map.entrySet();
+        }
+        return map.entrySet().stream().sorted(Comparator.comparing(entry -> String.valueOf(entry.getKey()))).toList();
     }
 
     private boolean isYamlSafeScalar(Object value) {

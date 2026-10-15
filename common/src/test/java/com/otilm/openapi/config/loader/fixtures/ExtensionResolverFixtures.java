@@ -1,5 +1,7 @@
 package com.otilm.openapi.config.loader.fixtures;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,10 @@ public class ExtensionResolverFixtures {
     private static final List<Map<String, String>> REQUIRED = List.of(METRIC_A, METRIC_B);
     public static final Map<String, Object> VALID_MAP = validMap();
 
+    public static final Map<String, Object> HASH_ORDERED_MAP = new HashMap<>(VALID_MAP);
+
+    public static final Map<String, Object> INSERTION_ORDERED_MAP = insertionOrderedMap();
+
     public static final List<Object> VALID_LIST = List.of("one", 2, true, Map.of("k", "v"));
 
     public static final String INVALID_SCALAR = "not-supported-top-level";
@@ -21,5 +27,13 @@ public class ExtensionResolverFixtures {
 
     private static Map<String, Object> validMap() {
         return Map.of("version", 1, "histograms", HISTOGRAMS, "required", REQUIRED);
+    }
+
+    private static Map<String, Object> insertionOrderedMap() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("version", 1);
+        map.put("required", REQUIRED);
+        map.put("histograms", HISTOGRAMS);
+        return map;
     }
 }

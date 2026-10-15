@@ -2,12 +2,11 @@ package com.otilm.openapi.e2e;
 
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.EntityExchangeResult;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.yaml.snakeyaml.Yaml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,8 +32,7 @@ class EndToEndIT {
     @LocalServerPort
     int port;
 
-    @Autowired
-    TestRestTemplate restTemplate;
+    private final RestTestClient restClient = RestTestClient.bindToServer().build();
 
     // -------------------------------------------------------------------------
     // Widgets group (TestWidgetController → TestAuthProtectedController)
@@ -42,8 +40,8 @@ class EndToEndIT {
 
     @Test
     void widgetsGroup_returnsHttp200() {
-        ResponseEntity<String> response = fetchGroupYaml("e2e-widgets");
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected HTTP 200 for e2e-widgets group");
+        EntityExchangeResult<String> response = fetchGroupYaml("e2e-widgets");
+        assertEquals(HttpStatus.OK, response.getStatus(), "Expected HTTP 200 for e2e-widgets group");
     }
 
     @Test
@@ -106,8 +104,8 @@ class EndToEndIT {
 
     @Test
     void statusGroup_returnsHttp200() {
-        ResponseEntity<String> response = fetchGroupYaml("e2e-status");
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected HTTP 200 for e2e-status group");
+        EntityExchangeResult<String> response = fetchGroupYaml("e2e-status");
+        assertEquals(HttpStatus.OK, response.getStatus(), "Expected HTTP 200 for e2e-status group");
     }
 
     @Test
@@ -148,17 +146,17 @@ class EndToEndIT {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private ResponseEntity<String> fetchGroupYaml(String groupName) {
+    private EntityExchangeResult<String> fetchGroupYaml(String groupName) {
         String url = "http://localhost:" + port + "/v3/api-docs.yaml/" + groupName;
-        return restTemplate.getForEntity(url, String.class);
+        return restClient.get().uri(url).exchange().returnResult(String.class);
     }
 
     private String fetchGroupYamlBody(String groupName) {
-        ResponseEntity<String> response = fetchGroupYaml(groupName);
-        assertEquals(HttpStatus.OK, response.getStatusCode(),
+        EntityExchangeResult<String> response = fetchGroupYaml(groupName);
+        assertEquals(HttpStatus.OK, response.getStatus(),
                 "Cannot assert on body: expected HTTP 200 for group " + groupName);
-        assertNotNull(response.getBody(), "Response body must not be null for group " + groupName);
-        return response.getBody();
+        assertNotNull(response.getResponseBody(), "Response body must not be null for group " + groupName);
+        return response.getResponseBody();
     }
 
     @SuppressWarnings("unchecked")

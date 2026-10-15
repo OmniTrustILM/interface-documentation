@@ -31,6 +31,30 @@ class ExtensionReferenceResolverTest {
     }
 
     @Test
+    void shouldOrderEntriesOfUnorderedMapByKey() {
+        Object resolved = resolver
+                .resolveTopLevelValue(
+                        "`com.otilm.openapi.config.loader.fixtures.ExtensionResolverFixtures.HASH_ORDERED_MAP`",
+                        "x-metrics-profile", "group 'secret-provider'");
+
+        Map<?, ?> result = assertInstanceOf(Map.class, resolved);
+        assertEquals(List.of("histograms", "required", "version"), List.copyOf(result.keySet()));
+        Map<?, ?> firstRequired = assertInstanceOf(Map.class, ((List<?>) result.get("required")).get(0));
+        assertEquals(List.of("name", "type"), List.copyOf(firstRequired.keySet()));
+    }
+
+    @Test
+    void shouldKeepEntryOrderOfSequencedMap() {
+        Object resolved = resolver
+                .resolveTopLevelValue(
+                        "`com.otilm.openapi.config.loader.fixtures.ExtensionResolverFixtures.INSERTION_ORDERED_MAP`",
+                        "x-metrics-profile", "group 'secret-provider'");
+
+        Map<?, ?> result = assertInstanceOf(Map.class, resolved);
+        assertEquals(List.of("version", "required", "histograms"), List.copyOf(result.keySet()));
+    }
+
+    @Test
     void shouldResolveBacktickReferenceToList() {
         Object resolved = resolver
                 .resolveTopLevelValue("`com.otilm.openapi.config.loader.fixtures.ExtensionResolverFixtures.VALID_LIST`",
