@@ -17,11 +17,13 @@ FROM nginx:stable-alpine
 
 # Patch base-image packages that the org Trivy gate flags as HIGH:
 #   libcrypto3, libssl3 - CVE-2026-14456
+#   libexpat            - CVE-2026-93990
 #   libuuid             - CVE-2026-53612, CVE-2026-53613, CVE-2026-53614, CVE-2026-76642,
 #                         CVE-2026-78408, CVE-2026-78409, CVE-2026-78410.
 # The pinned minimums make the build fail fast if a fixed package ever goes missing.
 RUN apk add --no-cache --upgrade \
         "libcrypto3>=3.5.8-r0" \
+        "libexpat>=2.8.5-r0" \
         "libssl3>=3.5.8-r0" \
         "libuuid>=2.42.3-r1"
 
