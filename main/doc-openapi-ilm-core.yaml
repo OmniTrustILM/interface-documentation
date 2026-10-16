@@ -26530,63 +26530,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/keyUsages:
-    get:
-      tags:
-      - Token Profile Management
-      summary: List supported token profile key usages
-      description: Returns the key usages supported for the specified token instance
-      operationId: listSupportedTokenProfileKeyUsages
-      parameters:
-      - name: tokenInstanceUuid
-        in: path
-        description: Token Instance UUID
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Supported key usages retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/KeyUsage"
-        "404":
-          description: Token Instance not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "502":
-          description: Connector Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "503":
-          description: Connector Communication Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
   /v1/tokens/{tokenInstanceUuid}/tokenProfiles/attributes:
     get:
       tags:
@@ -48482,7 +48425,6 @@ components:
       - retry
       - compromise
       - destroy
-      - listKeyUsages
       - updateKeyUsage
       - listKeyRequestTypes
       - encrypt

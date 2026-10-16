@@ -131,66 +131,6 @@ tags:
   description: "Key operations scoped by token, token-profile and key metadata supplied\
     \ in requests"
 paths:
-  /v2/cryptographyProvider/tokens/tokenProfile/keyUsages:
-    post:
-      tags:
-      - Token Management v2
-      summary: List supported token profile key usages
-      description: Returns the key usages supported for the supplied token context
-      operationId: listTokenProfileKeyUsages
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TokenScopedRequestV2Dto"
-        required: true
-      responses:
-        "200":
-          description: Supported key usages retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/KeyUsage"
-        "400":
-          description: "Request body cannot be read (errorCode BAD_REQUEST), including\
-            \ malformed JSON, unknown properties, and values outside the published\
-            \ enum values"
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-        "422":
-          description: Request body was read successfully but violates a field validation
-            rule (errorCode VALIDATION_FAILED)
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-        "404":
-          description: Not Found. Endpoint not found or not implemented
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetailExtended"
-      security:
-      - ConnectorAPIKeyAuth: []
-      - CertificateTLSAuth: []
-      - NoAuth: []
-      - BasicAuth: []
   /v2/cryptographyProvider/tokens/tokenProfile/attributes:
     post:
       tags:
@@ -3991,15 +3931,6 @@ components:
       - status
       - timestamp
       - type
-    KeyUsage:
-      type: string
-      enum:
-      - sign
-      - verify
-      - encrypt
-      - decrypt
-      - wrap
-      - unwrap
     BaseAttributeDto:
       type: object
       description: Base Attribute definition
