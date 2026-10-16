@@ -1,5 +1,5 @@
 # build environment
-FROM maven:3.9.16-eclipse-temurin-21 AS build
+FROM maven:3.10.0-eclipse-temurin-21 AS build
 COPY ./ /home/app
 COPY settings.xml /root/.m2/settings.xml
 RUN mvn -f /home/app/pom.xml clean verify -Dmaven.compiler.proc=full
