@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>ILM API Docs</title>
+  <link rel="shortcut icon" href="/images/ilm-sign-color.svg"/>
+
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Our Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/font-awesome.min.css">
+</head>
+<body scroll="no" style="overflow: hidden;">
+<div class="wrapper">
+  <!-- Sidebar Holder -->
+  <nav id="sidebar">
+    <div class="sidebar-header">
+      <h4><a href="https://docs.otilm.com" target="_blank" rel="noopener noreferrer">Documentation <i class="fa fa-external-link"></i></a></h4>
+      <br/>
+      <img src="images/ilm-logo-white.svg" alt="ILM" width="100">
+<!--      <h3>ILM APIs</h3>-->
+    </div>
+
+    <ul class="list-unstyled components">
+<!--      <p>Connector APIs</p>-->
+      <li class="active">
+        <a href="#coreApiSubmenu" data-toggle="collapse" aria-expanded="false">Core APIs</a>
+        <ul class="collapse list-unstyled" id="coreApiSubmenu">
+        </ul>
+      </li>
+      <li class="active">
+        <a href="#connectorApiSubmenu" data-toggle="collapse" aria-expanded="false">Connector APIs</a>
+        <ul class="collapse list-unstyled" id="connectorApiSubmenu">
+        </ul>
+      </li>
+      <li class="active">
+        <a href="#messagingApiSubmenu" data-toggle="collapse" aria-expanded="false">Messaging APIs</a>
+        <ul class="collapse list-unstyled" id="messagingApiSubmenu">
+        </ul>
+      </li>
+      <li class="active">
+        <a href="#protocolApiSubmenu" data-toggle="collapse" aria-expanded="false">Protocol APIs</a>
+        <ul class="collapse list-unstyled" id="protocolApiSubmenu">
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Page Content Holder -->
+  <div id="content">
+
+    <div id="iFrameDivision">
+      <iframe
+              key="showapi"
+              id="showapi"
+              src="about:blank"
+              width="100%"
+              height="100%"
+              frameborder="0"
+      ></iframe>
+    </div>
+</div>
+
+  <script>
+    // placeholder for the list of APIS
+        var coreApis = [
+          {"name": "ACME", "url": "doc-openapi-core-acme.html"},
+          {"name": "Approvals", "url": "doc-openapi-core-approval.html"},
+          {"name": "Attribute", "url": "doc-openapi-core-attribute.html"},
+          {"name": "Auth", "url": "doc-openapi-core-auth.html"},
+          {"name": "Authority", "url": "doc-openapi-core-authority.html"},
+          {"name": "CBOM", "url": "doc-openapi-core-cbom.html"},
+          {"name": "CMP", "url": "doc-openapi-core-cmp.html"},
+          {"name": "Certificate", "url": "doc-openapi-core-certificate.html"},
+          {"name": "Client Operations", "url": "doc-openapi-core-client-operations.html"},
+          {"name": "Comments", "url": "doc-openapi-core-comment.html"},
+          {"name": "Compliance Profile", "url": "doc-openapi-core-compliance-profile.html"},
+          {"name": "Compliance v2", "url": "doc-openapi-core-compliance-v2.html"},
+          {"name": "Connector", "url": "doc-openapi-core-connector.html"},
+          {"name": "Credential", "url": "doc-openapi-core-credential.html"},
+          {"name": "Cryptographic Key", "url": "doc-openapi-core-cryptographic-key.html"},
+          {"name": "Cryptographic Operations", "url": "doc-openapi-core-cryptographic-operations.html"},
+          {"name": "Discovery", "url": "doc-openapi-core-discovery.html"},
+          {"name": "Entity", "url": "doc-openapi-core-entity.html"},
+          {"name": "Group", "url": "doc-openapi-core-group.html"},
+          {"name": "Inspection", "url": "doc-openapi-core-inspection.html"},
+          {"name": "Local", "url": "doc-openapi-core-local.html"},
+          {"name": "Location", "url": "doc-openapi-core-location.html"},
+          {"name": "Notification", "url": "doc-openapi-core-notification.html"},
+          {"name": "Proxy", "url": "doc-openapi-core-proxy.html"},
+          {"name": "RA Profile", "url": "doc-openapi-core-ra-profile.html"},
+          {"name": "SCEP", "url": "doc-openapi-core-scep.html"},
+          {"name": "Scheduler", "url": "doc-openapi-core-scheduler.html"},
+          {"name": "Secret Management", "url": "doc-openapi-core-secret.html"},
+          {"name": "Signing Profile", "url": "doc-openapi-core-signing-profile.html"},
+          {"name": "Signing Record", "url": "doc-openapi-core-signing-record.html"},
+          {"name": "TSP Profile", "url": "doc-openapi-core-tsp-profile.html"},
+          {"name": "Time Quality Configuration", "url": "doc-openapi-core-time-quality-configuration.html"},
+          {"name": "Token Management", "url": "doc-openapi-core-token.html"},
+          {"name": "Token Profile", "url": "doc-openapi-core-token-profile.html"},
+          {"name": "Trusted Certificate", "url": "doc-openapi-core-trusted-certificate.html"},
+          {"name": "Uncategorized", "url": "doc-openapi-core-other.html"},
+          {"name": "Vault", "url": "doc-openapi-core-vault.html"},
+          {"name": "Vault Profile", "url": "doc-openapi-core-vault-profile.html"},
+          {"name": "Workflows", "url": "doc-openapi-core-workflows.html"},
+        ];
+
+        var connectorApis = [
+          {"name": "Authority Provider Legacy", "url": "doc-openapi-connector-authority-provider-legacy.html"},
+          {"name": "Authority Provider v2", "url": "doc-openapi-connector-authority-provider-v2.html"},
+          {"name": "Authority Provider v3", "url": "doc-openapi-connector-authority-provider-v3.html"},
+          {"name": "Compliance Provider", "url": "doc-openapi-connector-compliance-provider.html"},
+          {"name": "Compliance Provider v2", "url": "doc-openapi-connector-compliance-provider-v2.html"},
+          {"name": "Credential Provider", "url": "doc-openapi-connector-credential-provider.html"},
+          {"name": "Cryptography Provider", "url": "doc-openapi-connector-cryptography-provider.html"},
+          {"name": "Cryptography Provider v2", "url": "doc-openapi-connector-cryptography-provider-v2.html"},
+          {"name": "Discovery Provider", "url": "doc-openapi-connector-discovery-provider.html"},
+          {"name": "Discovery Provider v2", "url": "doc-openapi-connector-discovery-provider-v2.html"},
+          {"name": "Entity Provider", "url": "doc-openapi-connector-entity-provider.html"},
+          {"name": "Notification Provider", "url": "doc-openapi-connector-notification-provider.html"},
+          {"name": "Secret Provider", "url": "doc-openapi-connector-secret-provider.html"},
+          {"name": "Signature Formatting Provider", "url": "doc-openapi-connector-signature-formatting-provider.html"},
+        ];
+
+        var messagingApis = [
+          {"name": "Time Quality Messaging", "url": "doc-openapi-messaging-time-quality.html"},
+        ];
+
+        var protocolApis = [
+          {"name": "ACME", "url": "doc-openapi-protocol-acme.html"},
+          {"name": "CMP", "url": "doc-openapi-protocol-cmp.html"},
+          {"name": "SCEP", "url": "doc-openapi-protocol-scep.html"},
+          {"name": "TSP", "url": "doc-openapi-protocol-tsp.html"},
+        ];
+
+    // initially render first API
+    var iframe = document.getElementById("showapi");
+    iframe.src = connectorApis[1].url;
+    window.addEventListener("resize", onResize)
+
+    function onResize() {
+      var frame = document.getElementById("showapi");
+      frame.height = frame?.ownerDocument.documentElement.clientHeight + "px";
+    }
+
+    const ifElement =
+            iframe?.ownerDocument.documentElement.clientHeight;
+    iframe.height = ifElement + "px";
+    function onClick() {
+      var url = this.getAttribute("data-link");
+      document.getElementById("showapi").src = url;
+    }
+
+    // dynamically building navigation items
+    var $list = document.getElementById("coreApiSubmenu");
+    coreApis.forEach(function (api) {
+      var $listitem = document.createElement("li");
+      $listitem.setAttribute("data-link", api.url);
+      $listitem.setAttribute("class", "dropdown-item");
+      //$listitem.innerText = api.name;
+      $listitem.addEventListener("click", onClick);
+      var $lista = document.createElement("a");
+      $lista.setAttribute("href", "#");
+      $lista.innerText = api.name;
+      $listitem.appendChild($lista);
+      $list.appendChild($listitem);
+    });
+
+    var $list = document.getElementById("connectorApiSubmenu");
+    connectorApis.forEach(function (api) {
+      var $listitem = document.createElement("li");
+      $listitem.setAttribute("data-link", api.url);
+      $listitem.setAttribute("class", "dropdown-item");
+      //$listitem.innerText = api.name;
+      $listitem.addEventListener("click", onClick);
+      var $lista = document.createElement("a");
+      $lista.setAttribute("href", "#");
+      $lista.innerText = api.name;
+      $listitem.appendChild($lista);
+      $list.appendChild($listitem);
+    });
+
+    var $list = document.getElementById("messagingApiSubmenu");
+    messagingApis.forEach(function (api) {
+      var $listitem = document.createElement("li");
+      $listitem.setAttribute("data-link", api.url);
+      $listitem.setAttribute("class", "dropdown-item");
+      //$listitem.innerText = api.name;
+      $listitem.addEventListener("click", onClick);
+      var $lista = document.createElement("a");
+      $lista.setAttribute("href", "#");
+      $lista.innerText = api.name;
+      $listitem.appendChild($lista);
+      $list.appendChild($listitem);
+    });
+
+    var $list = document.getElementById("protocolApiSubmenu");
+    protocolApis.forEach(function (api) {
+      var $listitem = document.createElement("li");
+      $listitem.setAttribute("data-link", api.url);
+      $listitem.setAttribute("class", "dropdown-item");
+      //$listitem.innerText = api.name;
+      $listitem.addEventListener("click", onClick);
+      var $lista = document.createElement("a");
+      $lista.setAttribute("href", "#");
+      $lista.innerText = api.name;
+      $listitem.appendChild($lista);
+      $list.appendChild($listitem);
+    });
+  </script>
+
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<!-- Bootstrap Js CDN -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#sidebarCollapse').on('click', function () {
+      $('#sidebar').toggleClass('active');
+      $(this).toggleClass('active');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: TSP API
+  description: TSP API according to the RFC 3161
+  contact:
+    name: ILM
+    url: https://www.otilm.com
+    email: ilm@omnitrust.com
+  license:
+    name: "Apache License, Version 2.0"
+    url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
+  version: 2.20.0
+  x-logo:
+    url: images/ilm-logo.svg
+externalDocs:
+  description: ILM Documentation
+  url: https://docs.otilm.com
+servers:
+- url: https://demo.otilm.com/api
+  description: ILM Demo server
+tags:
+- name: TSP — by profile name
+  description: RFC 3161 Timestamp Protocol endpoint. Routed by TSP Profile name. Always
+    returns HTTP 200 with an application/timestamp-reply TimeStampResp; success and
+    rejection are encoded in-band via PKIStatus per RFC 3161.
+- name: TSP — by signing profile name
+  description: RFC 3161 Timestamp Protocol endpoint. Routed by Signing Profile name.
+    The Signing Profile must have TSP activated. Always returns HTTP 200 with an application/timestamp-reply
+    TimeStampResp; success and rejection are encoded in-band via PKIStatus per RFC
+    3161.
+paths:
+  /v1/protocols/tsp/{tspProfileName}:
+    post:
+      tags:
+      - TSP — by profile name
+      summary: Request a timestamp token
+      description: Accepts a DER-encoded TimeStampReq and returns a DER-encoded TimeStampResp.
+        Error conditions are encoded inside the response as PKIStatus rejection with
+        PKIFailureInfo.
+      externalDocs:
+        description: RFC 3161 — Internet X.509 PKI Time-Stamp Protocol
+        url: https://www.rfc-editor.org/rfc/rfc3161
+      operationId: timestamp
+      parameters:
+      - name: tspProfileName
+        in: path
+        description: TSP Profile name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/timestamp-query:
+            schema:
+              type: string
+              format: binary
+              description: DER-encoded TimeStampReq
+        required: true
+      responses:
+        "200":
+          description: "TimeStampResp returned. PKIStatus conveys the outcome: granted/grantedWithMods\
+            \ on success, rejection with PKIFailureInfo on failure."
+          content:
+            application/timestamp-reply:
+              schema:
+                type: string
+                format: binary
+      security: []
+  /v1/protocols/tsp/signingProfiles/{signingProfileName}:
+    post:
+      tags:
+      - TSP — by signing profile name
+      summary: Request a timestamp token
+      description: Accepts a DER-encoded TimeStampReq and returns a DER-encoded TimeStampResp.
+        Error conditions are encoded inside the response as PKIStatus rejection with
+        PKIFailureInfo.
+      externalDocs:
+        description: RFC 3161 — Internet X.509 PKI Time-Stamp Protocol
+        url: https://www.rfc-editor.org/rfc/rfc3161
+      operationId: timestamp_1
+      parameters:
+      - name: signingProfileName
+        in: path
+        description: Signing Profile name (must have TSP activated)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/timestamp-query:
+            schema:
+              type: string
+              format: binary
+              description: DER-encoded TimeStampReq
+        required: true
+      responses:
+        "200":
+          description: "TimeStampResp returned. PKIStatus conveys the outcome: granted/grantedWithMods\
+            \ on success, rejection with PKIFailureInfo on failure."
+          content:
+            application/timestamp-reply:
+              schema:
+                type: string
+                format: binary
+      security: []
+components: {}

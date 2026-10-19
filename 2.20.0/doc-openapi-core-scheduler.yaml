@@ -1,0 +1,782 @@
+openapi: 3.1.0
+info:
+  title: Scheduler API
+  description: REST API for managing Scheduler and its jobs in the platform
+  contact:
+    name: ILM
+    url: https://www.otilm.com
+    email: ilm@omnitrust.com
+  license:
+    name: "Apache License, Version 2.0"
+    url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
+  version: 2.20.0
+  x-logo:
+    url: images/ilm-logo.svg
+externalDocs:
+  description: ILM Documentation
+  url: https://docs.otilm.com
+servers:
+- url: https://demo.otilm.com/api
+  description: ILM Demo server
+tags:
+- name: Scheduled Jobs Management
+  description: Scheduled Jobs Management API
+paths:
+  /v1/scheduler/jobs/{uuid}:
+    get:
+      tags:
+      - Scheduled Jobs Management
+      summary: Scheduled job detail
+      operationId: getScheduledJobDetail
+      parameters:
+      - name: uuid
+        in: path
+        description: Scheduled job UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Scheduled job detail retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduledJobDetailDto"
+        "404":
+          description: Scheduled job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+    put:
+      tags:
+      - Scheduled Jobs Management
+      summary: Edit Scheduled job
+      operationId: updateScheduledJob
+      parameters:
+      - name: uuid
+        in: path
+        description: Scheduled job UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateScheduledJob"
+        required: true
+      responses:
+        "200":
+          description: Scheduled job updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduledJobDetailDto"
+        "404":
+          description: Scheduled job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+    delete:
+      tags:
+      - Scheduled Jobs Management
+      summary: Delete Scheduled job
+      operationId: deleteScheduledJob
+      parameters:
+      - name: uuid
+        in: path
+        description: Scheduled job UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Scheduled job deleted
+        "404":
+          description: Scheduled job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/scheduler/jobs/{uuid}/enable:
+    patch:
+      tags:
+      - Scheduled Jobs Management
+      summary: Enabling of Scheduled job
+      operationId: enableScheduledJob
+      parameters:
+      - name: uuid
+        in: path
+        description: Scheduled job UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Scheduled job enabled
+        "404":
+          description: Scheduled job not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/scheduler/jobs/{uuid}/disable:
+    patch:
+      tags:
+      - Scheduled Jobs Management
+      summary: Disabling of Scheduled job
+      operationId: disableScheduledJob
+      parameters:
+      - name: uuid
+        in: path
+        description: Scheduled job UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Scheduled job disabled
+        "404":
+          description: Scheduled job not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/scheduler/jobs:
+    get:
+      tags:
+      - Scheduled Jobs Management
+      summary: List of scheduled jobs
+      operationId: listScheduledJobs
+      parameters:
+      - name: itemsPerPage
+        in: query
+        description: Number of entries per page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+          description: Number of entries per page
+          maximum: 1000
+      - name: pageNumber
+        in: query
+        description: Page number for the request
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          description: Page number for the request
+      responses:
+        "200":
+          description: List of scheduled jobs fetched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduledJobsResponseDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/scheduler/jobs/{uuid}/history:
+    get:
+      tags:
+      - Scheduled Jobs Management
+      summary: Scheduled job history
+      operationId: getScheduledJobHistory
+      parameters:
+      - name: itemsPerPage
+        in: query
+        description: Number of entries per page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+          description: Number of entries per page
+          maximum: 1000
+      - name: pageNumber
+        in: query
+        description: Page number for the request
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          description: Page number for the request
+      - name: uuid
+        in: path
+        description: Scheduled job UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Scheduled job history retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduledJobHistoryResponseDto"
+        "404":
+          description: Scheduled job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+components:
+  schemas:
+    UpdateScheduledJob:
+      type: object
+      properties:
+        cronExpression:
+          type: string
+          description: Cron expression for job schedule
+    ErrorMessageDto:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message detail
+          examples:
+          - Error message
+      required:
+      - message
+    AuthenticationServiceExceptionDto:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+          description: Status code of the HTTP Request
+        code:
+          type: string
+          description: Code of the result
+        message:
+          type: string
+          description: Exception message
+      required:
+      - code
+      - message
+      - statusCode
+    ScheduledJobDetailDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the scheduled job
+        jobName:
+          type: string
+          description: Name of the scheduled job
+        jobType:
+          type: string
+          description: Type of scheduled job (job processor name)
+        cronExpression:
+          type: string
+          description: CRON expression representing configuration of pattern how to
+            run scheduled job
+        enabled:
+          type: boolean
+          description: "Status of the scheduled job. True = Enabled, False = Disabled"
+        oneTime:
+          type: boolean
+          description: Is scheduled job triggered only once
+        system:
+          type: boolean
+          description: Is system scheduled job
+        lastExecutionStatus:
+          $ref: "#/components/schemas/SchedulerJobExecutionStatus"
+          description: Execution status of last job triggered task
+        scheduleState:
+          $ref: "#/components/schemas/ScheduledJobScheduleState"
+          description: "State of the job's trigger as the scheduler service reported\
+            \ it for this response. 'scheduled': the scheduler holds a live trigger.\
+            \ 'paused': the trigger is paused, which is what disabling the job does.\
+            \ 'blocked': the trigger waits for a run still in progress. 'error': the\
+            \ scheduler could not fire the trigger and stopped trying. 'complete':\
+            \ the trigger has no fire time left. 'notScheduled': the scheduler holds\
+            \ no trigger for this job -- the normal end of a one-time job once its\
+            \ run has succeeded or was cancelled, since the platform then removes\
+            \ it from the scheduler; any other job will not fire until it is registered\
+            \ again. 'unknown': the scheduler could not be read for this response,\
+            \ or it reported no state for the trigger (a scheduler that predates this\
+            \ field); nextFireTime and previousFireTime are then absent."
+        nextFireTime:
+          type: string
+          format: date-time
+          description: "When the scheduler will next fire the job: the fire time it\
+            \ holds for the job's trigger, computed from the trigger's own schedule,\
+            \ not projected from the stored CRON expression. Absent while the schedule\
+            \ state is 'paused', 'error', 'notScheduled' or 'unknown', and when the\
+            \ trigger has no further fire time. While the state is 'scheduled', the\
+            \ scheduler is not firing if this value is in the past or previousFireTime\
+            \ is earlier than the last time the schedule should have fired before\
+            \ now. Check both: a scheduler that is alive but stuck keeps moving this\
+            \ value to about now."
+        previousFireTime:
+          type: string
+          format: date-time
+          description: "When the scheduler last fired the job, by the scheduler's\
+            \ clock. Absent while the schedule state is 'notScheduled' or 'unknown',\
+            \ and until the trigger has fired once. A firing newer than both lastExecutionStartTime\
+            \ and lastSkippedAt by more than the clock difference between the scheduler\
+            \ and the platform has not reached the platform, which stamps those after\
+            \ the firing it acts on."
+        lastExecutionStartTime:
+          type: string
+          format: date-time
+          description: "When the last recorded run of the job started, by the platform's\
+            \ own clock as it began the run, after the scheduler fired it; absent\
+            \ while the job has no run in its history."
+        lastSkippedAt:
+          type: string
+          format: date-time
+          description: "When the job last ran and declined the run -- nothing to do,\
+            \ or a condition it could not proceed under -- by the platform's own clock\
+            \ as it recorded the skip, after the scheduler fired the run. A declined\
+            \ run leaves no history row; this is what shows the job is alive. Absent\
+            \ until the job has declined a run."
+        lastSkipReason:
+          type: string
+          description: "Why the run at lastSkippedAt was declined, in the task's own\
+            \ words; absent with it."
+        userUuid:
+          type: string
+          format: uuid
+        objectData: {}
+      required:
+      - cronExpression
+      - enabled
+      - jobName
+      - jobType
+      - lastExecutionStatus
+      - oneTime
+      - scheduleState
+      - system
+      - uuid
+    ScheduledJobScheduleState:
+      type: string
+      enum:
+      - scheduled
+      - paused
+      - blocked
+      - error
+      - complete
+      - notScheduled
+      - unknown
+    SchedulerJobExecutionStatus:
+      type: string
+      enum:
+      - started
+      - succeeded
+      - failed
+      - cancelled
+    ScheduledJobDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the scheduled job
+        jobName:
+          type: string
+          description: Name of the scheduled job
+        jobType:
+          type: string
+          description: Type of scheduled job (job processor name)
+        cronExpression:
+          type: string
+          description: CRON expression representing configuration of pattern how to
+            run scheduled job
+        enabled:
+          type: boolean
+          description: "Status of the scheduled job. True = Enabled, False = Disabled"
+        oneTime:
+          type: boolean
+          description: Is scheduled job triggered only once
+        system:
+          type: boolean
+          description: Is system scheduled job
+        lastExecutionStatus:
+          $ref: "#/components/schemas/SchedulerJobExecutionStatus"
+          description: Execution status of last job triggered task
+        scheduleState:
+          $ref: "#/components/schemas/ScheduledJobScheduleState"
+          description: "State of the job's trigger as the scheduler service reported\
+            \ it for this response. 'scheduled': the scheduler holds a live trigger.\
+            \ 'paused': the trigger is paused, which is what disabling the job does.\
+            \ 'blocked': the trigger waits for a run still in progress. 'error': the\
+            \ scheduler could not fire the trigger and stopped trying. 'complete':\
+            \ the trigger has no fire time left. 'notScheduled': the scheduler holds\
+            \ no trigger for this job -- the normal end of a one-time job once its\
+            \ run has succeeded or was cancelled, since the platform then removes\
+            \ it from the scheduler; any other job will not fire until it is registered\
+            \ again. 'unknown': the scheduler could not be read for this response,\
+            \ or it reported no state for the trigger (a scheduler that predates this\
+            \ field); nextFireTime and previousFireTime are then absent."
+        nextFireTime:
+          type: string
+          format: date-time
+          description: "When the scheduler will next fire the job: the fire time it\
+            \ holds for the job's trigger, computed from the trigger's own schedule,\
+            \ not projected from the stored CRON expression. Absent while the schedule\
+            \ state is 'paused', 'error', 'notScheduled' or 'unknown', and when the\
+            \ trigger has no further fire time. While the state is 'scheduled', the\
+            \ scheduler is not firing if this value is in the past or previousFireTime\
+            \ is earlier than the last time the schedule should have fired before\
+            \ now. Check both: a scheduler that is alive but stuck keeps moving this\
+            \ value to about now."
+        previousFireTime:
+          type: string
+          format: date-time
+          description: "When the scheduler last fired the job, by the scheduler's\
+            \ clock. Absent while the schedule state is 'notScheduled' or 'unknown',\
+            \ and until the trigger has fired once. A firing newer than both lastExecutionStartTime\
+            \ and lastSkippedAt by more than the clock difference between the scheduler\
+            \ and the platform has not reached the platform, which stamps those after\
+            \ the firing it acts on."
+        lastExecutionStartTime:
+          type: string
+          format: date-time
+          description: "When the last recorded run of the job started, by the platform's\
+            \ own clock as it began the run, after the scheduler fired it; absent\
+            \ while the job has no run in its history."
+        lastSkippedAt:
+          type: string
+          format: date-time
+          description: "When the job last ran and declined the run -- nothing to do,\
+            \ or a condition it could not proceed under -- by the platform's own clock\
+            \ as it recorded the skip, after the scheduler fired the run. A declined\
+            \ run leaves no history row; this is what shows the job is alive. Absent\
+            \ until the job has declined a run."
+        lastSkipReason:
+          type: string
+          description: "Why the run at lastSkippedAt was declined, in the task's own\
+            \ words; absent with it."
+      required:
+      - cronExpression
+      - enabled
+      - jobName
+      - jobType
+      - lastExecutionStatus
+      - oneTime
+      - scheduleState
+      - system
+      - uuid
+    ScheduledJobsResponseDto:
+      type: object
+      properties:
+        itemsPerPage:
+          type: integer
+          format: int32
+          description: Number of entries per page
+        pageNumber:
+          type: integer
+          format: int32
+          description: Page number for the request
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages available
+        totalItems:
+          type: integer
+          format: int64
+          description: Number of items available
+        scheduledJobs:
+          type: array
+          description: Scheduled jobs
+          items:
+            $ref: "#/components/schemas/ScheduledJobDto"
+      required:
+      - itemsPerPage
+      - pageNumber
+      - scheduledJobs
+      - totalItems
+      - totalPages
+    Resource:
+      type: string
+      enum:
+      - NONE
+      - ANY
+      - dashboard
+      - settings
+      - auditLogs
+      - credentials
+      - connectors
+      - attributes
+      - jobs
+      - proxies
+      - users
+      - roles
+      - acmeAccounts
+      - acmeProfiles
+      - cboms
+      - cryptoAssets
+      - scepProfiles
+      - cmpProfiles
+      - authorities
+      - raProfiles
+      - certificates
+      - certificateRequests
+      - groups
+      - complianceProfiles
+      - discoveries
+      - oids
+      - entities
+      - locations
+      - tokenProfiles
+      - tokens
+      - keys
+      - approvalProfiles
+      - approvals
+      - comments
+      - notificationProfiles
+      - notificationInstances
+      - rules
+      - actions
+      - triggers
+      - resources
+      - resourceEvents
+      - searchFilters
+      - listViews
+      - keyItems
+      - platformEnums
+      - notifications
+      - conditions
+      - executions
+      - complianceRules
+      - complianceGroups
+      - customAttributes
+      - globalMetadata
+      - acmeOrders
+      - acmeAuthorizations
+      - acmeChallenges
+      - cmpTransactions
+      - endEntityProfiles
+      - authenticationProviders
+      - trustedCertificates
+      - vaults
+      - vaultProfiles
+      - secrets
+      - signingProfiles
+      - signingRecords
+      - timeQualityConfigurations
+      - tspProfiles
+      - tspProfileBasicCredentials
+    ScheduledJobHistoryDto:
+      type: object
+      properties:
+        jobUuid:
+          type: string
+          format: uuid
+          description: Scheduled job UUID
+        startTime:
+          type: string
+          format: date-time
+          description: Start time of triggered task
+        endTime:
+          type: string
+          format: date-time
+          description: End time of triggered task
+        status:
+          $ref: "#/components/schemas/SchedulerJobExecutionStatus"
+          description: Execution status of triggered task
+        resultMessage:
+          type: string
+          description: Message explaining result status
+        resultObjectType:
+          $ref: "#/components/schemas/Resource"
+          description: Result object type
+        resultObjectIdentification:
+          type: array
+          description: Result object identification (UUID)
+          items:
+            type: string
+      required:
+      - startTime
+      - status
+    ScheduledJobHistoryResponseDto:
+      type: object
+      properties:
+        itemsPerPage:
+          type: integer
+          format: int32
+          description: Number of entries per page
+        pageNumber:
+          type: integer
+          format: int32
+          description: Page number for the request
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages available
+        totalItems:
+          type: integer
+          format: int64
+          description: Number of items available
+        scheduledJobHistory:
+          type: array
+          description: Scheduled job history
+          items:
+            $ref: "#/components/schemas/ScheduledJobHistoryDto"
+      required:
+      - itemsPerPage
+      - pageNumber
+      - scheduledJobHistory
+      - totalItems
+      - totalPages
+  securitySchemes:
+    SessionAuth:
+      type: apiKey
+      description: Session-based authentication with session ID stored in 'session-id'
+        cookie
+      name: session-id
+      in: cookie
+    CertificateAuth:
+      type: apiKey
+      description: Base64 encoded X.509 certificate passed in header
+      name: ssl-client-cert
+      in: header
+    BearerJWTAuth:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT

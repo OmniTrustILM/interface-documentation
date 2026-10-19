@@ -1,0 +1,176 @@
+openapi: 3.1.0
+info:
+  title: CMP API
+  description: CMP API according to the RFC 4210
+  contact:
+    name: ILM
+    url: https://www.otilm.com
+    email: ilm@omnitrust.com
+  license:
+    name: "Apache License, Version 2.0"
+    url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
+  version: 2.20.0
+  x-logo:
+    url: images/ilm-logo.svg
+externalDocs:
+  description: ILM Documentation
+  url: https://docs.otilm.com
+servers:
+- url: https://demo.otilm.com/api
+  description: ILM Demo server
+tags:
+- name: CMP RA Profile
+  description: Interfaces used by CMP clients to request CMP related operations on
+    top of RA Profile. CMP Profile defines the behaviour for the specific CMP configuration.
+    CMP Profile is bound with specific RA Profile and it can be used by the CMP clients
+    to request operations on their specific URL. These operations are always specific
+    only for the RA Profile.
+- name: CMP operations
+  description: "Interfaces used by CMP clients to request CMP related operations.\
+    \ CMP Profile defines the behaviour for the specific CMP configuration. When the\
+    \ CMP Profile contains default RA Profile, it can be used by the CMP clients to\
+    \ request operations on their specific URL."
+paths:
+  /v1/protocols/cmp/{cmpProfileName}:
+    get:
+      tags:
+      - CMP operations
+      summary: CMP Get Operations
+      operationId: doGet
+      parameters:
+      - name: cmpProfileName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: message
+        in: query
+        description: DER encoded CMP data
+        required: false
+        schema:
+          type: string
+          format: binary
+          description: DER encoded CMP data
+      responses:
+        "200":
+          description: CMP Operations retrieved
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "500":
+          description: Operation is not allowed
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+      security: []
+    post:
+      tags:
+      - CMP operations
+      summary: CMP Post Operation
+      externalDocs:
+        description: RFC 4210
+        url: https://www.rfc-editor.org/rfc/rfc4210
+      operationId: doPost
+      parameters:
+      - name: cmpProfileName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/pkixcmp:
+            schema:
+              type: string
+              format: binary
+              description: Binary CMP data
+        required: true
+      responses:
+        "200":
+          description: Operation executed
+          content:
+            application/pkixcmp:
+              schema:
+                type: string
+                format: binary
+                description: "Response structure(s) defined in RFC 4210, section 5.3"
+                externalDocs:
+                  description: RFC 4210
+                  url: https://www.rfc-editor.org/rfc/rfc4210#section-5.3
+      security: []
+  /v1/protocols/cmp/raProfile/{raProfileName}:
+    get:
+      tags:
+      - CMP RA Profile
+      summary: CMP Get Operations
+      operationId: doGet_1
+      parameters:
+      - name: raProfileName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: message
+        in: query
+        description: DER encoded CMP data
+        required: false
+        schema:
+          type: string
+          format: binary
+          description: DER encoded CMP data
+      responses:
+        "200":
+          description: CMP Operations retrieved
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "500":
+          description: Operation is not allowed
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+      security: []
+    post:
+      tags:
+      - CMP RA Profile
+      summary: CMP Post Operation
+      externalDocs:
+        description: RFC 4210
+        url: https://www.rfc-editor.org/rfc/rfc4210
+      operationId: doPost_1
+      parameters:
+      - name: raProfileName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/pkixcmp:
+            schema:
+              type: string
+              format: binary
+              description: Binary CMP data
+        required: true
+      responses:
+        "200":
+          description: Operation executed
+          content:
+            application/pkixcmp:
+              schema:
+                type: string
+                format: binary
+                description: "Response structure(s) defined in RFC 4210, section 5.3"
+                externalDocs:
+                  description: RFC 4210
+                  url: https://www.rfc-editor.org/rfc/rfc4210#section-5.3
+      security: []
+components: {}
