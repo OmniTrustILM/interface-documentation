@@ -1,0 +1,1397 @@
+openapi: 3.1.0
+info:
+  title: ILM CSC API
+  description: ILM CSC API Documentation
+  contact:
+    name: OmniTrust
+    url: https://omnitrust.com
+    email: ilm@omnitrust.com
+  license:
+    name: Apache License, Version 2.0
+    url: https://github.com/OmniTrustILM/csc-api/blob/main/LICENSE.md
+  version: 1.8.0
+  x-logo:
+    url: https://raw.githubusercontent.com/OmniTrustILM/ilm/main/icon/ot-icon-color.svg
+externalDocs:
+  description: ILM Documentation
+  url: https://docs.otilm.com
+servers:
+- url: https://csc.otilm.com
+tags:
+- name: Info
+  description: Info API as defined in the CSC API v2.0.0.2 specification. This API
+    is used to retrieve information about the remote service.
+- name: Signatures
+  description: Signatures API as defined in the CSC API v2.0.0.2 specification. This
+    API is used to sign documents and hashes.
+- name: Credentials Management
+  description: An API for managing credentials. This API is not part of the CSC API
+    specification.
+- name: Credentials
+  description: Credentials API as defined in the CSC API v2.0.0.2 specification. This
+    API is used to get information about the existing user credentials.
+paths:
+  /management/v1/credentials/remove:
+    post:
+      tags:
+      - Credentials Management
+      summary: Remove Credential
+      description: Deletes the credential and all associated resources.
+      operationId: deleteCredential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveCredentialDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+      security:
+      - BearerAuthCredentialManagement: []
+      - MutualTLS: []
+  /management/v1/credentials/rekey:
+    post:
+      tags:
+      - Credentials Management
+      summary: Rekey Credential
+      description: Generates a new signing key and certificate for the credential.
+      operationId: rekeyCredential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RekeyCredentialDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+      security:
+      - BearerAuthCredentialManagement: []
+      - MutualTLS: []
+  /management/v1/credentials/enable:
+    post:
+      tags:
+      - Credentials Management
+      summary: Enable Credential
+      description: Enables the the credential so it can be used for signing.
+      operationId: enableCredential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectCredentialDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+      security:
+      - BearerAuthCredentialManagement: []
+      - MutualTLS: []
+  /management/v1/credentials/disable:
+    post:
+      tags:
+      - Credentials Management
+      summary: Disable Credential
+      description: Disables the the credential so it can no longer be used for signing.
+      operationId: disableCredential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectCredentialDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+      security:
+      - BearerAuthCredentialManagement: []
+      - MutualTLS: []
+  /management/v1/credentials/create:
+    post:
+      tags:
+      - Credentials Management
+      summary: Create Credential
+      description: Creates a new credential for a user.
+      operationId: createCredential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCredentialDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialDto"
+      security:
+      - BearerAuthCredentialManagement: []
+      - MutualTLS: []
+  /csc/v2/signatures/signHash:
+    post:
+      tags:
+      - Signatures
+      summary: Sign hash
+      description: "Calculate a raw digital signature from one or more hash values.\
+        \ For more information, see the CSC API specification, section `11.10 signatures/signHash`."
+      operationId: signHash
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignHashRequestDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignHashResponseDto"
+        "501":
+          description: Not Implemented
+      security:
+      - BearerAuthSignature: []
+  /csc/v2/signatures/signDoc:
+    post:
+      tags:
+      - Signatures
+      summary: Sign document
+      description: "Creates one or more AdES signatures for documents or document\
+        \ digests. For more information, see the CSC API specification, section `11.11\
+        \ signature/signDoc`."
+      operationId: signDoc
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignDocRequestDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignDocResponseDto"
+        "501":
+          description: Not Implemented
+      security:
+      - BearerAuthSignature: []
+  /csc/v2/credentials/list:
+    post:
+      tags:
+      - Credentials
+      summary: List Credentials
+      description: "Returns the list of credentials associated with a user identifier.\
+        \ For more information, see the CSC API specification, section `11.4 credentials/list`."
+      operationId: listCredentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListCredentialsRequestDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialsListDto"
+      security:
+      - BearerAuthCredential: []
+  /csc/v2/credentials/info:
+    post:
+      tags:
+      - Credentials
+      summary: Credentials Info
+      description: "Retrieves the credential. For more information, see the CSC API\
+        \ specification, section `11.5 credentials/info`."
+      operationId: credentialInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetCredentialInfoDto"
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialDto"
+      security:
+      - BearerAuthCredential: []
+  /csc/v2/info:
+    get:
+      tags:
+      - Info
+      summary: Get Info
+      description: "Returns information on the remote service and the list of API\
+        \ methods it has implemented. For more information, see the CSC API specification,\
+        \ section `11.1 info`."
+      operationId: getInfo
+      responses:
+        "500":
+          description: Internal Server Error
+          content: {}
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "401":
+          description: Unauthorized
+          content: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfoDto"
+components:
+  schemas:
+    ErrorDto:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          enum:
+          - invalid_request
+          - unauthorized_client
+          - access_denied
+          - unsupported_response_type
+          - invalid_scope
+          - server_error
+          - temporarily_unavailable
+          - expired_token
+          - invalid_token
+        error_description:
+          type: string
+          description: Error description
+      required:
+      - error
+    CertificateRevocationReason:
+      type: string
+      enum:
+      - unspecified
+      - keyCompromise
+      - cACompromise
+      - affiliationChanged
+      - superseded
+      - cessationOfOperation
+      - certificateHold
+      - privilegeWithdrawn
+      - aACompromise
+    RemoveCredentialDto:
+      type: object
+      properties:
+        credentialID:
+          type: string
+          description: |
+            Unique identifier of the credential.
+        revocationReason:
+          $ref: "#/components/schemas/CertificateRevocationReason"
+          description: |
+            Specifies the reason for revocation of the certificate.
+            If provided, the certificate will be revoked with the specified reason.
+      required:
+      - credentialID
+    RekeyCredentialDto:
+      type: object
+      properties:
+        credentialID:
+          type: string
+          description: |
+            Unique identifier of the credential to rekey.
+        credentialProfileName:
+          type: string
+          description: |
+            A name of the of the credential profile to use when generating the certificate.
+          example: long-term
+        cryptoTokenName:
+          type: string
+          description: |
+            A name of the crypto token which will hold the generated private key for the credential.
+
+            If not provided, the key will be stored in the same token as the old key.
+          example: EntrustSAMCryptoToken
+      required:
+      - credentialID
+      - credentialProfileName
+    SelectCredentialDto:
+      type: object
+      properties:
+        credentialID:
+          type: string
+          description: |
+            Unique identifier of the credential.
+      required:
+      - credentialID
+    CreateCredentialDto:
+      type: object
+      properties:
+        cryptoTokenName:
+          type: string
+          description: |
+            A name of the crypto token which will hold the generated private key for the credential.
+          example: EntrustSAMCryptoToken
+        credentialProfileName:
+          type: string
+          description: |
+            A name of the credential profile to use when generating the certificate.
+          example: long-term
+        userId:
+          type: string
+          description: |
+            Identifier of the user the credential will belong to.
+            This identifier must be unique within the identity provider.
+        signatureQualifier:
+          type: string
+          description: |
+            Identifier qualifying the type of signature this credential is suitable for.
+            See the list of supported signature qualifiers in the CSC API specification.
+          example: eu_eidas_qes
+        numberOfSignaturesPerAuthorization:
+          type: integer
+          format: int32
+          default: 1
+          description: |
+            Maximum number of signatures that can be created with this credential with a single
+            authorization request.
+          example: 2
+        scal:
+          type: string
+          default: "1"
+          description: |
+            Specifies if the credential should generate a signature activation data (SAD) or an access token
+            with scope `credential` that contains a link to the hash to-be-signed:
+            - `1`: The hash to-be-signed is not linked to the signature activation data.
+            - `2`: The hash to-be-signed is linked to the signature activation data.
+          example: "1"
+        dn:
+          type: string
+          description: |
+            A subject distinguished name (DN) of the credential for the certificate.
+            The format of the DN must be according to the X.500 standard. This field should contain
+            comma-separated key-value pairs, where the key is the type of the DN and the value is the
+            value of the DN.
+          example: "CN=John Doe,OU=IT,O=Company"
+        san:
+          type: string
+          description: |
+            A subject alternative name (SAN) of the credential for the certificate.
+            The format of the SAN must be according to the X.500 standard. This field should contain
+            comma-separated key-value pairs, where the key is the type of the SAN and the value is the
+            value of the SAN.
+          example: rfc822Name=your.name@email.com
+        description:
+          type: string
+          description: |
+            A free form description of the credential in the lang language. The maximum size of the string
+            is 255 characters.
+        usePreGeneratedKey:
+          type: boolean
+          description: |
+            Indicates whether to use a pre-generated key from the key pool.
+            If set to true, a pre-generated key will be used; if false or not provided, a new key will be generated.
+        certificates:
+          type: string
+          description: |
+            Specifies which certificates from the certificate chain SHALL be returned in
+            certs/certificates.
+            - “none”: No certificate SHALL be returned.
+            - “single”: Only the end entity certificate SHALL be returned.
+            - “chain”: The full certificate chain SHALL be returned.
+            The default value is “single”, so if the parameter is omitted then the method will
+            only return the end entity certificate(s).
+      required:
+      - credentialProfileName
+      - cryptoTokenName
+      - dn
+      - san
+      - userId
+    CredentialDto:
+      type: object
+      properties:
+        credentialID:
+          type: string
+          description: |
+            The credentialID identifying one of the credentials associated with the provided or implicit userID.
+        description:
+          type: string
+          description: |
+            A free form description of the credential in the lang language. The
+            maximum size of the string is 255 characters.
+        signatureQualifier:
+          type: string
+          description: |
+            Identifier qualifying the type of signature this credential is suitable for
+            (see signatures/signDoc).
+        key:
+          $ref: "#/components/schemas/KeyDto"
+          description: |
+            Cryptographic key details.
+        cert:
+          $ref: "#/components/schemas/KeyDto"
+          description: |
+            Certificate details.
+        multisign:
+          $ref: "#/components/schemas/KeyDto"
+          description: |
+            A number equal or higher to 1 representing the maximum number of
+            signatures that can be created with this credential with a single
+            authorization request (e.g. by calling credentials/signHash method, as
+            defined in signatures/signHash, once with multiple hash values or calling
+            it multiple times). The value of numSignatures specified in the
+            authorization request SHALL NOT exceed the value of this value.
+        authDto:
+          $ref: "#/components/schemas/KeyDto"
+          description: |
+            Authorization details.
+      required:
+      - authDto
+      - cert
+      - credentialID
+      - description
+      - key
+      - multisign
+      - signatureQualifier
+    KeyDto:
+      type: object
+      properties:
+        status:
+          type: string
+          description: |
+            The status of the signing key of the credential:
+            “enabled”: the signing key is enabled and can be used for signing.
+            “disabled”: the signing key is disabled and cannot be used for signing. This MAY occur when
+                the owner has disabled it or when the RSSP has detected that the associated certificate is
+                expired or revoked.
+        algo:
+          type: string
+          description: |
+            The list of OIDs of the supported key algorithms. For example:
+            1.2.840.113549.1.1.1 = RSA encryption, 1.2.840.10045.4.3.2 = ECDSA with SHA256.
+        len:
+          type:
+          - string
+          - "null"
+          description: |
+            The length of the cryptographic key in bits.
+        curve:
+          type:
+          - string
+          - "null"
+          description: |
+            The OID of the ECDSA curve. The value SHALL only be returned if
+            keyAlgo is based on ECDSA.
+      required:
+      - algo
+      - status
+    SignHashRequestDto:
+      type: object
+      properties:
+        credentialID:
+          type: string
+          description: |
+            The unique identifier associated to the credential. At least one of the two values
+            credentialID and signatureQualifier SHALL be present. Both values MAY be present.
+        operationMode:
+          type: string
+          default: S
+          description: |
+            The type of operation mode requested. Only the following is implemented:
+            - `S`: a synchronous operation mode is requested.
+            - `A`: an asynchronous operation mode is requested.
+          enum:
+          - A
+          - S
+        clientData:
+          type: string
+          description: |
+            Arbitrary data from the client. It is used to handle a application-specific data that may be useful for
+            debugging purposes.
+        hashes:
+          type: array
+          description: |
+            An array containing the Base64-encoded raw message digest(s).
+          items:
+            type: string
+        hashAlgorithmOID:
+          type: string
+          description: |
+            Hashing algorithm OID used to calculate the hash value(s). This
+            parameter will be ignored if the hash algorithm is implicitly specified by the signAlgo algorithm.
+        signAlgo:
+          type: string
+          description: |
+            The OID of the algorithm to use for signing. If the parameter `hashAlgorithmOID` defined in
+            is passed, it must use the same algorithms as this parameter.
+        signAlgoParams:
+          type: string
+          description: |
+            The Base64-encoded DER-encoded ASN.1 signature parameters, if required by
+            the `signAlgo`.
+        sad:
+          type: string
+        validity_period:
+          type: integer
+          format: int32
+          description: |
+            Maximum period of time, expressed in milliseconds, until which the server keeps the request outcome(s)
+            available for retrieval. This parameter is for future updates and currently ignored in synchronous mode.
+        response_uri:
+          type: string
+          description: |
+            Value of one location where the server will notify the signature creation operation completion, as a URI value.
+            This parameter is for future updates and currently ignored in synchronous mode.
+      required:
+      - hashes
+      - signAlgo
+    SignHashResponseDto:
+      type: object
+      properties:
+        responseId:
+          type: string
+          description: |
+            Arbitrary string value uniquely identifying the response. Returned only when operationMode is `A.`
+        signatures:
+          type: array
+          description: |
+            One or more Base64-encoded signed hash(s). In case of multiple signatures, the signed
+            hashes are returned in the same order as the corresponding hashes provided as
+            an input parameter. This value is returned when operationMode is `S`.
+          items:
+            type: string
+    AttributeDto:
+      type: object
+      properties:
+        attribute_name:
+          type: string
+          description: |
+            Name or OID of the attribute/property to be included in the signature.
+          enum:
+          - commitment-type-indication
+          - content-hint
+          - mime-type
+          - signer-location
+          - content-time-stamp
+          - signer-attributes-v2
+          - signature-policy-identifier
+          - content-reference
+          - content-identifier
+          - location
+          - reason
+          - name
+          - contactInfo
+          - signerRoleV2
+          - commitmentTypeIndication
+          - signatureProductionPlaceV2
+          - allDataObjectsTimeStamp
+          - individualDataObjectsTimeStamp
+          - signaturePolicyIdentifier
+        attribute_value:
+          type: string
+          description: |
+            Value of the attribute/property to be included in the signature. The value depends on
+            the attribute/property specified in `attribute_name`.
+      required:
+      - attribute_name
+    DocumentDigestsDto:
+      type: object
+      properties:
+        signAlgo:
+          type: string
+          description: |
+            The OID of the algorithm to use for signing. If the parameter `hashAlgorithmOID` defined in
+            is passed, it must use the same algorithms as this parameter.
+        signAlgoParams:
+          type: string
+          description: |
+            The Base64-encoded DER-encoded ASN.1 signature parameters, if required by
+            the `signAlgo`.
+        hashes:
+          type: array
+          description: |
+            An array containing the Base64-encoded document hashes to be signed.
+          items:
+            type: string
+        hashAlgorithmOID:
+          type: string
+          description: |
+            Hashing algorithm OID used to calculate document(s) hash(es). This
+            parameter will be ignored if the hash algorithm is implicitly specified by the signAlgo algorithm.
+        signature_format:
+          type: string
+          description: |
+            Requested signature format:
+            - `C`: CAdES signature format
+            - `X`: XAdES signature format
+            - `P`: PAdES signature format
+            - `J`: JAdES signature format
+          enum:
+          - C
+          - P
+          - X
+          - J
+        conformance_level:
+          type: string
+          default: Ades-B-B
+          description: |
+            Requested signature conformance level:
+            - `Ades-B-B` - baseline 191x2 level B signature
+            - `Ades-B-T` - baseline 191x2 level T signature
+            - `Ades-B-LT` - baseline 191x2 level LT signature
+            - `Ades-B-LTA` - baseline 191x2 level LTA signature
+            - `Ades-B` - baseline etsits level B signature
+            - `Ades-T` - baseline etsits level T signature
+            - `Ades-LT` - baseline etsits level LT signature
+            - `Ades-LTA` - baseline etsits level LTA signature
+          enum:
+          - Ades-B-B
+          - Ades-B-T
+          - Ades-B-LT
+          - Ades-B-LTA
+          - Ades-B
+          - Ades-T
+          - Ades-LT
+          - Ades-LTA
+        signed_props:
+          type: array
+          description: |
+            List of signed attributes to be included in the signature.
+          items:
+            $ref: "#/components/schemas/AttributeDto"
+        signed_envelope_property:
+          type: string
+          description: |
+            The signature packaging format to be used. Depending on the `signature_format`, one of the following
+            values must be used:
+            - CAdES: `Detached`, `Attached`, `Parallel`
+            - PAdES: `Certification`, `Revision`
+            - XAdES: `Enveloped`, `Enveloping`, `Detached`
+            - JAdES: `Detached`, `Attached`, `Parallel`
+          enum:
+          - Attached
+          - Detached
+          - Enveloping
+          - Enveloped
+          - Revision
+          - Certification
+          - Parallel
+      required:
+      - hashes
+      - signAlgo
+      - signature_format
+    DocumentDto:
+      type: object
+      properties:
+        signAlgo:
+          type: string
+          description: |
+            The OID of the algorithm to use for signing. If the parameter `hashAlgorithmOID` defined in
+            is passed, it must use the same algorithms as this parameter.
+        signAlgoParams:
+          type: string
+          description: |
+            The Base64-encoded DER-encoded ASN.1 signature parameters, if required by
+            the `signAlgo`.
+        document:
+          type: string
+          description: |
+            Base64-encoded document content to be signed.
+        signature_format:
+          type: string
+          description: |
+            Requested signature format:
+            - `C`: CAdES signature format
+            - `X`: XAdES signature format
+            - `P`: PAdES signature format
+            - `J`: JAdES signature format
+          enum:
+          - C
+          - P
+          - X
+          - J
+        conformance_level:
+          type: string
+          default: Ades-B-B
+          description: |
+            Requested signature conformance level:
+            - `Ades-B-B` - baseline 191x2 level B signature
+            - `Ades-B-T` - baseline 191x2 level T signature
+            - `Ades-B-LT` - baseline 191x2 level LT signature
+            - `Ades-B-LTA` - baseline 191x2 level LTA signature
+            - `Ades-B` - baseline etsits level B signature
+            - `Ades-T` - baseline etsits level T signature
+            - `Ades-LT` - baseline etsits level LT signature
+            - `Ades-LTA` - baseline etsits level LTA signature
+          enum:
+          - Ades-B-B
+          - Ades-B-T
+          - Ades-B-LT
+          - Ades-B-LTA
+          - Ades-B
+          - Ades-T
+          - Ades-LT
+          - Ades-LTA
+        signed_props:
+          type: array
+          description: |
+            List of signed attributes to be included in the signature.
+          items:
+            $ref: "#/components/schemas/AttributeDto"
+        signed_envelope_property:
+          type: string
+          description: |
+            The signature packaging format to be used. Depending on the `signature_format`, one of the following
+            values must be used:
+            - CAdES: `Detached`, `Attached`, `Parallel`
+            - PAdES: `Certification`, `Revision`
+            - XAdES: `Enveloped`, `Enveloping`, `Detached`
+            - JAdES: `Detached`, `Attached`, `Parallel`
+          enum:
+          - Attached
+          - Detached
+          - Enveloping
+          - Enveloped
+          - Revision
+          - Certification
+          - Parallel
+      required:
+      - document
+      - signAlgo
+      - signature_format
+    SignDocRequestDto:
+      type: object
+      properties:
+        credentialID:
+          type: string
+          description: |
+            The unique identifier associated to the credential. At least one of the two values
+            credentialID and signatureQualifier SHALL be present. Both values MAY be present.
+        operationMode:
+          type: string
+          default: S
+          description: |
+            The type of operation mode requested. Only the following is implemented:
+            - `S`: a synchronous operation mode is requested.
+            - `A`: an asynchronous operation mode is requested.
+          enum:
+          - A
+          - S
+        clientData:
+          type: string
+          description: |
+            Arbitrary data from the client. It is used to handle a application-specific data that may be useful for
+            debugging purposes.
+        signatureQualifier:
+          type: string
+          description: |
+            Identifier of the signature type to be created. At least one of the two values
+            credentialID and signatureQualifier SHALL be present. Both values MAY be present.
+        documentDigests:
+          type: array
+          description: |
+            An array containing document digest objects. This parameter or the
+            parameter `documents` MUST be present in a request.
+          items:
+            $ref: "#/components/schemas/DocumentDigestsDto"
+        documents:
+          type: array
+          description: |
+            An array containing document objects. This parameter or the
+            parameter `documentDigests` MUST be present in a request.
+          items:
+            $ref: "#/components/schemas/DocumentDto"
+        returnValidationInfo:
+          type: boolean
+          default: false
+          description: |
+            If this parameter is present and set to `true` the server will return validation information in the response.
+        sad:
+          type: string
+        validity_period:
+          type: integer
+          format: int32
+          description: |
+            Maximum period of time, expressed in milliseconds, until which the server keeps the request outcome(s)
+            available for retrieval. This parameter is for future updates and currently ignored in synchronous mode.
+        response_uri:
+          type: string
+          description: |
+            Value of one location where the server will notify the signature creation operation completion, as a URI value.
+            This parameter is for future updates and currently ignored in synchronous mode.
+    SignDocResponseDto:
+      type: object
+      properties:
+        responseId:
+          type: string
+          description: |
+            Arbitrary string value uniquely identifying the response. Returned only when operationMode is `A.`
+        documentWithSignature:
+          type: array
+          description: |
+            One or more Base64-encoded signatures enveloped within the
+            documents. Returned only when requested the creation of signature(s) enveloped within the signed
+            document(s) and when operationMode is not `A`.
+          items:
+            type: string
+        signatureObject:
+          type: array
+          description: |
+            One or more Base64-encoded signatures detached from the documents.
+            This element carries a value only if the client application requested
+            the creation of detached signature(s) and when operationMode is not `A`.
+          items:
+            type: string
+        validationInfo:
+          $ref: "#/components/schemas/ValidationInfo"
+          description: |
+            The `validationInfo` data to be included in the signing response if requested using the input
+            parameter `returnValidationInfo`.
+    ValidationInfo:
+      type: object
+      properties:
+        crl:
+          type: array
+          description: |
+            Array of Base64-encoded strings containing the DER-encoded ASN.1 data
+            structures of type `CertificateList` according to [RFC 5280](https://datatracker.ietf.org/doc/html/rfc5280).
+          items:
+            type: string
+          uniqueItems: true
+        ocsp:
+          type: array
+          description: |
+            Array of Base64-encoded strings containing the DER-encoded ASN.1 data
+            structures of type `OCSPResponse` according to [RFC 6960](https://datatracker.ietf.org/doc/html/rfc6960).
+          items:
+            type: string
+          uniqueItems: true
+        certificates:
+          type: array
+          description: |
+            Array of Base64-encoded X.509v3 certificates from the certificate
+            chain used to create the respective signature and timestamps included in the signature.
+          items:
+            type: string
+          uniqueItems: true
+    ListCredentialsRequestDto:
+      type: object
+      properties:
+        userID:
+          type: string
+          description: |
+            The identifier associated to the identity of the credential owner. This parameter
+            SHALL NOT be present if the service authorization is user-specific (see NOTE below).
+            In that case the userID is already implicit in the service access token passed in the
+            Authorization header.
+            If a user-specific service authorization is present, it SHALL NOT be allowed to use
+            this parameter to obtain the list of credentials associated to a different user. The
+            remote service SHALL return an error in such case.
+        credentialInfo:
+          type: boolean
+          description: |
+            Request to return the main information included in the public key certificate and
+            the public key certificate itself or the certificate chain associated to the credentials.
+            The default value is “false”, so if the parameter is omitted then the information will
+            not be returned.
+        certificates:
+          type: string
+          description: |
+            Specifies which certificates from the certificate chain SHALL be returned in
+            certs/certificates.
+            - “none”: No certificate SHALL be returned.
+            - “single”: Only the end entity certificate SHALL be returned.
+            - “chain”: The full certificate chain SHALL be returned.
+            The default value is “single”, so if the parameter is omitted then the method will
+            only return the end entity certificate(s).
+            This parameter MAY be specified only if the parameter credentialInfo is “true”. If
+            the parameter credentialInfo is not “true” and this parameter is specified its value
+            SHALL be ignored.
+        certInfo:
+          type: boolean
+          description: |
+            Request to return various parameters containing information from the end entity
+            certificate(s). This is useful in case the signature application wants to retrieve some
+            details of the certificate(s) without having to decode it first. The default value is
+            “false”, so if the parameter is omitted then the information will not be returned.
+            This parameter MAY be specified only if the parameter credentialInfo is “true”. If
+            the parameter credentialInfo is not “true” and this parameter is specified its value
+            SHALL be ignored.
+        authInfo:
+          type: boolean
+          description: |
+            Request to return various parameters containing information on the authorization
+            mechanisms supported by the corresponding credential (auth group). The default
+            value is “false”, so if the parameter is omitted then the information will not be
+            returned.
+            This parameter MAY be specified only if the parameter credentialInfo is “true”. If
+            the parameter credentialInfo is not “true” and this parameter is specified its value
+            SHALL be ignored.
+        clientData:
+          type: string
+          description: |
+            Arbitrary data from the signature application. It can be used to handle a
+            transaction identifier or other application-specific data that may be useful for
+            debugging purposes. WARNING: this parameter MAY expose sensitive data to
+            the remote service. Therefore it SHOULD be used carefully.
+        onlyValid:
+          type: boolean
+          description: |
+            Request to return only credentials usable to create a valid signature. The default
+            value is “false”, so if the parameter is omitted then the method will return all
+            credentials available to the owner.
+            The remote service MAY NOT support this parameter. When the parameter is
+            supported SHALL be returned in output.
+      required:
+      - userID
+    CredentialsListDto:
+      type: object
+      properties:
+        credentialIDs:
+          type: array
+          description: |
+            One or more credentialID(s) associated with the provided or implicit userID.
+          items: {}
+        credentialInfos:
+          $ref: "#/components/schemas/CredentialDto"
+          description: |2
+                The contents of credentialInfo object are described below. If the
+                credentialInfo parameter is not “true”, this value SHALL NOT be returned.
+        onlyValid:
+          $ref: "#/components/schemas/CredentialDto"
+          description: |2
+                This value SHALL be returned true when the input parameter “onlyValid”
+                was true, and the RSSP supports this feature, i.e. the RSSP only returns
+                credentials which can be used for signing.
+                If the values is false or the output parameter is omitted, then the list may
+                contain credentials which cannot be used for signing.
+      required:
+      - credentialIDs
+    GetCredentialInfoDto:
+      type: object
+      properties:
+        credentialID:
+          type: string
+          description: |
+            The unique identifier associated to the credential.
+        certificates:
+          type: string
+          description: |
+            Specifies which certificates from the certificate chain SHALL be returned in
+            certs/certificates.
+            - “none”: No certificate SHALL be returned.
+            - “single”: Only the end entity certificate SHALL be returned.
+            - “chain”: The full certificate chain SHALL be returned.
+            The default value is “single”, so if the parameter is omitted then the method will
+            only return the end entity certificate(s).
+            This parameter MAY be specified only if the parameter credentialInfo is “true”. If
+            the parameter credentialInfo is not “true” and this parameter is specified its value
+            SHALL be ignored.
+        certInfo:
+          type: boolean
+          description: |
+            Request to return various parameters containing information from the end entity
+            certificate(s). This is useful in case the signature application wants to retrieve some
+            details of the certificate(s) without having to decode it first. The default value is
+            “false”, so if the parameter is omitted then the information will not be returned.
+            This parameter MAY be specified only if the parameter credentialInfo is “true”. If
+            the parameter credentialInfo is not “true” and this parameter is specified its value
+            SHALL be ignored.
+        authInfo:
+          type: boolean
+          description: |
+            Request to return various parameters containing information on the authorization
+            mechanisms supported by the corresponding credential (auth group). The default
+            value is “false”, so if the parameter is omitted then the information will not be
+            returned.
+            This parameter MAY be specified only if the parameter credentialInfo is “true”. If
+            the parameter credentialInfo is not “true” and this parameter is specified its value
+            SHALL be ignored.
+        clientData:
+          type: string
+          description: |
+            Arbitrary data from the signature application. It can be used to handle a
+            transaction identifier or other application-spe cific data that may be useful for
+            debugging purposes. WARNING: this parameter MAY expose sensitive data to
+            the remote service. Therefore it SHOULD be used carefully.
+      required:
+      - credentialID
+    InfoDto:
+      type: object
+      properties:
+        specs:
+          type: string
+          description: |
+            The version of this specification implemented by the provider. The
+            format of the string is Major.Minor.x.y , where Major is a number
+            equivalent to the API version (e.g. 2 for API v2) and Minor is a
+            number identifying the version update, while x and y are subversion
+            numbers.
+        name:
+          type: string
+          description: |
+            The commercial name of the remote service. The maximum size of
+            the string is 255 characters.
+        logo:
+          type: string
+          description: |
+            The URI of the image file containing the logo of the remote service
+            which SHALL be published online. The image SHALL be in either
+            JPEG or PNG format and not larger than 256x256 pixels.
+        region:
+          type: string
+          description: |
+            The ISO 3166-1 [22] Alpha-2 code of the Country where the remote
+            service provider is established (e.g. ES for Spain).
+        lang:
+          type: string
+          description: |
+            The language used in the responses, specified according to RFC 5646.
+        authType:
+          type: array
+          description: |
+            One or more values corresponding to the service authorization
+            mechanisms supported by the remote service to authorize the
+            access to the API:
+            - `external`: in case the authorization is managed externally (e.g. using a VPN or a private LAN).
+            - `TLS`: in case the authorization is provided by means of TLS client certificate authentication.
+            - `basic`: in case of HTTP Basic Authentication.
+            - `digest`: in case of HTTP Digest Authentication.
+            - `oauth2code`: in case of OAuth 2.0 with authorization code flow.
+            - `oauth2client`: in case of OAuth 2.0 with client credentials flow.
+          items:
+            type: string
+        oauth2:
+          type: string
+          description: |
+            The base URI of the OAuth 2.0 authorization server endpoint
+            supported by the remote service for service authorization and/or
+            credential authorization.
+            The parameter is present if
+            - the authType parameter contains “oauth2code” or “oauth2client” or
+            - the remote service supports the value “oauth2code” for the
+              auth/mode parameter returned by credentials/info
+            and the parameter “oauth2Issuer” is not present.
+        oauth2Issuer:
+          type: string
+          description: |
+            The issuer URL of the OAuth 2.0 authorization server as defined in
+            IETF RFC 8414 supported by the remote service for service
+            authorization and/or credential authorization. The parameter
+            SHALL be present if
+            - the authType parameter contains “oauth2code” or “oauth2client” or
+            - the remote service supports the value “oauth2code” for the auth/mode
+              parameter returned by credentials/info
+            and the parameter “oauth2” is not present.
+        asynchronousOperationMode:
+          type: boolean
+          description: |
+            This parameter is “true” if the remote signing server supports
+            also asynchronous signature mechanism. The default value is
+            “false”. An omitted parameter or the value “false” indicates that the
+            remote signing server manages signature requests only in
+            synchronous operation mode
+        methods:
+          type: array
+          description: |
+            The list of names of all the API methods described in this
+            specification that are implemented and supported by the remote
+            service.
+          items:
+            type: string
+        validationInfo:
+          type: boolean
+          description: |
+            This parameter is “true” if the remote signing server
+            supports the “validationInfo” response parameter of the method
+            signatures/signDoc in not mandatory cases. An omitted parameter
+            or the value “false” indicates that the remote signing server does
+            not support “validationInfo” in those cases.
+        signAlgorithms:
+          $ref: "#/components/schemas/SignatureAlgorithmsDto"
+          description: |
+            Object including one or more signature algorithms supported by
+            the remote service.
+        signature_formats:
+          $ref: "#/components/schemas/SignatureFormatsDto"
+          description: |
+            Object including one or more signature formats supported by the
+            remote service.
+        conformanceLevels:
+          type: array
+          description: |
+            The list of names of all signature conformance levels supported by
+            the remote service.
+          items:
+            type: string
+      required:
+      - authType
+      - conformanceLevels
+      - lang
+      - logo
+      - methods
+      - name
+      - region
+      - signAlgorithms
+      - signature_formats
+      - specs
+      - validationInfo
+    SignatureAlgorithmsDto:
+      type: object
+      properties:
+        algos:
+          type: array
+          description: |
+            The list of signature algorithms supported by the remote service.
+          items:
+            type: string
+        algoParams:
+          type: array
+          description: |
+            The list of eventual signature parameters.
+          items:
+            type: string
+      required:
+      - algos
+    SignatureFormatsDto:
+      type: object
+      properties:
+        formats:
+          type: array
+          description: |
+            The list of signature formats supported by the remote service.
+          items:
+            type: string
+        envelope_properties:
+          type: array
+          description: |
+            The list of the properties concerning the signed envelope, whose possible
+            values depend on the value of the formats parameter entries, as defined in the
+            Input parameter table in signatures/signDoc. The number of arrays included in
+            the envelope_properties array SHALL equal the number of entries in the
+            formats array. The values included in the array at position i of the
+            envelope_properties array SHALL refer to the signature format value included
+            at position i of the formats array. An empty array at the position i of the
+            envelope_properties array indicates that the remote service supports the default signed
+            envelope property for the signature format specified at the position i of the
+            formats array, as defined in the Input parameter table in signatures/signDoc.
+          items:
+            type: array
+            items:
+              type: string
+      required:
+      - formats
+  securitySchemes:
+    BearerAuthSignature:
+      type: http
+      description: |
+        Bearer authentication with `credential` or `service` scope. If the access token passed
+        in the `Authorization` HTTP header has scope `service`, the signing application MUST pass an
+        access token with scope `credential` in the `SAD` request parameter. This is not required,
+        if the the access token passed in the `Authorization` HTTP header has scope `credential`.
+      scheme: bearer
+    BearerAuthCredential:
+      type: http
+      description: |
+        Bearer authentication with `credential` or `service` scope.
+      scheme: bearer
+    BearerAuthCredentialManagement:
+      type: http
+      description: |
+        Bearer authentication with `manageCredentials` scope.
+      scheme: bearer
+    MutualTLS:
+      type: mutualTLS
+      description: |
+        Mutual TLS authentication with client certificate.
