@@ -546,6 +546,7 @@ groups:
     indexCategory: core
     description: REST API for managing Signing Profiles in the platform
     interfaces:
+      - com.otilm.api.interfaces.core.web.SignatureParameterController
       - com.otilm.api.interfaces.core.web.SigningProfileController
 
   - id: doc-openapi-core-signing-record
@@ -679,6 +680,7 @@ groups:
       - com.otilm.api.interfaces.core.web.SchedulerController
       - com.otilm.api.interfaces.core.web.SecretManagementController
       - com.otilm.api.interfaces.core.web.SettingController
+      - com.otilm.api.interfaces.core.web.SignatureParameterController
       - com.otilm.api.interfaces.core.web.SigningProfileController
       - com.otilm.api.interfaces.core.web.SigningRecordController
       - com.otilm.api.interfaces.core.web.StatisticsController
