@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
@@ -449,7 +449,9 @@ paths:
         \ 200 or asynchronous 202). signatureAttributes must include exactly one v3\
         \ string attribute named signatureAlgorithm with UUID 9180267f-c82f-4b7b-8160-d2363d813869,\
         \ selecting exactly one code from the required, single-select, non-extensible\
-        \ list offered by /sign/attributes."
+        \ list offered by /sign/attributes. The platform adds the reserved `signatureActivation`\
+        \ attribute when it authorized the signature. A connector implementing `keyLifecycle`\
+        \ must refuse to sign unless that attribute names the key's signer."
       operationId: signData
       requestBody:
         content:
@@ -471,10 +473,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignDataResponseV2Dto"
+        "409":
+          description: "The key is bound to another signer (errorCode `SIGNER_MISMATCH`),\
+            \ or the key is not bound to a signer (errorCode `KEY_UNBOUND`)"
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
         "422":
           description: "Request body was read successfully but violates a field validation\
             \ rule (errorCode VALIDATION_FAILED), or the signatureAlgorithm selection\
-            \ names an algorithm the key does not support (errorCode PARAMETER_UNSUPPORTED)"
+            \ names an algorithm the key does not support (errorCode PARAMETER_UNSUPPORTED),\
+            \ or `signatureActivation` is missing (errorCode VALIDATION_FAILED), or\
+            \ the connector does not implement the requested signatureInputMode, or\
+            \ prehashedDigest is not defined for the selected signatureAlgorithm (errorCode\
+            \ PARAMETER_UNSUPPORTED), or a prehashedDigest item is not the length\
+            \ of the digest the signatureAlgorithm fixes (errorCode VALIDATION_FAILED)"
           content:
             application/problem+json:
               schema:
@@ -635,7 +649,11 @@ paths:
         \ 9180267f-c82f-4b7b-8160-d2363d813869, as a required, single-select, non-extensible\
         \ list offering the signature algorithms the key supports for signing. It\
         \ must offer at least one value, and every offered value must be a code from\
-        \ the SignatureAlgorithm enum."
+        \ the SignatureAlgorithm enum. A connector implementing `keyLifecycle` must\
+        \ also include the reserved `signatureActivation` attribute: a v3 data attribute\
+        \ with UUID `ed4eb7a8-2d0c-42ff-bbfa-4df695d39b78` and object content, required,\
+        \ hidden and writable, without a default, constraints or callback. Only the\
+        \ platform states its value. Refer to SignatureActivationAttribute."
       operationId: listSignAttributes
       requestBody:
         content:
@@ -1071,7 +1089,11 @@ paths:
       tags:
       - Key Management v2
       summary: Create key
-      description: Create a secret key or key pair synchronously or asynchronously
+      description: "Create a secret key or key pair synchronously or asynchronously.\
+        \ A connector declaring `signerBoundAtCreation` binds a key pair to its signer\
+        \ here, taking the signer from the signer attribute values among the create-key\
+        \ attributes of a new key pair, or from the reserved `boundSigner` attribute\
+        \ on a rekey."
       operationId: createKey
       requestBody:
         content:
@@ -1106,6 +1128,130 @@ paths:
             - `EXPORTABLE_NOT_SUPPORTED` — the reserved `keyExportable` attribute asked for an exportable key
               and this token cannot hold one. A connector must refuse rather than create a key whose flag it
               cannot deliver.
+            - `SIGNER_INVALID` — the create-key attributes identify no signer, or carry both signer attribute
+              values and `boundSigner`. The problem names the attribute.
+            - `VALIDATION_FAILED` — the body is readable but breaks a field rule.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "404":
+          description: Not Found. Endpoint not found or not implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "400":
+          description: "Request body cannot be read (errorCode BAD_REQUEST), including\
+            \ malformed JSON, unknown properties, and values outside the published\
+            \ enum values"
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+      security:
+      - ConnectorAPIKeyAuth: []
+      - CertificateTLSAuth: []
+      - NoAuth: []
+      - BasicAuth: []
+  /v2/cryptographyProvider/keys/resolve:
+    post:
+      tags:
+      - Key Management v2
+      summary: Resolve key handles
+      description: "Return the key the token holds under each handle a listing returned,\
+        \ or why it cannot. An error about one key goes into that key's result. Only\
+        \ a fault of the whole token fails the request."
+      operationId: resolveKeys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResolveKeysRequestV2Dto"
+        required: true
+      responses:
+        "200":
+          description: Handles resolved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResolveKeysResponseV2Dto"
+        "422":
+          description: |
+            - `KEY_TYPE_NOT_LISTABLE` — the connector cannot list keys of the requested type on this token.
+            - `VALIDATION_FAILED` — the body is readable but breaks a field rule.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "404":
+          description: Not Found. Endpoint not found or not implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "400":
+          description: "Request body cannot be read (errorCode BAD_REQUEST), including\
+            \ malformed JSON, unknown properties, and values outside the published\
+            \ enum values"
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+      security:
+      - ConnectorAPIKeyAuth: []
+      - CertificateTLSAuth: []
+      - NoAuth: []
+      - BasicAuth: []
+  /v2/cryptographyProvider/keys/list:
+    post:
+      tags:
+      - Key Management v2
+      summary: List keys
+      description: "Return one page of the keys the token holds, including keys created\
+        \ outside the platform. An error about one key goes into that key's entry.\
+        \ Only a fault of the whole token fails the request."
+      operationId: listKeys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListKeysRequestV2Dto"
+        required: true
+      responses:
+        "200":
+          description: Keys retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListKeysResponseV2Dto"
+        "422":
+          description: |
+            - `KEY_TYPE_NOT_LISTABLE` — the connector cannot list keys of the requested type on this token.
             - `VALIDATION_FAILED` — the body is readable but breaks a field rule.
           content:
             application/problem+json:
@@ -2036,6 +2182,11 @@ paths:
         of its own for it, and it takes part in `keyCreationId` replay equivalence like any other create-key
         attribute. A connector that does not declare `keyExport` must not publish it and is never sent it, and
         must create keys non-extractable wherever the technology expresses the distinction.
+
+        A connector that declares `signerBoundAtCreation` must include the reserved `boundSigner` attribute here: a
+        v3 data attribute named `boundSigner` with UUID `ab6ce1fe-abd3-47d4-8e6b-a33da08770ae` and string content,
+        optional and hidden. Only the platform states its value, on a rekey, as one content item naming the signer
+        of the key the rekey replaces.
       operationId: listCreateKeyAttributes
       requestBody:
         content:
@@ -3442,7 +3593,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -3506,7 +3657,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -3536,7 +3687,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -3847,6 +3998,8 @@ components:
       - DOCUMENT_TOO_LARGE
       - SIGNATURE_NOT_FOUND
       - PARAMETER_UNSUPPORTED
+      - SIGNATURE_PLACEMENT_REJECTED
+      - DOCUMENT_SIGNING_FORBIDDEN
       - CONTEXT_MISMATCH
       - CSR_MALFORMED
       - REVOCATION_NOT_ALLOWED
@@ -3857,10 +4010,16 @@ components:
       - CHECKPOINT_LOST
       - KEY_TYPE_NOT_IMPORTABLE
       - KEY_TYPE_NOT_EXPORTABLE
+      - KEY_TYPE_NOT_LISTABLE
       - KEY_MATERIAL_MISMATCH
       - KEY_DECRYPTION_FAILED
       - EXPORTABLE_NOT_SUPPORTED
       - KEY_NOT_EXPORTABLE
+      - SIGNER_INVALID
+      - SIGNER_MISMATCH
+      - KEY_CERTIFIED
+      - KEY_UNBOUND
+      - PUBLIC_KEY_MISMATCH
     ProblemDetailExtended:
       type: object
       properties:
@@ -4773,8 +4932,8 @@ components:
         data:
           type: string
           format: byte
-          description: "Data to be signed or verified, or the resulting signature,\
-            \ depending on the operation direction."
+          description: "Data to be signed or verified, or the signature to verify,\
+            \ depending on the request field."
           minLength: 1
         identifier:
           type: string
@@ -4814,7 +4973,8 @@ components:
           description: "Batch-wide signature settings. Must include exactly one v3\
             \ string attribute named signatureAlgorithm with UUID 9180267f-c82f-4b7b-8160-d2363d813869,\
             \ selecting exactly one signature algorithm code offered by the verification\
-            \ attribute schema."
+            \ attribute schema. RSA-PSS codes use MGF1 with the same hash as the code,\
+            \ a salt as long as that hash's output, and trailer field 1."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         data:
@@ -4929,12 +5089,28 @@ components:
           $ref: "#/components/schemas/OperationExecutionMode"
           description: Caller-selected execution mode. The connector must not switch
             modes implicitly.
+        signatureInputMode:
+          $ref: "#/components/schemas/SignatureInputMode"
+          description: "How the connector treats each data item. Absent means data,\
+            \ and callers omit the field for data mode because released connectors\
+            \ refuse unknown properties. Under prehashedDigest each item is already\
+            \ the digest the selected signature algorithm fixes and is never hashed\
+            \ again: RSA PKCS#1 v1.5 wraps it in a DigestInfo per RFC 8017 section\
+            \ 9.2 with explicit NULL parameters; RSA-PSS and ECDSA sign it with the\
+            \ parameters the signature algorithm code fixes. prehashedDigest is defined\
+            \ for RSA PKCS#1 v1.5, RSA-PSS and ECDSA signature algorithm codes only:\
+            \ any other code answers 422 PARAMETER_UNSUPPORTED, and an item whose\
+            \ length is not the output length of the fixed digest answers 422 VALIDATION_FAILED.\
+            \ A connector answers 422 PARAMETER_UNSUPPORTED to any signatureInputMode\
+            \ it does not implement and never ignores the field; one that implements\
+            \ prehashedDigest advertises the prehashedSigning feature flag."
         signatureAttributes:
           type: array
           description: "Batch-wide signature settings. Must include exactly one v3\
             \ string attribute named signatureAlgorithm with UUID 9180267f-c82f-4b7b-8160-d2363d813869,\
             \ selecting exactly one signature algorithm code offered by the signing\
-            \ attribute schema."
+            \ attribute schema. RSA-PSS codes use MGF1 with the same hash as the code,\
+            \ a salt as long as that hash's output, and trailer field 1."
           items:
             $ref: "#/components/schemas/RequestAttribute"
         data:
@@ -4950,6 +5126,48 @@ components:
       - signatureAttributes
       - tokenAttributes
       - tokenProfileAttributes
+    SignatureInputMode:
+      type: string
+      description: "Whether each data item is the data itself or its digest. A hash-then-sign\
+        \ algorithm computes a digest of the data and signs that digest, while a pure\
+        \ algorithm signs the data itself. The platform sends prehashedDigest for\
+        \ raw signing, where its caller has already computed the digest"
+      enum:
+      - data
+      - prehashedDigest
+    OperationEventType:
+      type: string
+      description: "Reported step of a signature activation, from a closed list"
+      enum:
+      - operationAccepted
+      - authorizationRequested
+      - authorizationProgress
+      - authorizationGranted
+      - signatureCreated
+      - rejected
+      - expired
+      - failed
+    OperationEventV2Dto:
+      type: object
+      additionalProperties: false
+      description: "One step of a signature activation as the connector observed it,\
+        \ kept by the platform as audit history."
+      properties:
+        type:
+          $ref: "#/components/schemas/OperationEventType"
+          description: Step the event reports
+        at:
+          type: string
+          format: date-time
+          description: "When the step happened, as the connector observed it"
+        vendorDetail:
+          type: object
+          additionalProperties: {}
+          description: "Opaque technology-specific detail of the step, such as the\
+            \ module's own identifiers"
+      required:
+      - at
+      - type
     SignDataResponseV2Dto:
       type: object
       additionalProperties: false
@@ -4959,7 +5177,7 @@ components:
           description: "Signatures, correlated to the request items by identifier.\
             \ Populated on sync 200; absent on async 202."
           items:
-            $ref: "#/components/schemas/SignatureDataV2Dto"
+            $ref: "#/components/schemas/SignatureResponseItemV2Dto"
           minItems: 1
         operationMeta:
           type: array
@@ -4971,6 +5189,31 @@ components:
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
+    SignatureResponseItemV2Dto:
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: string
+          format: byte
+          description: Signature over the data of the corresponding request item
+          minLength: 1
+        identifier:
+          type: string
+          description: Identifier of the corresponding item in the sign request
+          examples:
+          - customId
+          minLength: 1
+        events:
+          type: array
+          description: "Steps the connector took to create this signature, in order;\
+            \ absent when it took none. Steps shared by the whole batch, such as its\
+            \ authorization, must appear on every signature."
+          items:
+            $ref: "#/components/schemas/OperationEventV2Dto"
+      required:
+      - data
+      - identifier
     OperationTrackingRequestV2Dto:
       type: object
       additionalProperties: false
@@ -5266,6 +5509,11 @@ components:
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
+        signer:
+          type: string
+          description: "For a connector declaring `signerBoundAtCreation`, on a synchronous\
+            \ 200 and in a completed asynchronous creation-status result, must contain\
+            \ the canonical signer bound to the created key pair."
         keyRequestType:
           $ref: "#/components/schemas/KeyRequestType"
           description: Type of key requested and returned
@@ -5434,6 +5682,306 @@ components:
       required:
       - algorithm
       - type
+    KeyHandleV2Dto:
+      type: object
+      additionalProperties: false
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the handle. Its result echoes it.
+          examples:
+          - "0"
+          minLength: 1
+        keyMeta:
+          type: array
+          description: "Handle exactly as a listing returned it: `keyPairMeta` of\
+            \ a key pair, `keyMeta` of a secret key."
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+          minItems: 1
+      required:
+      - identifier
+      - keyMeta
+    ResolveKeysRequestV2Dto:
+      type: object
+      additionalProperties: false
+      description: "The handles of keys to resolve. Each is answered once, under its\
+        \ identifier."
+      properties:
+        tokenAttributes:
+          type: array
+          description: Token attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        tokenProfileAttributes:
+          type: array
+          description: Token profile attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        keyRequestType:
+          $ref: "#/components/schemas/KeyRequestType"
+          description: Type of the keys the handles name
+        keys:
+          type: array
+          description: "Handles to resolve, each under an identifier unique in the\
+            \ request"
+          items:
+            $ref: "#/components/schemas/KeyHandleV2Dto"
+          maxItems: 1000
+          minItems: 1
+      required:
+      - keyRequestType
+      - keys
+      - tokenAttributes
+      - tokenProfileAttributes
+    KeyResolutionOutcome:
+      type: string
+      enum:
+      - found
+      - notFound
+      - ambiguous
+      - unsupportedType
+      - unreadable
+      - invalidHandle
+    KeyResolutionV2Dto:
+      type: object
+      additionalProperties: false
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the handle this result answers
+          examples:
+          - "0"
+          minLength: 1
+        outcome:
+          $ref: "#/components/schemas/KeyResolutionOutcome"
+          description: Outcome of the resolution
+        key:
+          $ref: "#/components/schemas/ListedKeyV2"
+          description: "Key the token holds under the handle, in the listing's shape.\
+            \ Present only when `outcome` is `found`."
+      required:
+      - identifier
+      - outcome
+    ListedKeyPairV2Dto:
+      type: object
+      additionalProperties: false
+      description: |
+        A key pair the token holds. Any later request accepts its metadata exactly like metadata returned at
+        creation.
+      properties:
+        label:
+          type: string
+          description: Label the token keeps for the key
+        keyPairMeta:
+          type: array
+          description: "Connector-defined metadata for the pair as a whole. It must\
+            \ identify the pair durably. The key resolution takes it back as the key's\
+            \ handle. Each metadata name appears once, and every content item carries\
+            \ data. A key that cannot meet this is reported in `unusableKeys`."
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+          minItems: 1
+        privateKeyData:
+          $ref: "#/components/schemas/PrivateKeyDataResponseV2Dto"
+          description: Data of the private key
+        publicKeyData:
+          $ref: "#/components/schemas/PublicKeyDataResponseV2Dto"
+          description: "Data of the public key, read from the public key object on\
+            \ the token. Absent when the token lacks a public key object for the pair."
+        keyRequestType:
+          $ref: "#/components/schemas/KeyRequestType"
+          description: Type of the listed key
+          enum:
+          - keyPair
+      required:
+      - keyPairMeta
+      - keyRequestType
+      - privateKeyData
+    ListedKeyV2:
+      type: object
+      description: "A key the token holds, selected by key request type"
+      discriminator:
+        propertyName: keyRequestType
+        mapping:
+          secret: "#/components/schemas/ListedSecretKeyV2Dto"
+          keyPair: "#/components/schemas/ListedKeyPairV2Dto"
+      oneOf:
+      - $ref: "#/components/schemas/ListedSecretKeyV2Dto"
+      - $ref: "#/components/schemas/ListedKeyPairV2Dto"
+      properties:
+        keyRequestType:
+          $ref: "#/components/schemas/KeyRequestType"
+        label:
+          type: string
+    ListedSecretKeyV2Dto:
+      type: object
+      additionalProperties: false
+      description: |
+        A secret key the token holds. Any later request accepts its metadata exactly like metadata returned at
+        creation.
+      properties:
+        label:
+          type: string
+          description: Label the token keeps for the key
+        keyMeta:
+          type: array
+          description: "Connector-defined metadata of the key. It must identify the\
+            \ key durably, and for a key the platform created it equals the metadata\
+            \ creation returned: a secret key has no public key, so the platform recognises\
+            \ one it already holds by this metadata alone. The key resolution takes\
+            \ it back as the key's handle. Each metadata name appears once, and every\
+            \ content item carries data. A key that cannot meet this is reported in\
+            \ `unusableKeys`."
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+          minItems: 1
+        keyData:
+          $ref: "#/components/schemas/SecretKeyDataV2Dto"
+          description: Descriptor of the secret key
+        keyRequestType:
+          $ref: "#/components/schemas/KeyRequestType"
+          description: Type of the listed key
+          enum:
+          - secret
+      required:
+      - keyData
+      - keyMeta
+      - keyRequestType
+    ResolveKeysResponseV2Dto:
+      type: object
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          description: "Results, one per requested handle"
+          items:
+            $ref: "#/components/schemas/KeyResolutionV2Dto"
+      required:
+      - results
+    ListKeysRequestV2Dto:
+      type: object
+      additionalProperties: false
+      description: |
+        The page of the token's keys of one type to return. The connector keeps their order stable for an unchanged
+        token.
+      properties:
+        tokenAttributes:
+          type: array
+          description: Token attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        tokenProfileAttributes:
+          type: array
+          description: Token profile attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        keyRequestType:
+          $ref: "#/components/schemas/KeyRequestType"
+          description: Type of the keys to list. The connector must refuse a type
+            it cannot list with `KEY_TYPE_NOT_LISTABLE`.
+        offset:
+          type: integer
+          format: int32
+          description: Number of keys to skip
+          minimum: 0
+        limit:
+          type: integer
+          format: int32
+          description: "Number of keys to return. The page holds exactly this many\
+            \ entries, `items` and `unusableKeys` together, unless the listing ends\
+            \ first."
+          maximum: 1000
+          minimum: 1
+      required:
+      - keyRequestType
+      - limit
+      - offset
+      - tokenAttributes
+      - tokenProfileAttributes
+    KeyDataV2:
+      type: object
+      description: Type-specific key descriptor. Secret and private keys never contain
+        key material.
+      discriminator:
+        propertyName: type
+        mapping:
+          Secret: "#/components/schemas/SecretKeyDataV2Dto"
+          Public: "#/components/schemas/PublicKeyDataV2Dto"
+          Private: "#/components/schemas/PrivateKeyDataV2Dto"
+      oneOf:
+      - $ref: "#/components/schemas/SecretKeyDataV2Dto"
+      - $ref: "#/components/schemas/PublicKeyDataV2Dto"
+      - $ref: "#/components/schemas/PrivateKeyDataV2Dto"
+      properties:
+        type:
+          $ref: "#/components/schemas/KeyTypeV2"
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+        length:
+          type: integer
+          format: int32
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+    KeyTypeV2:
+      type: string
+      description: Key type supported by the v2 connector contract
+      enum:
+      - Secret
+      - Public
+      - Private
+    ListKeysResponseV2Dto:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          description: "Keys of the requested page, each of the requested key request\
+            \ type"
+          items:
+            $ref: "#/components/schemas/ListedKeyV2"
+        unusableKeys:
+          type: array
+          description: "Keys on this page that cannot be offered for onboarding, each\
+            \ with its reason"
+          items:
+            $ref: "#/components/schemas/UnusableKeyV2Dto"
+        totalItems:
+          type: integer
+          format: int64
+          description: "Number of keys in the whole listing. Each appears once on\
+            \ its page, as a listed or an unusable key."
+          minimum: 0
+      required:
+      - items
+      - totalItems
+    UnusableKeyReason:
+      type: string
+      enum:
+      - unaddressable
+      - unsupportedType
+      - unreadable
+      - notFound
+    UnusableKeyV2Dto:
+      type: object
+      additionalProperties: false
+      description: "A key the token holds that the platform cannot onboard, with the\
+        \ reason"
+      properties:
+        label:
+          type: string
+          description: Label the token keeps for the key
+        reason:
+          $ref: "#/components/schemas/UnusableKeyReason"
+          description: Reason the platform cannot onboard the key
+        keyData:
+          $ref: "#/components/schemas/KeyDataV2"
+          description: "Descriptor of the key: a private key for a key pair listing,\
+            \ a secret key for a secret key listing"
+      required:
+      - reason
     EncryptedKeyMaterialV2Dto:
       type: object
       additionalProperties: false
@@ -5802,39 +6350,6 @@ components:
       required:
       - keyData
       - material
-    KeyDataV2:
-      type: object
-      description: Type-specific key descriptor. Secret and private keys never contain
-        key material.
-      discriminator:
-        propertyName: type
-        mapping:
-          Secret: "#/components/schemas/SecretKeyDataV2Dto"
-          Public: "#/components/schemas/PublicKeyDataV2Dto"
-          Private: "#/components/schemas/PrivateKeyDataV2Dto"
-      oneOf:
-      - $ref: "#/components/schemas/SecretKeyDataV2Dto"
-      - $ref: "#/components/schemas/PublicKeyDataV2Dto"
-      - $ref: "#/components/schemas/PrivateKeyDataV2Dto"
-      properties:
-        type:
-          $ref: "#/components/schemas/KeyTypeV2"
-        algorithm:
-          $ref: "#/components/schemas/KeyAlgorithm"
-        length:
-          type: integer
-          format: int32
-        metadata:
-          type: array
-          items:
-            $ref: "#/components/schemas/MetadataAttribute"
-    KeyTypeV2:
-      type: string
-      description: Key type supported by the v2 connector contract
-      enum:
-      - Secret
-      - Public
-      - Private
     ExportableKeyTypeV2Dto:
       type: object
       additionalProperties: false
@@ -5990,6 +6505,7 @@ components:
       - entity
       - compliance
       - cryptography
+      - keyLifecycle
       - notification
       - secret
       - signatureFormatting
@@ -6170,6 +6686,9 @@ components:
       - asynchronous
       - keyImport
       - keyExport
+      - keyList
+      - prehashedSigning
+      - signerBoundAtCreation
       - secretVersioning
       - secretRotation
       - contentSigning

@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
 externalDocs:
@@ -1884,7 +1884,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -1948,7 +1948,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -1978,7 +1978,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2350,6 +2350,7 @@ components:
       - entity
       - compliance
       - cryptography
+      - keyLifecycle
       - notification
       - secret
       - signatureFormatting
@@ -2390,6 +2391,9 @@ components:
       - asynchronous
       - keyImport
       - keyExport
+      - keyList
+      - prehashedSigning
+      - signerBoundAtCreation
       - secretVersioning
       - secretRotation
       - contentSigning

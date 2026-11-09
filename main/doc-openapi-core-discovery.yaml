@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
 externalDocs:
@@ -2271,7 +2271,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2335,7 +2335,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2365,7 +2365,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2819,6 +2819,7 @@ components:
       - entity
       - compliance
       - cryptography
+      - keyLifecycle
       - notification
       - secret
       - signatureFormatting
@@ -2989,6 +2990,9 @@ components:
       - asynchronous
       - keyImport
       - keyExport
+      - keyList
+      - prehashedSigning
+      - signerBoundAtCreation
       - secretVersioning
       - secretRotation
       - contentSigning
@@ -3001,6 +3005,16 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+    DiscoveryDeliveryMode:
+      type: string
+      description: "How a run's discovered items and position travel between connector\
+        \ and Core. `buffered`: the connector holds the items it has not handed over\
+        \ between calls; the run's position is set by initiate, stop and resume, never\
+        \ by a results page. `checkpointed`: the connector holds nothing between calls;\
+        \ every results page carries the run's position after its items."
+      enum:
+      - buffered
+      - checkpointed
     DiscoveryDetailDto:
       type: object
       properties:
@@ -3127,6 +3141,11 @@ components:
             \ run. The status decides which applies now: stop while in progress, resume\
             \ while stopped. The connector can still refuse a stop past the point\
             \ of no return."
+        deliveryMode:
+          $ref: "#/components/schemas/DiscoveryDeliveryMode"
+          description: "How this v2 run's results travel from its connector. Absent\
+            \ for v1 runs. A v2 run whose connector chose no mode, including one whose\
+            \ initiate was refused or never answered, shows buffered."
       required:
       - attributes
       - connectorName
@@ -4614,6 +4633,7 @@ components:
       - KeyType
       - KeyUsage
       - KeyRequestType
+      - TokenKeyStatus
       - KeyCompromiseReason
       - TokenInstanceStatus
       - DigestAlgorithm
@@ -4655,11 +4675,22 @@ components:
       - QcType
       - SignatureFamily
       - SignatureLevel
+      - SignatureParameterGroup
       - SigningProtocol
+      - SigningRecordPersistenceMode
       - SigningScheme
       - SigningWorkflowType
       - TimestampSourceType
       - TspAuthenticationMethod
+      - PadesSignatureScope
+      - PadesCommitmentType
+      - PadesAnchorHorizontalAlignment
+      - PadesAnchorVerticalAlignment
+      - PadesTextWrapping
+      - PadesTextPosition
+      - PadesTextHorizontalAlignment
+      - PadesTextVerticalAlignment
+      - PadesImageScaling
       - CbomAssetSyncState
       - CbomSyncSkipState
       - CryptographicAssetType

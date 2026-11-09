@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
 externalDocs:
@@ -151,6 +151,8 @@ tags:
   description: Global Metadata API
 - name: Callback
   description: Callback API
+- name: Signature Parameters
+  description: Signature Parameters API
 - name: Location Management
   description: Location Management API
 - name: Authority Management
@@ -513,6 +515,8 @@ paths:
       tags:
       - Compliance Profile Management v2
       summary: Delete Compliance Profile
+      description: Refused while the profile is associated with existing objects;
+        use force delete to remove it anyway.
       operationId: deleteComplianceProfileV2
       parameters:
       - name: uuid
@@ -525,6 +529,17 @@ paths:
       responses:
         "204":
           description: Compliance Profile deleted
+        "422":
+          description: Unprocessable Content
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -1608,6 +1623,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VaultInstanceDetailDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -2037,6 +2063,17 @@ paths:
       responses:
         "204":
           description: TSP Profile deleted
+        "422":
+          description: Unprocessable Content
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -2216,6 +2253,17 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "503":
           description: Vault Connector Unavailable
           content:
@@ -2436,6 +2484,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -3107,9 +3166,8 @@ paths:
         \ `certificates`) is left untouched. A `utils` that is present is stored as\
         \ sent, so it carries the full desired state of that section: a field left\
         \ out is cleared, or returns to the platform default where it has one. Inside\
-        \ `certificates`, each group (`validation`, `requestAttributes`, `registration`)\
-        \ behaves the same way as a section: one left out is untouched, one that is\
-        \ present is stored as sent."
+        \ `certificates`, each group behaves the same way as a section: one left out\
+        \ is untouched, one that is present is stored as sent."
       operationId: updatePlatformSettings
       requestBody:
         content:
@@ -3654,6 +3712,17 @@ paths:
       responses:
         "204":
           description: Secret deleted successfully
+        "422":
+          description: Unprocessable Content
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -10536,6 +10605,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VaultInstanceDetailDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -11456,6 +11536,94 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/tokenKeys/onboard:
+    post:
+      tags:
+      - Cryptographic Key Management
+      summary: Onboard keys from the key storage
+      description: "Onboard the selected keys into the specified token profile, reading\
+        \ each key again from the key storage. Each key item that onboarding adds\
+        \ starts disabled and is never exportable. A new key is owned by the caller.\
+        \ For a key pair, the inventory may already hold a key with its public key\
+        \ but no token instance. Onboarding then adds the private key to that key,\
+        \ and requires permission to update it. That key keeps its name, owner, groups,\
+        \ custom attributes and certificates. A key the inventory holds in any other\
+        \ way is skipped. A result names an existing key only when the caller may\
+        \ see that key in detail."
+      operationId: onboardTokenKeys
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardTokenKeysRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Onboarding finished with one result per selected key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardTokenKeysResponseDto"
+        "404":
+          description: Token instance or token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: "The request is invalid, the token profile is disabled, or\
+            \ the connector of the token instance cannot list keys or refuses to resolve\
+            \ the selected keys"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "502":
           description: Connector Error
           content:
@@ -18611,6 +18779,8 @@ paths:
       tags:
       - Compliance Profile Management v2
       summary: Associate Compliance Profile to specified resource object
+      description: The object must exist and be of a resource that compliance checks
+        apply to.
       operationId: associateComplianceProfileV2
       parameters:
       - name: uuid
@@ -19765,6 +19935,98 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/signingProfiles/{uuid}/protocols/ilmNative/deactivate:
+    patch:
+      tags:
+      - Signing Profile Management
+      summary: Deactivate the ILM Native API for Signing Profile
+      operationId: deactivateIlmNative
+      parameters:
+      - name: uuid
+        in: path
+        description: Signing Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: ILM Native API deactivated
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/signingProfiles/{uuid}/protocols/ilmNative/activate:
+    patch:
+      tags:
+      - Signing Profile Management
+      summary: Activate the ILM Native API for Signing Profile
+      description: Enables the native signing API on a content-signing or raw-signing
+        profile that uses ILM-managed signing. Refused with 422 on a timestamping
+        profile and on a profile that uses delegated signing.
+      operationId: activateIlmNative
+      parameters:
+      - name: uuid
+        in: path
+        description: Signing Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: ILM Native API activated
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -20944,6 +21206,59 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/keys/{uuid}/removeFromInventory:
+    patch:
+      tags:
+      - Cryptographic Key Management
+      summary: Remove a key from the inventory
+      description: "Delete the inventory record of the key, including its history.\
+        \ The key stays in the key storage. Removal requires a key that has a private\
+        \ key, belongs to a token instance whose connector can list keys, and has\
+        \ no compromised items. Any other key can only be deleted or destroyed."
+      operationId: removeKeyFromInventory
+      parameters:
+      - name: uuid
+        in: path
+        description: Key UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Key removed from the inventory
+        "404":
+          description: Key not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: The key cannot be removed from the inventory
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/keys/{uuid}/items/{keyItemUuid}:
     get:
       tags:
@@ -21310,6 +21625,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/keys/removeFromInventory:
+    patch:
+      tags:
+      - Cryptographic Key Management
+      summary: Remove keys from the inventory
+      description: "Delete the inventory records of the listed keys, including their\
+        \ history. The keys stay in the key storage. Removal requires a key that has\
+        \ a private key, belongs to a token instance whose connector can list keys,\
+        \ and has no compromised items. Any other key, or one not found, is reported\
+        \ and left unchanged. If the user lacks the key delete permission or the members\
+        \ permission on the token instance of any listed key, the request is refused\
+        \ and nothing is removed."
+      operationId: removeKeysFromInventory
+      requestBody:
+        description: Key UUIDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+            example:
+            - c2f685d4-6a3e-11ec-90d6-0242ac120003
+            - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
+        required: true
+      responses:
+        "200":
+          description: Removal finished with one entry per key not removed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionMessageDto"
         "400":
           description: Bad Request
           content:
@@ -22184,6 +22549,7 @@ paths:
       tags:
       - Compliance Profile Management
       summary: Associate Compliance Profile to RA Profile
+      description: The RA profiles must exist. Either all are associated or none.
       operationId: associateProfiles
       parameters:
       - name: uuid
@@ -26337,6 +26703,101 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/tokenKeys:
+    get:
+      tags:
+      - Cryptographic Key Management
+      summary: List keys in the key storage
+      description: "Returns one page of the keys in the key storage of the specified\
+        \ token instance, including keys created outside the platform. Each key carries\
+        \ its onboarding status, and the reason when it cannot be onboarded."
+      operationId: listTokenKeys
+      parameters:
+      - name: tokenInstanceUuid
+        in: path
+        description: Token Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: tokenProfileUuid
+        in: path
+        description: Token Profile UUID
+        required: true
+        schema:
+          type: string
+      - name: pageNumber
+        in: query
+        description: "Page number, starting at 1"
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+      - name: itemsPerPage
+        in: query
+        description: Number of keys per page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+          maximum: 1000
+          minimum: 1
+      responses:
+        "200":
+          description: Keys retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenKeyListResponseDto"
+        "404":
+          description: Token instance or token profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: "The page starts past the largest offset, the token profile\
+            \ is disabled, or the connector of the token instance cannot list keys\
+            \ or refuses the listing"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
   /v1/tokens/{tokenInstanceUuid}/tokenProfiles/{tokenProfileUuid}/keys/{type}/import/attributes:
     get:
       tags:
@@ -26558,6 +27019,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "502":
           description: Connector Error
           content:
@@ -26890,7 +27362,8 @@ paths:
       description: "With importable, lists only the token profiles whose provider\
         \ imports every given key type and algorithm, as far as the platform has recorded.\
         \ A profile whose provider declares key import but whose answer is not recorded\
-        \ yet is listed; the import then checks it."
+        \ yet is listed; the import then checks it. With keyListable, lists only the\
+        \ token profiles whose connector can list the keys in their key storage."
       operationId: listTokenProfiles
       parameters:
       - name: enabled
@@ -26908,6 +27381,14 @@ paths:
           type: array
           items:
             type: string
+      - name: keyListable
+        in: query
+        description: Whether to list only the token profiles whose connector can list
+          keys
+        required: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: Token Profiles retrieved
@@ -27352,6 +27833,9 @@ paths:
       tags:
       - Signing Profile Management
       summary: List signing protocols supported for a given workflow type
+      description: "Lists the protocols a profile of this workflow type can enable.\
+        \ Activation can still refuse a protocol for the profile's signing scheme:\
+        \ the ILM Native API needs ILM-managed signing."
       operationId: listSupportedProtocols
       parameters:
       - name: signingWorkflowType
@@ -27713,6 +28197,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+  /v1/signatureParameters/groups:
+    get:
+      tags:
+      - Signature Parameters
+      summary: List signature parameter groups
+      description: "Returns, for each signature family that has signature parameters,\
+        \ its signature parameter groups and the request fields each group governs.\
+        \ A signing request may set a field only when its Signing Profile allows the\
+        \ field's group. Any authenticated user may call this operation."
+      operationId: listSignatureParameterGroups
+      responses:
+        "200":
+          description: Signature parameter groups retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SignatureFamilyParameterGroups"
         "400":
           description: Bad Request
           content:
@@ -31065,6 +31584,8 @@ paths:
       tags:
       - Compliance Profile Management
       summary: Delete Compliance Profile
+      description: Refused while the profile is associated with existing objects;
+        use force delete to remove it anyway.
       operationId: deleteComplianceProfile
       parameters:
       - name: uuid
@@ -31076,6 +31597,17 @@ paths:
       responses:
         "204":
           description: Compliance Profile deleted
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
         "400":
           description: Bad Request
           content:
@@ -35380,7 +35912,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -35444,7 +35976,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -35474,7 +36006,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -35877,6 +36409,7 @@ components:
       - entity
       - compliance
       - cryptography
+      - keyLifecycle
       - notification
       - secret
       - signatureFormatting
@@ -35990,6 +36523,9 @@ components:
       - asynchronous
       - keyImport
       - keyExport
+      - keyList
+      - prehashedSigning
+      - signerBoundAtCreation
       - secretVersioning
       - secretRotation
       - contentSigning
@@ -38760,7 +39296,9 @@ components:
           type: array
           description: Attributes for the Signature Formatting Provider that control
             DTBS construction for the content signing workflow. Must be omitted for
-            delegated signing.
+            delegated signing. These attributes carry operator-only settings; a request
+            supplies signature parameters only in the groups that allowedRequestParameterGroups
+            lists.
           items:
             $ref: "#/components/schemas/RequestAttribute"
         family:
@@ -38803,6 +39341,24 @@ components:
             minLength: 1
             pattern: "^([01]\\.(\\d|[1-3]\\d)|2\\.(0|[1-9]\\d*))(\\.(0|[1-9]\\d*)){0,49}$"
           uniqueItems: true
+        allowedRequestParameterGroups:
+          type: array
+          description: "Signature parameter groups a signing request may supply; every\
+            \ group must apply to the profile's family. Must be omitted for delegated\
+            \ signing. Membership is the only permission mechanism. A request carrying\
+            \ any field of a group absent from this list is rejected, even when the\
+            \ value matches the profile's own. Omitted or empty means no request-supplied\
+            \ group is accepted. Allowing a group and defaulting it are separate decisions."
+          items:
+            $ref: "#/components/schemas/SignatureParameterGroup"
+          uniqueItems: true
+        defaultSignatureParameters:
+          $ref: "#/components/schemas/SignatureParameters"
+          description: "Signature parameters this profile applies when a request does\
+            \ not override them; their family must match the profile's family. Must\
+            \ be omitted for delegated signing. Merged field by field with the request\
+            \ winning; list-typed fields, and a placement in a different addressing\
+            \ mode, replace the default wholesale."
       required:
       - type
     DelegatedSigningRequestDto:
@@ -38916,15 +39472,335 @@ components:
       - signingOperationAttributes
       - signingScheme
       - tokenProfileUuid
+    PadesAnchorHorizontalAlignment:
+      type: string
+      description: Horizontal edge a visible signature anchors to on the page
+      enum:
+      - left
+      - center
+      - right
+    PadesAnchorVerticalAlignment:
+      type: string
+      description: Vertical edge a visible signature anchors to on the page
+      enum:
+      - top
+      - middle
+      - bottom
+    PadesCommitmentType:
+      type: string
+      description: "Commitment the signer makes, carried as the signed commitment-type\
+        \ attribute of ETSI EN 319 122-1"
+      enum:
+      - proof_of_origin
+      - proof_of_receipt
+      - proof_of_delivery
+      - proof_of_sender
+      - proof_of_approval
+      - proof_of_creation
+    PadesImageScaling:
+      type: string
+      description: How the stamp image is fitted into the signature box
+      enum:
+      - stretch
+      - zoom_and_center
+      - center
+    PadesSignatureParameters:
+      type: object
+      description: Signature parameters for the PAdES family. Every parameter is optional
+        and independent. The field that declares this object says which values it
+        carries and how absence is resolved.
+      properties:
+        family:
+          $ref: "#/components/schemas/SignatureFamily"
+          description: Signature family these parameters belong to
+          examples:
+          - pades
+        reason:
+          type: string
+          description: "Why the document was signed, recorded as the /Reason entry\
+            \ of the signature dictionary"
+          example: Contract approval
+          maxLength: 512
+          minLength: 0
+        location:
+          type: string
+          description: "Where the document was signed, recorded as the /Location entry\
+            \ of the signature dictionary"
+          example: Prague
+          maxLength: 512
+          minLength: 0
+        contactInfo:
+          type: string
+          description: "How to reach the signer, recorded as the /ContactInfo entry\
+            \ of the signature dictionary"
+          example: jane.doe@example.com
+          maxLength: 512
+          minLength: 0
+        signerName:
+          type: string
+          description: "Name shown as the signer, recorded as the /Name entry of the\
+            \ signature dictionary. Absent means the name is derived from the signing\
+            \ certificate."
+          example: Jane Doe
+          maxLength: 512
+          minLength: 0
+        signatureScope:
+          $ref: "#/components/schemas/PadesSignatureScope"
+          description: "Whether the signature certifies the document or approves a\
+            \ revision of it. Absent is unspecified: on a request the Signing Profile's\
+            \ default decides, and in the effective parameters it means revision.\
+            \ Certification is never inferred."
+        commitmentType:
+          $ref: "#/components/schemas/PadesCommitmentType"
+          description: "Commitment the signer makes, bound into the signature as a\
+            \ signed attribute"
+        claimedRoles:
+          type: array
+          description: "Roles the signer claims, bound into the signature as a signed\
+            \ attribute. Claimed only: a certified role would be an attribute certificate,\
+            \ which this contract does not carry. Omit the field to inherit; an empty\
+            \ list is refused."
+          example:
+          - Head of Legal
+          items:
+            type: string
+            maxLength: 256
+            minLength: 0
+          maxItems: 10
+          minItems: 1
+        visibleSignature:
+          $ref: "#/components/schemas/PadesVisibleSignature"
+          description: "The visible signature drawn on the page: what it shows, where\
+            \ it goes and how it is drawn"
+      required:
+      - family
+    PadesSignatureScope:
+      type: string
+      description: Scope a PAdES signature claims over the document
+      enum:
+      - certification
+      - revision
+    PadesTextHorizontalAlignment:
+      type: string
+      description: Horizontal alignment of the caption within its area
+      enum:
+      - left
+      - center
+      - right
+    PadesTextPosition:
+      type: string
+      description: "Side of the stamp image the caption sits on, when a visible signature\
+        \ draws both"
+      enum:
+      - top
+      - bottom
+      - left
+      - right
+    PadesTextVerticalAlignment:
+      type: string
+      description: Vertical alignment of the caption within its area
+      enum:
+      - top
+      - middle
+      - bottom
+    PadesTextWrapping:
+      type: string
+      description: How the caption of a visible signature is fitted into its area
+      enum:
+      - font_based
+      - fill_box
+      - fill_box_and_linebreak
+    PadesVisibleSignature:
+      type: object
+      description: "Content of a PAdES visible signature. A stamp image and its media\
+        \ type travel together: one without the other is rejected."
+      properties:
+        visible:
+          type: boolean
+          description: "Whether the signature is drawn on the page at all. On a request,\
+            \ absent means the Signing Profile's default decides. In the effective\
+            \ parameters false is never sent: resolving to false omits this whole\
+            \ container instead. Absent inside a container that is present leaves\
+            \ the draw decision to the connector."
+          example: true
+        text:
+          type: string
+          description: "Caption drawn in the signature. Plain text: any transport\
+            \ encoding belongs to the door that used it, not to this contract."
+          example: Signed by Jane Doe
+          maxLength: 4096
+          minLength: 0
+        image:
+          type: string
+          format: byte
+          description: "Stamp image drawn in the signature, base64-encoded in JSON.\
+            \ At most 256 KiB decoded. Always resolved bytes: this contract carries\
+            \ no reference, no identifier and no path."
+          maxLength: 349528
+          minLength: 4
+        imageMimeType:
+          type: string
+          description: "Media type of the stamp image. PNG and JPEG only; SVG is excluded\
+            \ because the renderer wants a raster. Matched exactly: image/png or image/jpeg,\
+            \ lower-case, with no parameters."
+          enum:
+          - image/png
+          - image/jpeg
+          example: image/png
+          pattern: image/png|image/jpeg
+        placement:
+          $ref: "#/components/schemas/PadesVisibleSignaturePlacement"
+          description: Where the signature lands on the page
+        style:
+          $ref: "#/components/schemas/PadesVisibleSignatureStyle"
+          description: How the signature is drawn
+    PadesVisibleSignaturePlacement:
+      type: object
+      description: "Placement of a PAdES visible signature, in one addressing mode\
+        \ only: a named signature field (fieldId alone), explicit coordinates, or\
+        \ an anchor. Coordinates are in PDF points (1/72 inch) measured from the top-left\
+        \ corner of the page's MediaBox, turned the way a viewer displays the page,\
+        \ so the signature reads upright on a rotated page. Whether a mode is complete\
+        \ is decided after the request has been merged over the profile's defaults."
+      properties:
+        fieldId:
+          type: string
+          description: "Name of an existing signature field to sign into. Addresses\
+            \ the placement on its own: no page, coordinates or anchor may accompany\
+            \ it, because the field already carries all of them."
+          example: Signature1
+          maxLength: 256
+          minLength: 0
+        page:
+          type: integer
+          format: int32
+          description: "Page to place the signature on, counting from 1. Shared by\
+            \ the coordinate and anchor modes."
+          example: 1
+          minimum: 1
+        originX:
+          type: number
+          format: float
+          description: "Distance from the left edge of the page's MediaBox to the\
+            \ left edge of the signature, in PDF points"
+          example: 20
+          minimum: 0
+        originY:
+          type: number
+          format: float
+          description: "Distance from the top edge of the page's MediaBox to the top\
+            \ edge of the signature, in PDF points"
+          example: 30
+          minimum: 0
+        width:
+          type: number
+          format: float
+          description: "Width of the signature, in PDF points"
+          example: 180
+          exclusiveMinimum: 0
+        height:
+          type: number
+          format: float
+          description: "Height of the signature, in PDF points"
+          example: 60
+          exclusiveMinimum: 0
+        alignmentHorizontal:
+          $ref: "#/components/schemas/PadesAnchorHorizontalAlignment"
+          description: "Horizontal edge to anchor the signature to, in the anchor\
+            \ mode"
+        alignmentVertical:
+          $ref: "#/components/schemas/PadesAnchorVerticalAlignment"
+          description: "Vertical edge to anchor the signature to, in the anchor mode"
+        zoom:
+          type: integer
+          format: int32
+          description: "Size of the anchored signature as a whole percentage of its\
+            \ natural size, where 100 is natural size. Belongs to the anchor mode;\
+            \ an explicit width and height leave nothing to scale."
+          example: 100
+          maximum: 1000
+          minimum: 1
+    PadesVisibleSignatureStyle:
+      type: object
+      description: Style of a PAdES visible signature. A field that neither the request
+        nor the profile default sets keeps the Signature Formatting Provider's built-in
+        value.
+      properties:
+        textColor:
+          type: string
+          description: "Colour of the caption text, as #RRGGBB"
+          example: "#171717"
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        textBackgroundColor:
+          type: string
+          description: "Colour behind the caption text, as #RRGGBB"
+          example: "#FFFFFF"
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        backgroundColor:
+          type: string
+          description: "Colour of the whole signature box, as #RRGGBB"
+          example: "#FFFFFF"
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        padding:
+          type: integer
+          format: int32
+          description: "Space between the caption text and the edge of its area, in\
+            \ PDF points"
+          example: 5
+          maximum: 100
+          minimum: 0
+        textWrapping:
+          $ref: "#/components/schemas/PadesTextWrapping"
+          description: How the caption is fitted into its area
+        textPosition:
+          $ref: "#/components/schemas/PadesTextPosition"
+          description: "Side of the stamp image the caption sits on, when both are\
+            \ drawn"
+        textHorizontalAlignment:
+          $ref: "#/components/schemas/PadesTextHorizontalAlignment"
+          description: Horizontal alignment of the caption within its area
+        textVerticalAlignment:
+          $ref: "#/components/schemas/PadesTextVerticalAlignment"
+          description: Vertical alignment of the caption within its area
+        imageScaling:
+          $ref: "#/components/schemas/PadesImageScaling"
+          description: How the stamp image is fitted into the signature box
+        dpi:
+          type: integer
+          format: int32
+          description: "Resolution the stamp image is drawn at, in dots per inch,\
+            \ which sets the image's natural size"
+          example: 300
+          maximum: 1200
+          minimum: 72
     RawSigningWorkflowRequestDto:
       type: object
-      description: Raw signing workflow configuration request.
+      description: "Raw signing workflow configuration request. The digest algorithm\
+        \ is not configured here: the signature algorithm of the signing scheme fixes\
+        \ it."
       properties:
         type:
           $ref: "#/components/schemas/SigningWorkflowType"
           description: Signing workflow type
           examples:
           - timestamping
+        requireNonRepudiation:
+          type: boolean
+          description: "Demand the nonRepudiation key-usage bit specifically, for\
+            \ commitment-grade profiles. Applies to ILM-managed signing only. For\
+            \ delegated signing, omit it or send false; an echoed false from a response\
+            \ is accepted, true is rejected."
+        requiredExtendedKeyUsageOids:
+          type: array
+          description: "Extended key usage OIDs the signing certificate must all carry,\
+            \ in dot notation (1.3.6.1.5.5.7.3.36 is RFC 9336 id-kp-documentSigning).\
+            \ An empty set accepts any extended key usage. Applies to ILM-managed\
+            \ signing only; for delegated signing send nothing or an empty set."
+          items:
+            type: string
+            minLength: 1
+            pattern: "^([01]\\.(\\d|[1-3]\\d)|2\\.(0|[1-9]\\d*))(\\.(0|[1-9]\\d*)){0,49}$"
+          uniqueItems: true
       required:
       - type
     SignatureFamily:
@@ -38945,6 +39821,34 @@ components:
       - timestamped
       - long_term
       - archival
+    SignatureParameterGroup:
+      type: string
+      description: Group of signature parameters a Signing Profile may allow signing
+        requests to supply. Membership in the profile's allow-list is the only permission
+        mechanism. A request carrying a parameter from a group the profile does not
+        allow is rejected.
+      enum:
+      - signature_context
+      - signer_identity
+      - signed_attributes
+      - signature_scope
+      - visible_signature_placement
+      - visible_signature_content
+      - visible_signature_style
+    SignatureParameters:
+      type: object
+      description: "Signature parameters a caller may influence, in the shape shared\
+        \ by the signing request, the Signing Profile's defaults and the connector's\
+        \ effective object. The required family property is the discriminator selecting\
+        \ the family-specific shape."
+      discriminator:
+        propertyName: family
+        mapping:
+          pades: "#/components/schemas/PadesSignatureParameters"
+      oneOf:
+      - $ref: "#/components/schemas/PadesSignatureParameters"
+      required:
+      - family
     SigningProfileRequestDto:
       type: object
       description: Request to create or update a Signing Profile
@@ -39274,7 +40178,9 @@ components:
           type: array
           description: Attributes configured on the Signature Formatting Provider
             that control DTBS construction for the content signing workflow. Applicable
-            only when ILM-managed signing is used.
+            only when ILM-managed signing is used. These attributes carry operator-only
+            settings; a request supplies signature parameters only in the groups that
+            allowedRequestParameterGroups lists.
           items:
             $ref: "#/components/schemas/ResponseAttribute"
         family:
@@ -39312,6 +40218,24 @@ components:
           items:
             type: string
           uniqueItems: true
+        allowedRequestParameterGroups:
+          type: array
+          description: "Signature parameter groups which a signing request may supply.\
+            \ Empty for delegated signing. Membership is the only permission mechanism.\
+            \ A request carrying any field of a group absent from this list is rejected,\
+            \ even when the value matches the profile's own. An empty list accepts\
+            \ no request-supplied group. Independent of defaultSignatureParameters:\
+            \ a group may be allowed with no default (pure pass-through), or carry\
+            \ a default without being allowed (operator-fixed)."
+          items:
+            $ref: "#/components/schemas/SignatureParameterGroup"
+          uniqueItems: true
+        defaultSignatureParameters:
+          $ref: "#/components/schemas/SignatureParameters"
+          description: "Signature parameters this profile applies when a request does\
+            \ not override them. Null for delegated signing. Merged field by field\
+            \ with the request winning; list-typed fields, and a placement in a different\
+            \ addressing mode, replace the default wholesale."
       required:
       - type
     DelegatedSigningDto:
@@ -39403,13 +40327,29 @@ components:
       - tokenProfile
     RawSigningWorkflowDto:
       type: object
-      description: Raw signing workflow configuration.
+      description: "Raw signing workflow configuration. The digest algorithm is not\
+        \ configured here: the signature algorithm of the signing scheme fixes it."
       properties:
         type:
           $ref: "#/components/schemas/SigningWorkflowType"
           description: Signing workflow type
           examples:
           - timestamping
+        requireNonRepudiation:
+          type: boolean
+          default: false
+          description: "Demand the nonRepudiation key-usage bit specifically, for\
+            \ commitment-grade profiles. Applies to ILM-managed signing only; delegated\
+            \ profile gets always false."
+        requiredExtendedKeyUsageOids:
+          type: array
+          description: "Extended key usage OIDs the signing certificate must all carry,\
+            \ in dot notation (1.3.6.1.5.5.7.3.36 is RFC 9336 id-kp-documentSigning).\
+            \ An empty set accepts any extended key usage. Applies to ILM-managed\
+            \ signing only."
+          items:
+            type: string
+          uniqueItems: true
       required:
       - type
     SigningProfileDto:
@@ -39472,6 +40412,7 @@ components:
       enum:
       - csc_api
       - tsp
+      - ilm_native
       - internal_tsa
     SigningRecordPolicyDto:
       type: object
@@ -39677,6 +40618,19 @@ components:
         registration:
           $ref: "#/components/schemas/CertificateRegistrationSettingsUpdateDto"
           description: Certificate pre-registration settings
+        upload:
+          $ref: "#/components/schemas/CertificateUploadSettingsUpdateDto"
+          description: Certificate upload settings
+    CertificateUploadSettingsUpdateDto:
+      type: object
+      properties:
+        automaticOwnership:
+          type: boolean
+          default: false
+          description: "Indicator whether the user who uploads a certificate, manually\
+            \ or by file import, becomes its owner. An owner set by an upload trigger\
+            \ takes precedence. The uploader gets full owner rights over the certificate,\
+            \ such as updating, archiving and deleting it"
     CertificateValidationSettingsUpdateDto:
       type: object
       properties:
@@ -40071,6 +41025,20 @@ components:
         usernameClaim:
           type: string
           description: The claim name used to extract the username from the token.
+        allowedDelegates:
+          type: array
+          default: []
+          description: Identifiers of delegates this provider may assert in RFC 8693
+            delegation tokens. A provider without allowed delegates refuses every
+            delegation token. Identifiers are matched exactly; there is no wildcard.
+          items:
+            type: string
+        delegateClaim:
+          type: string
+          default: client_id
+          description: "The claim inside the outermost act object that identifies\
+            \ the immediate delegate. The delegate is read from the signature-validated\
+            \ access token, never from user info claims."
       required:
       - name
     OAuth2ProviderSettingsUpdateDto:
@@ -40140,6 +41108,20 @@ components:
         usernameClaim:
           type: string
           description: The claim name used to extract the username from the token.
+        allowedDelegates:
+          type: array
+          default: []
+          description: Identifiers of delegates this provider may assert in RFC 8693
+            delegation tokens. A provider without allowed delegates refuses every
+            delegation token. Identifiers are matched exactly; there is no wildcard.
+          items:
+            type: string
+        delegateClaim:
+          type: string
+          default: client_id
+          description: "The claim inside the outermost act object that identifies\
+            \ the immediate delegate. The delegate is read from the signature-validated\
+            \ access token, never from user info claims."
     SecretUpdateRequestDto:
       type: object
       properties:
@@ -41665,12 +42647,16 @@ components:
         complianceStatus:
           $ref: "#/components/schemas/ComplianceStatus"
           description: Key compliance status
+        removableFromInventory:
+          type: boolean
+          description: Whether the key meets the conditions for removal from the inventory
       required:
       - attributes
       - complianceStatus
       - creationTime
       - items
       - name
+      - removableFromInventory
       - uuid
     KeyFormat:
       type: string
@@ -45345,6 +46331,93 @@ components:
       required:
       - attributes
       - name
+    MetadataAttribute:
+      description: Metadata Attribute definition
+      oneOf:
+      - $ref: "#/components/schemas/MetadataAttributeV2"
+      - $ref: "#/components/schemas/MetadataAttributeV3"
+    OnboardTokenKeysRequestDto:
+      type: object
+      description: Keys found in the key storage to onboard into the inventory
+      properties:
+        keys:
+          type: array
+          description: Keys to onboard. At most 1000.
+          items:
+            $ref: "#/components/schemas/TokenKeySelectionDto"
+          maxItems: 1000
+          minItems: 0
+        customAttributes:
+          type: array
+          description: Custom attributes of each new key. A key pair onboarded into
+            an existing key keeps the attributes of that key.
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - keys
+    TokenKeySelectionDto:
+      type: object
+      description: "A key to onboard, and the name to give it"
+      properties:
+        keyPairMeta:
+          type: array
+          description: "Metadata of the key pair, exactly as the listing returned\
+            \ it"
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+          minItems: 1
+        name:
+          type: string
+          description: Name of the onboarded key. Onboarding picks one when it is
+            absent. A key pair onboarded into an existing key keeps the name of that
+            key.
+      required:
+      - keyPairMeta
+    OnboardTokenKeysResponseDto:
+      type: object
+      description: "One result per selected key, in the order selected"
+      properties:
+        results:
+          type: array
+          description: Results of the onboarding
+          items:
+            $ref: "#/components/schemas/TokenKeyOnboardingResultDto"
+      required:
+      - results
+    TokenKeyOnboardingResultDto:
+      type: object
+      description: What became of one selected key
+      properties:
+        keyPairMeta:
+          type: array
+          description: "Metadata of the key pair, as the request sent it"
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+        onboarded:
+          type: boolean
+          description: Whether the key was onboarded
+        intoExistingKey:
+          type: boolean
+          description: Whether the private key joined the inventory key that held
+            the public key
+        keyUuid:
+          type: string
+          format: uuid
+          description: "UUID of the onboarded key, or of the inventory key that already\
+            \ holds the key. For an existing key, present only when the caller may\
+            \ see that key in detail."
+        keyName:
+          type: string
+          description: "Name of the onboarded key, or of the inventory key that already\
+            \ holds the key. For an existing key, present only when the caller may\
+            \ see that key in detail."
+        reason:
+          type: string
+          description: Why the key was skipped
+      required:
+      - intoExistingKey
+      - keyPairMeta
+      - onboarded
     KeyRequestType:
       type: string
       enum:
@@ -46420,7 +47493,7 @@ components:
           type: array
           description: Cryptographic Keys
           items:
-            $ref: "#/components/schemas/KeyItemDto"
+            $ref: "#/components/schemas/KeyItemListDto"
         itemsPerPage:
           type: integer
           format: int32
@@ -46443,6 +47516,134 @@ components:
       - pageNumber
       - totalItems
       - totalPages
+    KeyItemListDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: Object identifier
+          examples:
+          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+        name:
+          type: string
+          description: Object Name
+          examples:
+          - Name
+        description:
+          type: string
+          description: Description of the Key
+        creationTime:
+          type: string
+          format: date-time
+          description: "Creation time of the Key. If the key is discovered from the\
+            \ connector, then it will be returned"
+        keyWrapperUuid:
+          type: string
+          description: UUID of the wrapper object
+        tokenProfileUuid:
+          type: string
+          description: UUID of the Token Profile
+        tokenProfileName:
+          type: string
+          description: Name of the Token Profile
+        tokenInstanceUuid:
+          type: string
+          description: Token Instance UUID
+        tokenInstanceName:
+          type: string
+          description: Token Instance Name
+        owner:
+          type: string
+          description: Owner of the Key
+        ownerUuid:
+          type: string
+          description: UUID of the owner of the Key
+        groups:
+          type: array
+          description: Groups associated to the Key
+          items:
+            $ref: "#/components/schemas/GroupDto"
+        associations:
+          type: integer
+          format: int32
+          description: Number of associated objects
+        keyReferenceUuid:
+          type: string
+          description: UUID of the key item in the Connector
+        type:
+          $ref: "#/components/schemas/KeyType"
+          description: Type of the Key
+        keyAlgorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+          description: Key Algorithm
+        format:
+          $ref: "#/components/schemas/KeyFormat"
+          description: Key Format
+        length:
+          type:
+          - integer
+          - "null"
+          format: int32
+          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
+            \ otherwise."
+          minimum: 1
+        usage:
+          type: array
+          description: Key Usages
+          items:
+            $ref: "#/components/schemas/KeyUsage"
+        enabled:
+          type: boolean
+          description: Boolean describing if the key is enabled or not
+        state:
+          $ref: "#/components/schemas/KeyState"
+          description: Key State
+        complianceStatus:
+          $ref: "#/components/schemas/ComplianceStatus"
+          description: Key compliance status
+        attributeValues:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                $ref: "#/components/schemas/BaseAttributeContentDtoV3"
+          description: "Values of the attribute-sourced fields requested as columns,\
+            \ keyed by field source and then by field identifier. Present only when\
+            \ the listing request asked for attribute-sourced columns; a field the\
+            \ object has no value for is absent rather than empty, and a multi-valued\
+            \ attribute arrives in its stored item_order."
+          example:
+            custom:
+              businessUnit|STRING:
+              - contentType: string
+                reference: Payments
+                data: payments
+              environment|STRING:
+              - contentType: string
+                reference: Production
+                data: production
+              - contentType: string
+                reference: Disaster recovery
+                data: disaster-recovery
+        removableFromInventory:
+          type: boolean
+          description: Whether the key this item belongs to meets the conditions for
+            removal from the inventory
+      required:
+      - associations
+      - complianceStatus
+      - creationTime
+      - enabled
+      - format
+      - keyAlgorithm
+      - keyWrapperUuid
+      - name
+      - removableFromInventory
+      - state
+      - type
+      - uuid
     KeyExportRequestDto:
       type: object
       description: Passphrase and provider options for exporting a key
@@ -48257,6 +49458,10 @@ components:
           format: uuid
         name:
           type: string
+        delegate:
+          $ref: "#/components/schemas/DelegateRecord"
+          description: The immediate system acting on behalf of the user. Absent for
+            direct operations and existing records.
       required:
       - authMethod
       - type
@@ -48365,6 +49570,21 @@ components:
       - session
       - apiKey
       - userProxy
+    DelegateRecord:
+      type: object
+      description: The immediate delegate from the outermost act object of a validated
+        RFC 8693 access token. Additional members may describe nested delegation in
+        a future version.
+      properties:
+        identifier:
+          type: string
+          description: The value of the provider's configured delegate claim inside
+            act.
+        subject:
+          type: string
+          description: "The delegate subject from act.sub, when present."
+      required:
+      - identifier
     Operation:
       type: string
       enum:
@@ -48400,6 +49620,7 @@ components:
       - revoke
       - export
       - import
+      - onboard
       - inspect
       - getStatus
       - getContent
@@ -49365,6 +50586,7 @@ components:
       - KeyType
       - KeyUsage
       - KeyRequestType
+      - TokenKeyStatus
       - KeyCompromiseReason
       - TokenInstanceStatus
       - DigestAlgorithm
@@ -49406,11 +50628,22 @@ components:
       - QcType
       - SignatureFamily
       - SignatureLevel
+      - SignatureParameterGroup
       - SigningProtocol
+      - SigningRecordPersistenceMode
       - SigningScheme
       - SigningWorkflowType
       - TimestampSourceType
       - TspAuthenticationMethod
+      - PadesSignatureScope
+      - PadesCommitmentType
+      - PadesAnchorHorizontalAlignment
+      - PadesAnchorVerticalAlignment
+      - PadesTextWrapping
+      - PadesTextPosition
+      - PadesTextHorizontalAlignment
+      - PadesTextVerticalAlignment
+      - PadesImageScaling
       - CbomAssetSyncState
       - CbomSyncSkipState
       - CryptographicAssetType
@@ -49910,6 +51143,97 @@ components:
       - status
       - tokenProfiles
       - uuid
+    TokenKeyDto:
+      type: object
+      description: "A key found in the key storage, and whether it can be onboarded"
+      properties:
+        keyPairMeta:
+          type: array
+          description: Metadata identifying the key pair in the key storage. Send
+            it back unchanged to onboard the key pair.
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+        label:
+          type: string
+          description: Label the key storage keeps for the key
+        keyAlgorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+          description: Algorithm of the key
+        length:
+          type:
+          - integer
+          - "null"
+          format: int32
+          description: Key length in bits
+          minimum: 1
+        fingerprint:
+          type: string
+          description: SHA-256 fingerprint of the public key of a key pair
+        status:
+          $ref: "#/components/schemas/TokenKeyStatus"
+          description: Onboarding status of the key
+        inventoryKeyUuid:
+          type: string
+          format: uuid
+          description: UUID of the inventory key that already holds this key or its
+            public key. Present only when the caller may see that key in detail.
+        inventoryKeyName:
+          type: string
+          description: Name of the inventory key that already holds this key or its
+            public key. Present only when the caller may see that key in detail.
+        suggestedName:
+          type: string
+          description: Name the platform suggests for the onboarded key
+        reason:
+          type: string
+          description: Why the key cannot be onboarded
+      required:
+      - status
+    TokenKeyListResponseDto:
+      type: object
+      description: One page of the keys found in the key storage
+      properties:
+        items:
+          type: array
+          description: Items returned
+          items:
+            $ref: "#/components/schemas/TokenKeyDto"
+        itemsPerPage:
+          type: integer
+          format: int32
+          description: Number of entries per page
+        pageNumber:
+          type: integer
+          format: int32
+          description: Page number for the request
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages available
+        totalItems:
+          type: integer
+          format: int64
+          description: Number of items available
+      required:
+      - items
+      - itemsPerPage
+      - pageNumber
+      - totalItems
+      - totalPages
+    TokenKeyStatus:
+      type: string
+      description: Onboarding status of a key found in the key storage
+      enum:
+      - onboardable
+      - onboardableIntoKey
+      - inInventory
+      - inInventoryWithoutToken
+      - importInProgress
+      - noPublicKey
+      - noUsableId
+      - unsupportedKeyType
+      - unreadable
+      - gone
     KeyEventHistoryDto:
       type: object
       properties:
@@ -49932,6 +51256,7 @@ components:
           enum:
           - Create Key
           - Import Key
+          - Onboard Key
           - Export Key
           - Disable Key Export
           - Compromised Key
@@ -50397,6 +51722,42 @@ components:
       - signingTime
       - timestampTokenSerialNumbers
       - uuid
+    SignatureFamilyParameterGroups:
+      type: object
+      description: "Signature parameter groups of one signature family, each with\
+        \ the fields it governs"
+      properties:
+        family:
+          $ref: "#/components/schemas/SignatureFamily"
+          description: Signature family whose parameters the groups govern
+        groups:
+          type: array
+          description: "Groups governing the family's parameters, in the order the\
+            \ `SignatureParameterGroup` enum lists them"
+          items:
+            $ref: "#/components/schemas/SignatureParameterGroupFields"
+      required:
+      - family
+      - groups
+    SignatureParameterGroupFields:
+      type: object
+      description: Signature parameter group with the paths of the fields it governs
+      properties:
+        group:
+          $ref: "#/components/schemas/SignatureParameterGroup"
+          description: Group governing the fields
+        fields:
+          type: array
+          description: "Paths of the fields the group governs, in the order the family's\
+            \ parameters declare them. A path joins property names with dots, from\
+            \ the family's signature parameters down to the field."
+          example:
+          - visibleSignature.placement.page
+          items:
+            type: string
+      required:
+      - fields
+      - group
     BrandingSettingsDto:
       type: object
       properties:
@@ -50473,6 +51834,22 @@ components:
           $ref: "#/components/schemas/CertificateRequestAttributesSettingsDto"
         registration:
           $ref: "#/components/schemas/CertificateRegistrationSettingsDto"
+        upload:
+          $ref: "#/components/schemas/CertificateUploadSettingsDto"
+          description: "Certificate upload settings, which govern ownership of certificates\
+            \ added by manual upload and by file import"
+    CertificateUploadSettingsDto:
+      type: object
+      properties:
+        automaticOwnership:
+          type: boolean
+          default: false
+          description: "Indicator whether the user who uploads a certificate, manually\
+            \ or by file import, becomes its owner. An owner set by an upload trigger\
+            \ takes precedence. The uploader gets full owner rights over the certificate,\
+            \ such as updating, archiving and deleting it"
+      required:
+      - automaticOwnership
     CertificateValidationSettingsDto:
       type: object
       properties:
@@ -50614,6 +51991,20 @@ components:
         usernameClaim:
           type: string
           description: The claim name used to extract the username from the token.
+        allowedDelegates:
+          type: array
+          default: []
+          description: Identifiers of delegates this provider may assert in RFC 8693
+            delegation tokens. A provider without allowed delegates refuses every
+            delegation token. Identifiers are matched exactly; there is no wildcard.
+          items:
+            type: string
+        delegateClaim:
+          type: string
+          default: client_id
+          description: "The claim inside the outermost act object that identifies\
+            \ the immediate delegate. The delegate is read from the signature-validated\
+            \ access token, never from user info claims."
         name:
           type: string
           description: Name of OAuth2 Provider
@@ -51246,6 +52637,16 @@ components:
       required:
       - code
       - label
+    DiscoveryDeliveryMode:
+      type: string
+      description: "How a run's discovered items and position travel between connector\
+        \ and Core. `buffered`: the connector holds the items it has not handed over\
+        \ between calls; the run's position is set by initiate, stop and resume, never\
+        \ by a results page. `checkpointed`: the connector holds nothing between calls;\
+        \ every results page carries the run's position after its items."
+      enum:
+      - buffered
+      - checkpointed
     DiscoveryDetailDto:
       type: object
       properties:
@@ -51372,6 +52773,11 @@ components:
             \ run. The status decides which applies now: stop while in progress, resume\
             \ while stopped. The connector can still refuse a stop past the point\
             \ of no return."
+        deliveryMode:
+          $ref: "#/components/schemas/DiscoveryDeliveryMode"
+          description: "How this v2 run's results travel from its connector. Absent\
+            \ for v1 runs. A v2 run whose connector chose no mode, including one whose\
+            \ initiate was refused or never answered, shows buffered."
       required:
       - attributes
       - connectorName
@@ -51658,11 +53064,6 @@ components:
       - sequence
       - uniqueRef
       - uuid
-    MetadataAttribute:
-      description: Metadata Attribute definition
-      oneOf:
-      - $ref: "#/components/schemas/MetadataAttributeV2"
-      - $ref: "#/components/schemas/MetadataAttributeV3"
     PaginationResponseDtoDiscoveryItemDto:
       type: object
       properties:

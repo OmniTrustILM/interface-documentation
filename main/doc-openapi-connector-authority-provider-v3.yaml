@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
@@ -2635,7 +2635,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2699,7 +2699,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2729,7 +2729,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -3028,6 +3028,8 @@ components:
       - DOCUMENT_TOO_LARGE
       - SIGNATURE_NOT_FOUND
       - PARAMETER_UNSUPPORTED
+      - SIGNATURE_PLACEMENT_REJECTED
+      - DOCUMENT_SIGNING_FORBIDDEN
       - CONTEXT_MISMATCH
       - CSR_MALFORMED
       - REVOCATION_NOT_ALLOWED
@@ -3038,10 +3040,16 @@ components:
       - CHECKPOINT_LOST
       - KEY_TYPE_NOT_IMPORTABLE
       - KEY_TYPE_NOT_EXPORTABLE
+      - KEY_TYPE_NOT_LISTABLE
       - KEY_MATERIAL_MISMATCH
       - KEY_DECRYPTION_FAILED
       - EXPORTABLE_NOT_SUPPORTED
       - KEY_NOT_EXPORTABLE
+      - SIGNER_INVALID
+      - SIGNER_MISMATCH
+      - KEY_CERTIFIED
+      - KEY_UNBOUND
+      - PUBLIC_KEY_MISMATCH
     ProblemDetailExtended:
       type: object
       properties:
@@ -4349,6 +4357,7 @@ components:
       - entity
       - compliance
       - cryptography
+      - keyLifecycle
       - notification
       - secret
       - signatureFormatting
@@ -4529,6 +4538,9 @@ components:
       - asynchronous
       - keyImport
       - keyExport
+      - keyList
+      - prehashedSigning
+      - signerBoundAtCreation
       - secretVersioning
       - secretRotation
       - contentSigning

@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
 externalDocs:
@@ -82,9 +82,8 @@ paths:
         \ `certificates`) is left untouched. A `utils` that is present is stored as\
         \ sent, so it carries the full desired state of that section: a field left\
         \ out is cleared, or returns to the platform default where it has one. Inside\
-        \ `certificates`, each group (`validation`, `requestAttributes`, `registration`)\
-        \ behaves the same way as a section: one left out is untouched, one that is\
-        \ present is stored as sent."
+        \ `certificates`, each group behaves the same way as a section: one left out\
+        \ is untouched, one that is present is stored as sent."
       operationId: updatePlatformSettings
       requestBody:
         content:
@@ -2034,11 +2033,24 @@ components:
         registration:
           $ref: "#/components/schemas/CertificateRegistrationSettingsUpdateDto"
           description: Certificate pre-registration settings
+        upload:
+          $ref: "#/components/schemas/CertificateUploadSettingsUpdateDto"
+          description: Certificate upload settings
     CertificateType:
       type: string
       enum:
       - X.509
       - SSH
+    CertificateUploadSettingsUpdateDto:
+      type: object
+      properties:
+        automaticOwnership:
+          type: boolean
+          default: false
+          description: "Indicator whether the user who uploads a certificate, manually\
+            \ or by file import, becomes its owner. An owner set by an upload trigger\
+            \ takes precedence. The uploader gets full owner rights over the certificate,\
+            \ such as updating, archiving and deleting it"
     CertificateValidationSettingsUpdateDto:
       type: object
       properties:
@@ -3390,7 +3402,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -3454,7 +3466,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -3484,7 +3496,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -4288,6 +4300,20 @@ components:
         usernameClaim:
           type: string
           description: The claim name used to extract the username from the token.
+        allowedDelegates:
+          type: array
+          default: []
+          description: Identifiers of delegates this provider may assert in RFC 8693
+            delegation tokens. A provider without allowed delegates refuses every
+            delegation token. Identifiers are matched exactly; there is no wildcard.
+          items:
+            type: string
+        delegateClaim:
+          type: string
+          default: client_id
+          description: "The claim inside the outermost act object that identifies\
+            \ the immediate delegate. The delegate is read from the signature-validated\
+            \ access token, never from user info claims."
       required:
       - name
     OAuth2ProviderSettingsUpdateDto:
@@ -4357,6 +4383,20 @@ components:
         usernameClaim:
           type: string
           description: The claim name used to extract the username from the token.
+        allowedDelegates:
+          type: array
+          default: []
+          description: Identifiers of delegates this provider may assert in RFC 8693
+            delegation tokens. A provider without allowed delegates refuses every
+            delegation token. Identifiers are matched exactly; there is no wildcard.
+          items:
+            type: string
+        delegateClaim:
+          type: string
+          default: client_id
+          description: "The claim inside the outermost act object that identifies\
+            \ the immediate delegate. The delegate is read from the signature-validated\
+            \ access token, never from user info claims."
     AdditionalOidPropertiesDto:
       description: Additional properties of custom OID entry
     CertificateExtensionOidPropertiesDto:
@@ -4993,6 +5033,10 @@ components:
           format: uuid
         name:
           type: string
+        delegate:
+          $ref: "#/components/schemas/DelegateRecord"
+          description: The immediate system acting on behalf of the user. Absent for
+            direct operations and existing records.
       required:
       - authMethod
       - type
@@ -5101,6 +5145,21 @@ components:
       - session
       - apiKey
       - userProxy
+    DelegateRecord:
+      type: object
+      description: The immediate delegate from the outermost act object of a validated
+        RFC 8693 access token. Additional members may describe nested delegation in
+        a future version.
+      properties:
+        identifier:
+          type: string
+          description: The value of the provider's configured delegate claim inside
+            act.
+        subject:
+          type: string
+          description: "The delegate subject from act.sub, when present."
+      required:
+      - identifier
     Operation:
       type: string
       enum:
@@ -5136,6 +5195,7 @@ components:
       - revoke
       - export
       - import
+      - onboard
       - inspect
       - getStatus
       - getContent
@@ -5663,6 +5723,22 @@ components:
           $ref: "#/components/schemas/CertificateRequestAttributesSettingsDto"
         registration:
           $ref: "#/components/schemas/CertificateRegistrationSettingsDto"
+        upload:
+          $ref: "#/components/schemas/CertificateUploadSettingsDto"
+          description: "Certificate upload settings, which govern ownership of certificates\
+            \ added by manual upload and by file import"
+    CertificateUploadSettingsDto:
+      type: object
+      properties:
+        automaticOwnership:
+          type: boolean
+          default: false
+          description: "Indicator whether the user who uploads a certificate, manually\
+            \ or by file import, becomes its owner. An owner set by an upload trigger\
+            \ takes precedence. The uploader gets full owner rights over the certificate,\
+            \ such as updating, archiving and deleting it"
+      required:
+      - automaticOwnership
     CertificateValidationSettingsDto:
       type: object
       properties:
@@ -5804,6 +5880,20 @@ components:
         usernameClaim:
           type: string
           description: The claim name used to extract the username from the token.
+        allowedDelegates:
+          type: array
+          default: []
+          description: Identifiers of delegates this provider may assert in RFC 8693
+            delegation tokens. A provider without allowed delegates refuses every
+            delegation token. Identifiers are matched exactly; there is no wildcard.
+          items:
+            type: string
+        delegateClaim:
+          type: string
+          default: client_id
+          description: "The claim inside the outermost act object that identifies\
+            \ the immediate delegate. The delegate is read from the signature-validated\
+            \ access token, never from user info claims."
         name:
           type: string
           description: Name of OAuth2 Provider
@@ -5911,6 +6001,7 @@ components:
       - KeyType
       - KeyUsage
       - KeyRequestType
+      - TokenKeyStatus
       - KeyCompromiseReason
       - TokenInstanceStatus
       - DigestAlgorithm
@@ -5952,11 +6043,22 @@ components:
       - QcType
       - SignatureFamily
       - SignatureLevel
+      - SignatureParameterGroup
       - SigningProtocol
+      - SigningRecordPersistenceMode
       - SigningScheme
       - SigningWorkflowType
       - TimestampSourceType
       - TspAuthenticationMethod
+      - PadesSignatureScope
+      - PadesCommitmentType
+      - PadesAnchorHorizontalAlignment
+      - PadesAnchorVerticalAlignment
+      - PadesTextWrapping
+      - PadesTextPosition
+      - PadesTextHorizontalAlignment
+      - PadesTextVerticalAlignment
+      - PadesImageScaling
       - CbomAssetSyncState
       - CbomSyncSkipState
       - CryptographicAssetType

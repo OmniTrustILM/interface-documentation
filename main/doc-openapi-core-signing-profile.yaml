@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
 externalDocs:
@@ -19,6 +19,8 @@ servers:
 - url: https://demo.otilm.com/api
   description: ILM Demo server
 tags:
+- name: Signature Parameters
+  description: Signature Parameters API
 - name: Signing Profile Management
   description: Signing Profile Management API
 paths:
@@ -507,6 +509,106 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/signingProfiles/{uuid}/protocols/ilmNative/deactivate:
+    patch:
+      tags:
+      - Signing Profile Management
+      summary: Deactivate the ILM Native API for Signing Profile
+      operationId: deactivateIlmNative
+      parameters:
+      - name: uuid
+        in: path
+        description: Signing Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: ILM Native API deactivated
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
+  /v1/signingProfiles/{uuid}/protocols/ilmNative/activate:
+    patch:
+      tags:
+      - Signing Profile Management
+      summary: Activate the ILM Native API for Signing Profile
+      description: Enables the native signing API on a content-signing or raw-signing
+        profile that uses ILM-managed signing. Refused with 422 on a timestamping
+        profile and on a profile that uses delegated signing.
+      operationId: activateIlmNative
+      parameters:
+      - name: uuid
+        in: path
+        description: Signing Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: ILM Native API activated
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/signingProfiles/{uuid}/enable:
     patch:
       tags:
@@ -828,6 +930,9 @@ paths:
       tags:
       - Signing Profile Management
       summary: List signing protocols supported for a given workflow type
+      description: "Lists the protocols a profile of this workflow type can enable.\
+        \ Activation can still refuse a protocol for the profile's signing scheme:\
+        \ the ILM Native API needs ILM-managed signing."
       operationId: listSupportedProtocols
       parameters:
       - name: signingWorkflowType
@@ -1229,6 +1334,45 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/signatureParameters/groups:
+    get:
+      tags:
+      - Signature Parameters
+      summary: List signature parameter groups
+      description: "Returns, for each signature family that has signature parameters,\
+        \ its signature parameter groups and the request fields each group governs.\
+        \ A signing request may set a field only when its Signing Profile allows the\
+        \ field's group. Any authenticated user may call this operation."
+      operationId: listSignatureParameterGroups
+      responses:
+        "200":
+          description: Signature parameter groups retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SignatureFamilyParameterGroups"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
 components:
   schemas:
     ApiKeySecretContent:
@@ -1561,7 +1705,9 @@ components:
           type: array
           description: Attributes for the Signature Formatting Provider that control
             DTBS construction for the content signing workflow. Must be omitted for
-            delegated signing.
+            delegated signing. These attributes carry operator-only settings; a request
+            supplies signature parameters only in the groups that allowedRequestParameterGroups
+            lists.
           items:
             $ref: "#/components/schemas/RequestAttribute"
         family:
@@ -1604,6 +1750,24 @@ components:
             minLength: 1
             pattern: "^([01]\\.(\\d|[1-3]\\d)|2\\.(0|[1-9]\\d*))(\\.(0|[1-9]\\d*)){0,49}$"
           uniqueItems: true
+        allowedRequestParameterGroups:
+          type: array
+          description: "Signature parameter groups a signing request may supply; every\
+            \ group must apply to the profile's family. Must be omitted for delegated\
+            \ signing. Membership is the only permission mechanism. A request carrying\
+            \ any field of a group absent from this list is rejected, even when the\
+            \ value matches the profile's own. Omitted or empty means no request-supplied\
+            \ group is accepted. Allowing a group and defaulting it are separate decisions."
+          items:
+            $ref: "#/components/schemas/SignatureParameterGroup"
+          uniqueItems: true
+        defaultSignatureParameters:
+          $ref: "#/components/schemas/SignatureParameters"
+          description: "Signature parameters this profile applies when a request does\
+            \ not override them; their family must match the profile's family. Must\
+            \ be omitted for delegated signing. Merged field by field with the request\
+            \ winning; list-typed fields, and a placement in a different addressing\
+            \ mode, replace the default wholesale."
       required:
       - type
     CredentialAttributeContentData:
@@ -2196,6 +2360,307 @@ components:
       - signingOperationAttributes
       - signingScheme
       - tokenProfileUuid
+    PadesAnchorHorizontalAlignment:
+      type: string
+      description: Horizontal edge a visible signature anchors to on the page
+      enum:
+      - left
+      - center
+      - right
+    PadesAnchorVerticalAlignment:
+      type: string
+      description: Vertical edge a visible signature anchors to on the page
+      enum:
+      - top
+      - middle
+      - bottom
+    PadesCommitmentType:
+      type: string
+      description: "Commitment the signer makes, carried as the signed commitment-type\
+        \ attribute of ETSI EN 319 122-1"
+      enum:
+      - proof_of_origin
+      - proof_of_receipt
+      - proof_of_delivery
+      - proof_of_sender
+      - proof_of_approval
+      - proof_of_creation
+    PadesImageScaling:
+      type: string
+      description: How the stamp image is fitted into the signature box
+      enum:
+      - stretch
+      - zoom_and_center
+      - center
+    PadesSignatureParameters:
+      type: object
+      description: Signature parameters for the PAdES family. Every parameter is optional
+        and independent. The field that declares this object says which values it
+        carries and how absence is resolved.
+      properties:
+        family:
+          $ref: "#/components/schemas/SignatureFamily"
+          description: Signature family these parameters belong to
+          examples:
+          - pades
+        reason:
+          type: string
+          description: "Why the document was signed, recorded as the /Reason entry\
+            \ of the signature dictionary"
+          example: Contract approval
+          maxLength: 512
+          minLength: 0
+        location:
+          type: string
+          description: "Where the document was signed, recorded as the /Location entry\
+            \ of the signature dictionary"
+          example: Prague
+          maxLength: 512
+          minLength: 0
+        contactInfo:
+          type: string
+          description: "How to reach the signer, recorded as the /ContactInfo entry\
+            \ of the signature dictionary"
+          example: jane.doe@example.com
+          maxLength: 512
+          minLength: 0
+        signerName:
+          type: string
+          description: "Name shown as the signer, recorded as the /Name entry of the\
+            \ signature dictionary. Absent means the name is derived from the signing\
+            \ certificate."
+          example: Jane Doe
+          maxLength: 512
+          minLength: 0
+        signatureScope:
+          $ref: "#/components/schemas/PadesSignatureScope"
+          description: "Whether the signature certifies the document or approves a\
+            \ revision of it. Absent is unspecified: on a request the Signing Profile's\
+            \ default decides, and in the effective parameters it means revision.\
+            \ Certification is never inferred."
+        commitmentType:
+          $ref: "#/components/schemas/PadesCommitmentType"
+          description: "Commitment the signer makes, bound into the signature as a\
+            \ signed attribute"
+        claimedRoles:
+          type: array
+          description: "Roles the signer claims, bound into the signature as a signed\
+            \ attribute. Claimed only: a certified role would be an attribute certificate,\
+            \ which this contract does not carry. Omit the field to inherit; an empty\
+            \ list is refused."
+          example:
+          - Head of Legal
+          items:
+            type: string
+            maxLength: 256
+            minLength: 0
+          maxItems: 10
+          minItems: 1
+        visibleSignature:
+          $ref: "#/components/schemas/PadesVisibleSignature"
+          description: "The visible signature drawn on the page: what it shows, where\
+            \ it goes and how it is drawn"
+      required:
+      - family
+    PadesSignatureScope:
+      type: string
+      description: Scope a PAdES signature claims over the document
+      enum:
+      - certification
+      - revision
+    PadesTextHorizontalAlignment:
+      type: string
+      description: Horizontal alignment of the caption within its area
+      enum:
+      - left
+      - center
+      - right
+    PadesTextPosition:
+      type: string
+      description: "Side of the stamp image the caption sits on, when a visible signature\
+        \ draws both"
+      enum:
+      - top
+      - bottom
+      - left
+      - right
+    PadesTextVerticalAlignment:
+      type: string
+      description: Vertical alignment of the caption within its area
+      enum:
+      - top
+      - middle
+      - bottom
+    PadesTextWrapping:
+      type: string
+      description: How the caption of a visible signature is fitted into its area
+      enum:
+      - font_based
+      - fill_box
+      - fill_box_and_linebreak
+    PadesVisibleSignature:
+      type: object
+      description: "Content of a PAdES visible signature. A stamp image and its media\
+        \ type travel together: one without the other is rejected."
+      properties:
+        visible:
+          type: boolean
+          description: "Whether the signature is drawn on the page at all. On a request,\
+            \ absent means the Signing Profile's default decides. In the effective\
+            \ parameters false is never sent: resolving to false omits this whole\
+            \ container instead. Absent inside a container that is present leaves\
+            \ the draw decision to the connector."
+          example: true
+        text:
+          type: string
+          description: "Caption drawn in the signature. Plain text: any transport\
+            \ encoding belongs to the door that used it, not to this contract."
+          example: Signed by Jane Doe
+          maxLength: 4096
+          minLength: 0
+        image:
+          type: string
+          format: byte
+          description: "Stamp image drawn in the signature, base64-encoded in JSON.\
+            \ At most 256 KiB decoded. Always resolved bytes: this contract carries\
+            \ no reference, no identifier and no path."
+          maxLength: 349528
+          minLength: 4
+        imageMimeType:
+          type: string
+          description: "Media type of the stamp image. PNG and JPEG only; SVG is excluded\
+            \ because the renderer wants a raster. Matched exactly: image/png or image/jpeg,\
+            \ lower-case, with no parameters."
+          enum:
+          - image/png
+          - image/jpeg
+          example: image/png
+          pattern: image/png|image/jpeg
+        placement:
+          $ref: "#/components/schemas/PadesVisibleSignaturePlacement"
+          description: Where the signature lands on the page
+        style:
+          $ref: "#/components/schemas/PadesVisibleSignatureStyle"
+          description: How the signature is drawn
+    PadesVisibleSignaturePlacement:
+      type: object
+      description: "Placement of a PAdES visible signature, in one addressing mode\
+        \ only: a named signature field (fieldId alone), explicit coordinates, or\
+        \ an anchor. Coordinates are in PDF points (1/72 inch) measured from the top-left\
+        \ corner of the page's MediaBox, turned the way a viewer displays the page,\
+        \ so the signature reads upright on a rotated page. Whether a mode is complete\
+        \ is decided after the request has been merged over the profile's defaults."
+      properties:
+        fieldId:
+          type: string
+          description: "Name of an existing signature field to sign into. Addresses\
+            \ the placement on its own: no page, coordinates or anchor may accompany\
+            \ it, because the field already carries all of them."
+          example: Signature1
+          maxLength: 256
+          minLength: 0
+        page:
+          type: integer
+          format: int32
+          description: "Page to place the signature on, counting from 1. Shared by\
+            \ the coordinate and anchor modes."
+          example: 1
+          minimum: 1
+        originX:
+          type: number
+          format: float
+          description: "Distance from the left edge of the page's MediaBox to the\
+            \ left edge of the signature, in PDF points"
+          example: 20
+          minimum: 0
+        originY:
+          type: number
+          format: float
+          description: "Distance from the top edge of the page's MediaBox to the top\
+            \ edge of the signature, in PDF points"
+          example: 30
+          minimum: 0
+        width:
+          type: number
+          format: float
+          description: "Width of the signature, in PDF points"
+          example: 180
+          exclusiveMinimum: 0
+        height:
+          type: number
+          format: float
+          description: "Height of the signature, in PDF points"
+          example: 60
+          exclusiveMinimum: 0
+        alignmentHorizontal:
+          $ref: "#/components/schemas/PadesAnchorHorizontalAlignment"
+          description: "Horizontal edge to anchor the signature to, in the anchor\
+            \ mode"
+        alignmentVertical:
+          $ref: "#/components/schemas/PadesAnchorVerticalAlignment"
+          description: "Vertical edge to anchor the signature to, in the anchor mode"
+        zoom:
+          type: integer
+          format: int32
+          description: "Size of the anchored signature as a whole percentage of its\
+            \ natural size, where 100 is natural size. Belongs to the anchor mode;\
+            \ an explicit width and height leave nothing to scale."
+          example: 100
+          maximum: 1000
+          minimum: 1
+    PadesVisibleSignatureStyle:
+      type: object
+      description: Style of a PAdES visible signature. A field that neither the request
+        nor the profile default sets keeps the Signature Formatting Provider's built-in
+        value.
+      properties:
+        textColor:
+          type: string
+          description: "Colour of the caption text, as #RRGGBB"
+          example: "#171717"
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        textBackgroundColor:
+          type: string
+          description: "Colour behind the caption text, as #RRGGBB"
+          example: "#FFFFFF"
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        backgroundColor:
+          type: string
+          description: "Colour of the whole signature box, as #RRGGBB"
+          example: "#FFFFFF"
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        padding:
+          type: integer
+          format: int32
+          description: "Space between the caption text and the edge of its area, in\
+            \ PDF points"
+          example: 5
+          maximum: 100
+          minimum: 0
+        textWrapping:
+          $ref: "#/components/schemas/PadesTextWrapping"
+          description: How the caption is fitted into its area
+        textPosition:
+          $ref: "#/components/schemas/PadesTextPosition"
+          description: "Side of the stamp image the caption sits on, when both are\
+            \ drawn"
+        textHorizontalAlignment:
+          $ref: "#/components/schemas/PadesTextHorizontalAlignment"
+          description: Horizontal alignment of the caption within its area
+        textVerticalAlignment:
+          $ref: "#/components/schemas/PadesTextVerticalAlignment"
+          description: Vertical alignment of the caption within its area
+        imageScaling:
+          $ref: "#/components/schemas/PadesImageScaling"
+          description: How the stamp image is fitted into the signature box
+        dpi:
+          type: integer
+          format: int32
+          description: "Resolution the stamp image is drawn at, in dots per inch,\
+            \ which sets the image's natural size"
+          example: 300
+          maximum: 1200
+          minimum: 72
     PrivateKeySecretContent:
       type: object
       description: Secret representing private key
@@ -2293,13 +2758,32 @@ components:
           description: End of the range for validation
     RawSigningWorkflowRequestDto:
       type: object
-      description: Raw signing workflow configuration request.
+      description: "Raw signing workflow configuration request. The digest algorithm\
+        \ is not configured here: the signature algorithm of the signing scheme fixes\
+        \ it."
       properties:
         type:
           $ref: "#/components/schemas/SigningWorkflowType"
           description: Signing workflow type
           examples:
           - timestamping
+        requireNonRepudiation:
+          type: boolean
+          description: "Demand the nonRepudiation key-usage bit specifically, for\
+            \ commitment-grade profiles. Applies to ILM-managed signing only. For\
+            \ delegated signing, omit it or send false; an echoed false from a response\
+            \ is accepted, true is rejected."
+        requiredExtendedKeyUsageOids:
+          type: array
+          description: "Extended key usage OIDs the signing certificate must all carry,\
+            \ in dot notation (1.3.6.1.5.5.7.3.36 is RFC 9336 id-kp-documentSigning).\
+            \ An empty set accepts any extended key usage. Applies to ILM-managed\
+            \ signing only; for delegated signing send nothing or an empty set."
+          items:
+            type: string
+            minLength: 1
+            pattern: "^([01]\\.(\\d|[1-3]\\d)|2\\.(0|[1-9]\\d*))(\\.(0|[1-9]\\d*)){0,49}$"
+          uniqueItems: true
       required:
       - type
     RegexpAttributeConstraint:
@@ -2406,7 +2890,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2470,7 +2954,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2500,7 +2984,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2707,6 +3191,34 @@ components:
       - timestamped
       - long_term
       - archival
+    SignatureParameterGroup:
+      type: string
+      description: Group of signature parameters a Signing Profile may allow signing
+        requests to supply. Membership in the profile's allow-list is the only permission
+        mechanism. A request carrying a parameter from a group the profile does not
+        allow is rejected.
+      enum:
+      - signature_context
+      - signer_identity
+      - signed_attributes
+      - signature_scope
+      - visible_signature_placement
+      - visible_signature_content
+      - visible_signature_style
+    SignatureParameters:
+      type: object
+      description: "Signature parameters a caller may influence, in the shape shared\
+        \ by the signing request, the Signing Profile's defaults and the connector's\
+        \ effective object. The required family property is the discriminator selecting\
+        \ the family-specific shape."
+      discriminator:
+        propertyName: family
+        mapping:
+          pades: "#/components/schemas/PadesSignatureParameters"
+      oneOf:
+      - $ref: "#/components/schemas/PadesSignatureParameters"
+      required:
+      - family
     SigningProfileRequestDto:
       type: object
       description: Request to create or update a Signing Profile
@@ -3147,7 +3659,9 @@ components:
           type: array
           description: Attributes configured on the Signature Formatting Provider
             that control DTBS construction for the content signing workflow. Applicable
-            only when ILM-managed signing is used.
+            only when ILM-managed signing is used. These attributes carry operator-only
+            settings; a request supplies signature parameters only in the groups that
+            allowedRequestParameterGroups lists.
           items:
             $ref: "#/components/schemas/ResponseAttribute"
         family:
@@ -3185,6 +3699,24 @@ components:
           items:
             type: string
           uniqueItems: true
+        allowedRequestParameterGroups:
+          type: array
+          description: "Signature parameter groups which a signing request may supply.\
+            \ Empty for delegated signing. Membership is the only permission mechanism.\
+            \ A request carrying any field of a group absent from this list is rejected,\
+            \ even when the value matches the profile's own. An empty list accepts\
+            \ no request-supplied group. Independent of defaultSignatureParameters:\
+            \ a group may be allowed with no default (pure pass-through), or carry\
+            \ a default without being allowed (operator-fixed)."
+          items:
+            $ref: "#/components/schemas/SignatureParameterGroup"
+          uniqueItems: true
+        defaultSignatureParameters:
+          $ref: "#/components/schemas/SignatureParameters"
+          description: "Signature parameters this profile applies when a request does\
+            \ not override them. Null for delegated signing. Merged field by field\
+            \ with the request winning; list-typed fields, and a placement in a different\
+            \ addressing mode, replace the default wholesale."
       required:
       - type
     DelegatedSigningDto:
@@ -3292,13 +3824,29 @@ components:
       - tokenProfile
     RawSigningWorkflowDto:
       type: object
-      description: Raw signing workflow configuration.
+      description: "Raw signing workflow configuration. The digest algorithm is not\
+        \ configured here: the signature algorithm of the signing scheme fixes it."
       properties:
         type:
           $ref: "#/components/schemas/SigningWorkflowType"
           description: Signing workflow type
           examples:
           - timestamping
+        requireNonRepudiation:
+          type: boolean
+          default: false
+          description: "Demand the nonRepudiation key-usage bit specifically, for\
+            \ commitment-grade profiles. Applies to ILM-managed signing only; delegated\
+            \ profile gets always false."
+        requiredExtendedKeyUsageOids:
+          type: array
+          description: "Extended key usage OIDs the signing certificate must all carry,\
+            \ in dot notation (1.3.6.1.5.5.7.3.36 is RFC 9336 id-kp-documentSigning).\
+            \ An empty set accepts any extended key usage. Applies to ILM-managed\
+            \ signing only."
+          items:
+            type: string
+          uniqueItems: true
       required:
       - type
     SigningProfileDto:
@@ -3361,6 +3909,7 @@ components:
       enum:
       - csc_api
       - tsp
+      - ilm_native
       - internal_tsa
     SigningRecordPolicyDto:
       type: object
@@ -4974,6 +5523,7 @@ components:
       - KeyType
       - KeyUsage
       - KeyRequestType
+      - TokenKeyStatus
       - KeyCompromiseReason
       - TokenInstanceStatus
       - DigestAlgorithm
@@ -5015,11 +5565,22 @@ components:
       - QcType
       - SignatureFamily
       - SignatureLevel
+      - SignatureParameterGroup
       - SigningProtocol
+      - SigningRecordPersistenceMode
       - SigningScheme
       - SigningWorkflowType
       - TimestampSourceType
       - TspAuthenticationMethod
+      - PadesSignatureScope
+      - PadesCommitmentType
+      - PadesAnchorHorizontalAlignment
+      - PadesAnchorVerticalAlignment
+      - PadesTextWrapping
+      - PadesTextPosition
+      - PadesTextHorizontalAlignment
+      - PadesTextVerticalAlignment
+      - PadesImageScaling
       - CbomAssetSyncState
       - CbomSyncSkipState
       - CryptographicAssetType
@@ -5079,6 +5640,42 @@ components:
       - fieldIdentifier
       - fieldLabel
       - type
+    SignatureFamilyParameterGroups:
+      type: object
+      description: "Signature parameter groups of one signature family, each with\
+        \ the fields it governs"
+      properties:
+        family:
+          $ref: "#/components/schemas/SignatureFamily"
+          description: Signature family whose parameters the groups govern
+        groups:
+          type: array
+          description: "Groups governing the family's parameters, in the order the\
+            \ `SignatureParameterGroup` enum lists them"
+          items:
+            $ref: "#/components/schemas/SignatureParameterGroupFields"
+      required:
+      - family
+      - groups
+    SignatureParameterGroupFields:
+      type: object
+      description: Signature parameter group with the paths of the fields it governs
+      properties:
+        group:
+          $ref: "#/components/schemas/SignatureParameterGroup"
+          description: Group governing the fields
+        fields:
+          type: array
+          description: "Paths of the fields the group governs, in the order the family's\
+            \ parameters declare them. A path joins property names with dots, from\
+            \ the family's signature parameters down to the field."
+          example:
+          - visibleSignature.placement.page
+          items:
+            type: string
+      required:
+      - fields
+      - group
   securitySchemes:
     SessionAuth:
       type: apiKey

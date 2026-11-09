@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache License, Version 2.0"
     url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
-  version: 2.20.0
+  version: 2.21.0-SNAPSHOT
   x-logo:
     url: images/ilm-logo.svg
   x-metrics-profile:
@@ -961,6 +961,7 @@ components:
       - entity
       - compliance
       - cryptography
+      - keyLifecycle
       - notification
       - secret
       - signatureFormatting
@@ -1730,7 +1731,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -1794,7 +1795,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -1824,7 +1825,7 @@ components:
           type: string
           description: Resource identifier
           examples:
-          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+          - 7b55de1c-844f-11dc-a8a3-0242ac120002
         name:
           type: string
           description: Resource name
@@ -2143,6 +2144,8 @@ components:
       - DOCUMENT_TOO_LARGE
       - SIGNATURE_NOT_FOUND
       - PARAMETER_UNSUPPORTED
+      - SIGNATURE_PLACEMENT_REJECTED
+      - DOCUMENT_SIGNING_FORBIDDEN
       - CONTEXT_MISMATCH
       - CSR_MALFORMED
       - REVOCATION_NOT_ALLOWED
@@ -2153,10 +2156,16 @@ components:
       - CHECKPOINT_LOST
       - KEY_TYPE_NOT_IMPORTABLE
       - KEY_TYPE_NOT_EXPORTABLE
+      - KEY_TYPE_NOT_LISTABLE
       - KEY_MATERIAL_MISMATCH
       - KEY_DECRYPTION_FAILED
       - EXPORTABLE_NOT_SUPPORTED
       - KEY_NOT_EXPORTABLE
+      - SIGNER_INVALID
+      - SIGNER_MISMATCH
+      - KEY_CERTIFIED
+      - KEY_UNBOUND
+      - PUBLIC_KEY_MISMATCH
     ProblemDetailExtended:
       type: object
       properties:
@@ -3081,18 +3090,22 @@ components:
       - type
     SignatureAlgorithm:
       type: string
-      description: "Signature algorithm, named by its code. Each algorithm fixes the\
-        \ digest carried inside the signature it produces, so naming the algorithm\
-        \ names that digest. It says nothing about a digest an operation takes as\
-        \ a parameter of its own. Where the code spells its digest out, that is the\
-        \ digest. Where it does not, the platform records the digest it pairs the\
-        \ algorithm with: Ed25519 commits to SHA-512, FALCON-1024 commits to SHA-512,\
-        \ ML-DSA-44 commits to SHA-512, ML-DSA-65 commits to SHA-512, ML-DSA-87 commits\
-        \ to SHA-512, SLH-DSA-SHA2-128S commits to SHA-256, SLH-DSA-SHA2-128F commits\
-        \ to SHA-256, SLH-DSA-SHA2-192S commits to SHA-512, SLH-DSA-SHA2-192F commits\
-        \ to SHA-512, SLH-DSA-SHA2-256S commits to SHA-512, SLH-DSA-SHA2-256F commits\
-        \ to SHA-512, and Ed448 commits to SHAKE256, which is not a DigestAlgorithm\
-        \ value."
+      description: "Signature algorithm, named by its code. It says nothing about\
+        \ a digest an operation takes as a parameter of its own. Only the RSA, RSA-PSS\
+        \ and ECDSA codes spell their digest out: such an algorithm hashes its input\
+        \ with that digest and signs the result, so naming the algorithm names that\
+        \ digest. RSA-PSS codes use MGF1 with the same hash as the code, a salt as\
+        \ long as that hash's output, and trailer field 1. The other algorithms take\
+        \ their input whole and hash it inside as their standard defines. For them\
+        \ the platform records the digest it pairs the algorithm with and applies\
+        \ to the document itself, one layer above the signature algorithm (in CMS,\
+        \ the message-digest algorithm, as RFC 8419, RFC 9882 and RFC 9814 specify).\
+        \ Ed25519 commits to SHA-512, FALCON-1024 commits to SHA-512, ML-DSA-44 commits\
+        \ to SHA-512, ML-DSA-65 commits to SHA-512, ML-DSA-87 commits to SHA-512,\
+        \ SLH-DSA-SHA2-128S commits to SHA-256, SLH-DSA-SHA2-128F commits to SHA-256,\
+        \ SLH-DSA-SHA2-192S commits to SHA-512, SLH-DSA-SHA2-192F commits to SHA-512,\
+        \ SLH-DSA-SHA2-256S commits to SHA-512, SLH-DSA-SHA2-256F commits to SHA-512,\
+        \ and Ed448 commits to SHAKE256, which is not a DigestAlgorithm value."
       enum:
       - SHA256withRSA
       - SHA384withRSA
@@ -3370,6 +3383,9 @@ components:
       - asynchronous
       - keyImport
       - keyExport
+      - keyList
+      - prehashedSigning
+      - signerBoundAtCreation
       - secretVersioning
       - secretRotation
       - contentSigning
