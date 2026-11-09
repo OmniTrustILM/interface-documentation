@@ -19,8 +19,8 @@
         <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <revision>2.20.0</revision>
-        <apiVersion>2.20.0</apiVersion>
+        <revision>2.21.0-SNAPSHOT</revision>
+        <apiVersion>2.21.0-SNAPSHOT</apiVersion>
 
         <!-- Plugin versions -->
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
