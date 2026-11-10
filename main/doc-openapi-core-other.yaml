@@ -79,11 +79,12 @@ paths:
       - Settings
       summary: Update platform settings
       description: "**Request semantics:** a section left out of the body (`utils`,\
-        \ `certificates`) is left untouched. A `utils` that is present is stored as\
-        \ sent, so it carries the full desired state of that section: a field left\
-        \ out is cleared, or returns to the platform default where it has one. Inside\
-        \ `certificates`, each group behaves the same way as a section: one left out\
-        \ is untouched, one that is present is stored as sent."
+        \ `certificates`, `signing`) is left untouched. A `utils` or `signing` that\
+        \ is present is stored as sent, so it carries the full desired state of that\
+        \ section: a field left out is cleared, or returns to the platform default\
+        \ where it has one. Inside `certificates`, each group behaves the same way\
+        \ as a section: one left out is untouched, one that is present is stored as\
+        \ sent."
       operationId: updatePlatformSettings
       requestBody:
         content:
@@ -3265,6 +3266,10 @@ components:
         certificates:
           $ref: "#/components/schemas/CertificateSettingsUpdateDto"
           description: Settings applicable to all certificates in inventory by default
+        signing:
+          $ref: "#/components/schemas/SigningSettingsDto"
+          description: "Signing settings shared by every Signing Profile; stored as\
+            \ sent when present, so a value left out returns to the platform default"
     PrivateKeySecretContent:
       type: object
       description: Secret representing private key
@@ -3706,6 +3711,17 @@ components:
       - keyStore
       - keyValue
       - generic
+    SigningSettingsDto:
+      type: object
+      properties:
+        maxItemsPerRequest:
+          type: integer
+          format: int32
+          default: 100
+          description: Maximum number of items for one request of the Native Signing
+            API
+          maximum: 1000
+          minimum: 1
     SourceParam:
       type: object
       description: Dependency filter that scopes a value source by another attribute's
@@ -5770,6 +5786,9 @@ components:
         branding:
           $ref: "#/components/schemas/BrandingSettingsDto"
           description: Branding applied across the platform user interface
+        signing:
+          $ref: "#/components/schemas/SigningSettingsDto"
+          description: Signing settings shared by every Signing Profile
     AuthenticationSettingsDto:
       type: object
       properties:
