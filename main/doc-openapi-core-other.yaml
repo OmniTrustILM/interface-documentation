@@ -773,6 +773,66 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/resources/{resource}/objects/allowed-actions:
+    post:
+      tags:
+      - Resource Management
+      summary: Report the actions the caller may perform on objects of a resource
+      description: |
+        Reports, per object, the actions the caller may perform on it, so a client can disable the controls the caller cannot use. Detail pages ask for one object, list pages and bulk operations for many. Each action is answered the way the endpoints that perform it are authorized, and where they differ the strictest decides, so every reported action is accepted. Objects the caller may neither list nor view are left out, the same as objects that do not exist. The resource must be one whose objects are identified by UUID and authorized individually, by grants on objects or by ownership.
+      operationId: listObjectAllowedActions
+      parameters:
+      - name: resource
+        in: path
+        description: Resource
+        required: true
+        schema:
+          $ref: "#/components/schemas/Resource"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ObjectAllowedActionsRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Allowed actions reported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObjectAllowedActionsResponseDto"
+        "422":
+          description: "The request is invalid, or the resource has no objects identified\
+            \ by UUID and authorized individually"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/oids:
     post:
       tags:
@@ -4834,6 +4894,89 @@ components:
       - direction
       - fieldIdentifier
       - fieldSource
+    ObjectAllowedActionsRequestDto:
+      type: object
+      description: Objects of one resource to report the caller's allowed actions
+        on
+      properties:
+        uuids:
+          type: array
+          description: "UUIDs of the objects. At most 1000, the size of the largest\
+            \ list page."
+          items:
+            type: string
+            format: uuid
+          maxItems: 1000
+          minItems: 0
+      required:
+      - uuids
+    ObjectAllowedActionsDto:
+      type: object
+      description: Actions the caller may perform on one object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the object
+        allowedActions:
+          type: array
+          description: |
+            Actions the caller may perform on this object. Each action is answered the way the endpoint that performs it is authorized: on the object itself, where ownership, grants on the object and, for list and detail, the members action on a group the object is assigned to count; on the resource as a whole, where only resource-level grants count; or on a parent object first, such as the authority of an RA profile. Where several endpoints perform the same action on an object and are authorized differently, the strictest of them decides, so a reported action is accepted by every endpoint that performs it for the caller, and an action one of them would refuse is left out. Actions that do not act on an existing object, such as create, list, register and import, and actions the authorization service will not grant at all are never reported. The authorization service remains the only gate; this is a hint that keeps a control the caller cannot use off the screen.
+          items:
+            $ref: "#/components/schemas/ResourceAction"
+      required:
+      - allowedActions
+      - uuid
+    ObjectAllowedActionsResponseDto:
+      type: object
+      description: The caller's allowed actions on the requested objects
+      properties:
+        items:
+          type: array
+          description: |
+            One item per requested object the caller may list or view, each object at most once. An object the caller may neither list nor view is left out, the same as an object that does not exist, so a missing item says nothing about whether the object exists.
+          items:
+            $ref: "#/components/schemas/ObjectAllowedActionsDto"
+      required:
+      - items
+    ResourceAction:
+      type: string
+      enum:
+      - NONE
+      - ANY
+      - members
+      - list
+      - detail
+      - create
+      - update
+      - delete
+      - comment
+      - enable
+      - activate
+      - stop
+      - resume
+      - cancel
+      - approve
+      - connect
+      - register
+      - issue
+      - renew
+      - rekey
+      - revoke
+      - archive
+      - export
+      - checkCompliance
+      - encrypt
+      - decrypt
+      - verify
+      - sign
+      - getProxyInstallation
+      - importKey
+      - exportKey
+      - getSecretContent
+      - updateSourceVaultProfile
+      - timestamp
+      - updateBranding
     CustomOidEntryRequestDto:
       type: object
       properties:
