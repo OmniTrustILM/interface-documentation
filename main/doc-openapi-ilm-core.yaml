@@ -39373,14 +39373,6 @@ components:
             \ above. Required when maxLevel is TIMESTAMPED or higher, and must be\
             \ omitted when maxLevel is SIGNED, which embeds no timestamp. Must be\
             \ omitted for delegated signing."
-        documentSizeCap:
-          type: integer
-          format: int64
-          description: "Largest document accepted for signing, in bytes. Enforced\
-            \ when an ILM-managed signing request arrives. When omitted, no profile-level\
-            \ cap applies."
-          example: 5242880
-          exclusiveMinimum: 0
         requireNonRepudiation:
           type: boolean
           description: "Demand the nonRepudiation key-usage bit specifically, for\
@@ -40253,13 +40245,6 @@ components:
           $ref: "#/components/schemas/TimestampSourceDto"
           description: Source of the timestamps embedded at level TIMESTAMPED and
             above. Set when maxLevel is TIMESTAMPED or higher.
-        documentSizeCap:
-          type: integer
-          format: int64
-          description: "Largest document accepted for signing, in bytes. Enforced\
-            \ when an ILM-managed signing request arrives. Null when no profile-level\
-            \ cap applies."
-          example: 5242880
         requireNonRepudiation:
           type: boolean
           default: false
