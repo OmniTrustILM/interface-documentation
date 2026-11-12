@@ -2035,9 +2035,15 @@ components:
         uuid:
           type: string
           description: UUID of the Certificate
+        displayName:
+          type: string
+          description: "Name to show for the certificate: the common name of an X.509\
+            \ certificate, the identifier of a certificate type without one"
         commonName:
           type: string
-          description: Certificate common name
+          description: "Certificate common name. Absent when the certificate has no\
+            \ common name: its type has none, or the subject of an X.509 certificate\
+            \ has none (a registration with only alternative names)"
         serialNumber:
           type: string
           description: Certificate serial number
@@ -2046,10 +2052,13 @@ components:
           description: Certificate issuer common name
         issuerDn:
           type: string
-          description: Issuer DN of the Certificate
+          description: Issuer DN of the Certificate. X.509 only; absent for other
+            types.
         subjectDn:
           type: string
-          description: Subject DN of the Certificate
+          description: "Subject DN of the Certificate. Absent when the certificate\
+            \ has no subject distinguished name: its type has none, or an X.509 certificate\
+            \ was registered with only alternative names."
         notBefore:
           type: string
           format: date-time
@@ -2060,27 +2069,35 @@ components:
           description: Certificate expiration date
         publicKeyAlgorithm:
           type: string
-          description: Public key algorithm
+          description: "Public key algorithm. Absent when the certificate has no public\
+            \ key: its type has none, or the certificate is registered and not yet\
+            \ issued"
         altPublicKeyAlgorithm:
           type: string
-          description: Alternative Public key algorithm
+          description: Alternative Public key algorithm. X.509 only; absent for other
+            types.
         signatureAlgorithm:
           type: string
           description: Certificate signature algorithm
         altSignatureAlgorithm:
           type: string
-          description: Certificate alternative signature algorithm
+          description: Certificate alternative signature algorithm. X.509 only; absent
+            for other types.
         hybridCertificate:
           type: boolean
-          description: Indicator whether the certificate is hybrid
+          description: Indicator whether the certificate is hybrid. False for types
+            without a hybrid form.
         keySize:
           type: integer
           format: int32
-          description: Certificate key size
+          description: "Certificate key size. Absent when the certificate has no public\
+            \ key: its type has none, or the certificate is registered and not yet\
+            \ issued"
         altKeySize:
           type: integer
           format: int32
-          description: Certificate key size of the alternative key
+          description: Certificate key size of the alternative key. X.509 only; absent
+            for other types.
         state:
           $ref: "#/components/schemas/CertificateState"
           description: State of the Certificate
@@ -2109,7 +2126,7 @@ components:
           description: Certificate type
         issuerSerialNumber:
           type: string
-          description: Serial number of the issuer
+          description: Serial number of the issuer. X.509 only; absent for other types.
         complianceStatus:
           $ref: "#/components/schemas/ComplianceStatus"
           description: Certificate compliance status
@@ -2155,14 +2172,11 @@ components:
                 data: disaster-recovery
       required:
       - certificateType
-      - commonName
       - complianceStatus
+      - displayName
       - hybridCertificate
-      - keySize
       - privateKeyAvailability
-      - publicKeyAlgorithm
       - state
-      - subjectDn
       - uuid
       - validationStatus
     CertificateResponseDto:
@@ -3656,8 +3670,8 @@ components:
           description: Certificate signing request encoded as Base64 string
         format:
           $ref: "#/components/schemas/CertificateRequestFormat"
-          default: pkcs10
-          description: Certificate signing request format
+          description: "Format of the request, which says how to read it. When absent,\
+            \ the default format of the certificate type applies: pkcs10 for X.509"
         tokenProfileUuid:
           type: string
           format: uuid
@@ -3722,258 +3736,15 @@ components:
       - status
     CertificateDetailDto:
       type: object
-      properties:
-        uuid:
-          type: string
-          description: UUID of the Certificate
-        commonName:
-          type: string
-          description: Certificate common name
-        serialNumber:
-          type: string
-          description: Certificate serial number
-        issuerCommonName:
-          type: string
-          description: Certificate issuer common name
-        issuerDn:
-          type: string
-          description: Issuer DN of the Certificate
-        subjectDn:
-          type: string
-          description: Subject DN of the Certificate
-        notBefore:
-          type: string
-          format: date-time
-          description: Certificate validity start date
-        notAfter:
-          type: string
-          format: date-time
-          description: Certificate expiration date
-        publicKeyAlgorithm:
-          type: string
-          description: Public key algorithm
-        altPublicKeyAlgorithm:
-          type: string
-          description: Alternative Public key algorithm
-        signatureAlgorithm:
-          type: string
-          description: Certificate signature algorithm
-        altSignatureAlgorithm:
-          type: string
-          description: Certificate alternative signature algorithm
-        hybridCertificate:
-          type: boolean
-          description: Indicator whether the certificate is hybrid
-        keySize:
-          type: integer
-          format: int32
-          description: Certificate key size
-        altKeySize:
-          type: integer
-          format: int32
-          description: Certificate key size of the alternative key
-        state:
-          $ref: "#/components/schemas/CertificateState"
-          description: State of the Certificate
-        validationStatus:
-          $ref: "#/components/schemas/CertificateValidationStatus"
-          description: Current validation status of the certificate
-        raProfile:
-          $ref: "#/components/schemas/SimplifiedRaProfileDto"
-          description: RA Profile associated to the Certificate
-        fingerprint:
-          type: string
-          description: SHA256 fingerprint of the Certificate
-        groups:
-          type: array
-          description: Groups associated to the Certificate
-          items:
-            $ref: "#/components/schemas/GroupDto"
-        owner:
-          type: string
-          description: Certificate Owner
-        ownerUuid:
-          type: string
-          description: Certificate Owner UUID
-        certificateType:
-          $ref: "#/components/schemas/CertificateType"
-          description: Certificate type
-        issuerSerialNumber:
-          type: string
-          description: Serial number of the issuer
-        complianceStatus:
-          $ref: "#/components/schemas/ComplianceStatus"
-          description: Certificate compliance status
-        issuerCertificateUuid:
-          type: string
-          description: UUID of the issuer certificate
-        privateKeyAvailability:
-          type: boolean
-          description: Private Key Availability
-        trustedCa:
-          type: boolean
-          description: "Indicator whether CA is marked as trusted, set to null if\
-            \ certificate is not CA"
-        archived:
-          type: boolean
-          default: false
-          description: Certificate is archived
-        attributeValues:
-          type: object
-          additionalProperties:
-            type: object
-            additionalProperties:
-              type: array
-              items:
-                $ref: "#/components/schemas/BaseAttributeContentDtoV3"
-          description: "Values of the attribute-sourced fields requested as columns,\
-            \ keyed by field source and then by field identifier. Present only when\
-            \ the listing request asked for attribute-sourced columns; a field the\
-            \ object has no value for is absent rather than empty, and a multi-valued\
-            \ attribute arrives in its stored item_order."
-          example:
-            custom:
-              businessUnit|STRING:
-              - contentType: string
-                reference: Payments
-                data: payments
-              environment|STRING:
-              - contentType: string
-                reference: Production
-                data: production
-              - contentType: string
-                reference: Disaster recovery
-                data: disaster-recovery
-        extendedKeyUsage:
-          type: array
-          description: Extended key usages
-          items:
-            type: string
-        keyUsage:
-          type: array
-          description: Key usages
-          items:
-            $ref: "#/components/schemas/CertificateKeyUsage"
-        subjectType:
-          $ref: "#/components/schemas/CertificateSubjectType"
-          description: Certificate subject type
-        metadata:
-          type: array
-          description: Certificate metadata
-          items:
-            $ref: "#/components/schemas/MetadataResponseDto"
-        certificateContent:
-          type: string
-          description: Base64 encoded Certificate content
-        subjectAlternativeNames:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          description: Subject alternative names
-        locations:
-          type: array
-          description: Locations associated to the Certificate
-          items:
-            $ref: "#/components/schemas/LocationDto"
-          uniqueItems: true
-        registration:
-          $ref: "#/components/schemas/CertificateRegistrationDetailDto"
-          description: Pre-registration authorization status; present only for certificates
-            that were pre-registered
-        nonCompliantRules:
-          type: array
-          deprecated: true
-          description: "Certificate compliance check result. Deprecated, use `complianceResult`\
-            \ property instead."
-          items:
-            $ref: "#/components/schemas/CertificateComplianceResultDto"
-        customAttributes:
-          type: array
-          description: List of Custom Attributes
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        key:
-          $ref: "#/components/schemas/KeyDto"
-          description: Key Pair of the certificate
-        keystoreAvailable:
-          type: boolean
-          description: Whether the certificate can be downloaded with its private
-            key as PKCS#12
-        altKey:
-          $ref: "#/components/schemas/KeyDto"
-          description: Alternative Key Pair of the certificate
-        certificateRequest:
-          $ref: "#/components/schemas/CertificateRequestDto"
-          description: Certificate request data
-        sourceCertificateUuid:
-          type: string
-          format: uuid
-          deprecated: true
-          description: Source certificate UUID
-        issueAttributes:
-          type: array
-          description: List of issue attributes
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        revokeAttributes:
-          type: array
-          description: List of revoke attributes
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        registerAttributes:
-          type: array
-          description: "List of register attributes: the connector's register-operation\
-            \ attributes submitted when the certificate was pre-registered"
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        renewAttributes:
-          type: array
-          description: "List of renew attributes: the connector's renew-operation\
-            \ attributes submitted when this certificate was created by renewing or\
-            \ rekeying its predecessor"
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        identifyAttributes:
-          type: array
-          description: "List of identify attributes: the connector's identify-operation\
-            \ attributes submitted when the certificate was identified at its authority"
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        registrationRequestAttributes:
-          type: array
-          description: "List of request attributes submitted at registration: the\
-            \ operator-supplied request-attribute values that shaped the pre-registered\
-            \ identity"
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        relatedCertificates:
-          type: array
-          deprecated: true
-          description: List of related certificates
-          items:
-            $ref: "#/components/schemas/CertificateDto"
-        protocolInfo:
-          $ref: "#/components/schemas/CertificateProtocolDto"
-          description: Information about protocol used to issue the certificate
-        qcStatements:
-          $ref: "#/components/schemas/CertificateQcStatementsDto"
-          description: Parsed ETSI QCStatements extension (RFC 3739 / ETSI EN 319
-            412-5). Absent when the extension is not present in the certificate.
+      description: Certificate detail dependent on the certificate type
+      discriminator:
+        propertyName: certificateType
+        mapping:
+          X.509: "#/components/schemas/X509CertificateDetail"
+      oneOf:
+      - $ref: "#/components/schemas/X509CertificateDetail"
       required:
       - certificateType
-      - commonName
-      - complianceStatus
-      - hybridCertificate
-      - keySize
-      - keystoreAvailable
-      - privateKeyAvailability
-      - publicKeyAlgorithm
-      - state
-      - subjectDn
-      - uuid
-      - validationStatus
     CertificateInLocationDto:
       type: object
       properties:
@@ -4029,6 +3800,21 @@ components:
       - cRLSign
       - encipherOnly
       - decipherOnly
+    CertificateOperation:
+      type: string
+      enum:
+      - revoke
+      - renew
+      - rekey
+      - validate
+      - checkCompliance
+      - validateChain
+      - pushToLocation
+      - discover
+      - enrollAcme
+      - enrollScep
+      - enrollCmp
+      - enrollEst
     CertificateProtocol:
       type: string
       enum:
@@ -4103,76 +3889,15 @@ components:
       - closed
     CertificateRequestDto:
       type: object
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          description: UUID of the Certificate Request
-        certificateType:
-          $ref: "#/components/schemas/CertificateType"
-          description: Certificate type
-        certificateRequestFormat:
-          $ref: "#/components/schemas/CertificateRequestFormat"
-          description: Certificate request format
-        publicKeyAlgorithm:
-          type: string
-          description: Public key algorithm
-        signatureAlgorithm:
-          type: string
-          description: Certificate signature algorithm
-        altSignatureAlgorithm:
-          type: string
-          description: Certificate alternative signature algorithm
-        content:
-          type: string
-          description: Certificate request content
-        commonName:
-          type: string
-          description: Certificate common name
-        subjectDn:
-          type: string
-          description: Subject DN of the Certificate
-        subjectAlternativeNames:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          description: Subject alternative names
-        attributes:
-          type: array
-          description: CSR Attributes
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        signatureAttributes:
-          type: array
-          description: Signature Attributes
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        altSignatureAttributes:
-          type: array
-          description: Alternative Signature Attributes
-          items:
-            $ref: "#/components/schemas/ResponseAttribute"
-        keyUuid:
-          type: string
-          description: UUID of the Key
-        altKeyUuid:
-          type: string
-          description: UUID of the Alternative Key
-        complianceStatus:
-          $ref: "#/components/schemas/ComplianceStatus"
-          description: Certificate request compliance status
+      description: Certificate request dependent on the certificate type
+      discriminator:
+        propertyName: certificateType
+        mapping:
+          X.509: "#/components/schemas/X509CertificateRequestDetail"
+      oneOf:
+      - $ref: "#/components/schemas/X509CertificateRequestDetail"
       required:
-      - certificateRequestFormat
       - certificateType
-      - commonName
-      - complianceStatus
-      - content
-      - publicKeyAlgorithm
-      - signatureAlgorithm
-      - subjectDn
-      - uuid
     CertificateSubjectType:
       type: string
       enum:
@@ -4708,25 +4433,384 @@ components:
       - sourceObjects
       - type
       - version
+    X509CertificateDetail:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: UUID of the Certificate
+        displayName:
+          type: string
+          description: "Name to show for the certificate: the common name of an X.509\
+            \ certificate, the identifier of a certificate type without one"
+        commonName:
+          type: string
+          description: "Certificate common name. Absent when the certificate has no\
+            \ common name: its type has none, or the subject of an X.509 certificate\
+            \ has none (a registration with only alternative names)"
+        serialNumber:
+          type: string
+          description: Certificate serial number
+        issuerCommonName:
+          type: string
+          description: Certificate issuer common name
+        issuerDn:
+          type: string
+          description: Issuer DN of the Certificate. X.509 only; absent for other
+            types.
+        subjectDn:
+          type: string
+          description: "Subject DN of the Certificate. Absent when the certificate\
+            \ has no subject distinguished name: its type has none, or an X.509 certificate\
+            \ was registered with only alternative names."
+        notBefore:
+          type: string
+          format: date-time
+          description: Certificate validity start date
+        notAfter:
+          type: string
+          format: date-time
+          description: Certificate expiration date
+        publicKeyAlgorithm:
+          type: string
+          description: "Public key algorithm. Absent when the certificate has no public\
+            \ key: its type has none, or the certificate is registered and not yet\
+            \ issued"
+        altPublicKeyAlgorithm:
+          type: string
+          description: Alternative Public key algorithm. X.509 only; absent for other
+            types.
+        signatureAlgorithm:
+          type: string
+          description: Certificate signature algorithm
+        altSignatureAlgorithm:
+          type: string
+          description: Certificate alternative signature algorithm. X.509 only; absent
+            for other types.
+        hybridCertificate:
+          type: boolean
+          description: Indicator whether the certificate is hybrid. False for types
+            without a hybrid form.
+        keySize:
+          type: integer
+          format: int32
+          description: "Certificate key size. Absent when the certificate has no public\
+            \ key: its type has none, or the certificate is registered and not yet\
+            \ issued"
+        altKeySize:
+          type: integer
+          format: int32
+          description: Certificate key size of the alternative key. X.509 only; absent
+            for other types.
+        state:
+          $ref: "#/components/schemas/CertificateState"
+          description: State of the Certificate
+        validationStatus:
+          $ref: "#/components/schemas/CertificateValidationStatus"
+          description: Current validation status of the certificate
+        raProfile:
+          $ref: "#/components/schemas/SimplifiedRaProfileDto"
+          description: RA Profile associated to the Certificate
+        fingerprint:
+          type: string
+          description: SHA256 fingerprint of the Certificate
+        groups:
+          type: array
+          description: Groups associated to the Certificate
+          items:
+            $ref: "#/components/schemas/GroupDto"
+        owner:
+          type: string
+          description: Certificate Owner
+        ownerUuid:
+          type: string
+          description: Certificate Owner UUID
+        certificateType:
+          $ref: "#/components/schemas/CertificateType"
+          description: Certificate type
+        issuerSerialNumber:
+          type: string
+          description: Serial number of the issuer. X.509 only; absent for other types.
+        complianceStatus:
+          $ref: "#/components/schemas/ComplianceStatus"
+          description: Certificate compliance status
+        issuerCertificateUuid:
+          type: string
+          description: UUID of the issuer certificate
+        privateKeyAvailability:
+          type: boolean
+          description: Private Key Availability
+        trustedCa:
+          type: boolean
+          description: "Indicator whether CA is marked as trusted, set to null if\
+            \ certificate is not CA"
+        archived:
+          type: boolean
+          default: false
+          description: Certificate is archived
+        attributeValues:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: array
+              items:
+                $ref: "#/components/schemas/BaseAttributeContentDtoV3"
+          description: "Values of the attribute-sourced fields requested as columns,\
+            \ keyed by field source and then by field identifier. Present only when\
+            \ the listing request asked for attribute-sourced columns; a field the\
+            \ object has no value for is absent rather than empty, and a multi-valued\
+            \ attribute arrives in its stored item_order."
+          example:
+            custom:
+              businessUnit|STRING:
+              - contentType: string
+                reference: Payments
+                data: payments
+              environment|STRING:
+              - contentType: string
+                reference: Production
+                data: production
+              - contentType: string
+                reference: Disaster recovery
+                data: disaster-recovery
+        metadata:
+          type: array
+          description: Certificate metadata
+          items:
+            $ref: "#/components/schemas/MetadataResponseDto"
+        certificateContent:
+          type: string
+          description: Base64 encoded Certificate content
+        locations:
+          type: array
+          description: Locations associated to the Certificate
+          items:
+            $ref: "#/components/schemas/LocationDto"
+          uniqueItems: true
+        registration:
+          $ref: "#/components/schemas/CertificateRegistrationDetailDto"
+          description: Pre-registration authorization status; present only for certificates
+            that were pre-registered
+        nonCompliantRules:
+          type: array
+          deprecated: true
+          description: "Certificate compliance check result. Deprecated, use `complianceResult`\
+            \ property instead."
+          items:
+            $ref: "#/components/schemas/CertificateComplianceResultDto"
+        customAttributes:
+          type: array
+          description: List of Custom Attributes
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        key:
+          $ref: "#/components/schemas/KeyDto"
+          description: Key Pair of the certificate
+        keystoreAvailable:
+          type: boolean
+          description: Whether the certificate can be downloaded with its private
+            key as PKCS#12
+        certificateRequest:
+          $ref: "#/components/schemas/CertificateRequestDto"
+          description: Certificate request data
+        sourceCertificateUuid:
+          type: string
+          format: uuid
+          deprecated: true
+          description: Source certificate UUID
+        issueAttributes:
+          type: array
+          description: List of issue attributes
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        revokeAttributes:
+          type: array
+          description: List of revoke attributes
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        registerAttributes:
+          type: array
+          description: "List of register attributes: the connector's register-operation\
+            \ attributes submitted when the certificate was pre-registered"
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        renewAttributes:
+          type: array
+          description: "List of renew attributes: the connector's renew-operation\
+            \ attributes submitted when this certificate was created by renewing or\
+            \ rekeying its predecessor"
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        identifyAttributes:
+          type: array
+          description: "List of identify attributes: the connector's identify-operation\
+            \ attributes submitted when the certificate was identified at its authority"
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        registrationRequestAttributes:
+          type: array
+          description: "List of request attributes submitted at registration: the\
+            \ operator-supplied request-attribute values that shaped the pre-registered\
+            \ identity"
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        relatedCertificates:
+          type: array
+          deprecated: true
+          description: List of related certificates
+          items:
+            $ref: "#/components/schemas/CertificateDto"
+        protocolInfo:
+          $ref: "#/components/schemas/CertificateProtocolDto"
+          description: Information about protocol used to issue the certificate
+        supportedOperations:
+          type: array
+          description: "Operations the certificate supports: what its type supports\
+            \ combined with what its authority supports"
+          items:
+            $ref: "#/components/schemas/CertificateOperation"
+        extendedKeyUsage:
+          type: array
+          description: Extended key usages
+          items:
+            type: string
+        keyUsage:
+          type: array
+          description: Key usages
+          items:
+            $ref: "#/components/schemas/CertificateKeyUsage"
+        subjectType:
+          $ref: "#/components/schemas/CertificateSubjectType"
+          description: Certificate subject type
+        subjectAlternativeNames:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Subject alternative names
+        qcStatements:
+          $ref: "#/components/schemas/CertificateQcStatementsDto"
+          description: Parsed ETSI QCStatements extension (RFC 3739 / ETSI EN 319
+            412-5). Absent when the extension is not present in the certificate.
+        altKey:
+          $ref: "#/components/schemas/KeyDto"
+          description: Alternative Key Pair of the certificate
+      required:
+      - certificateType
+      - complianceStatus
+      - displayName
+      - hybridCertificate
+      - keystoreAvailable
+      - privateKeyAvailability
+      - state
+      - uuid
+      - validationStatus
+    X509CertificateRequestDetail:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the Certificate Request
+        certificateType:
+          $ref: "#/components/schemas/CertificateType"
+          description: Certificate type
+        certificateRequestFormat:
+          $ref: "#/components/schemas/CertificateRequestFormat"
+          description: Certificate request format
+        publicKeyAlgorithm:
+          type: string
+          description: Public key algorithm. Absent for certificate types without
+            a public key
+        signatureAlgorithm:
+          type: string
+          description: Certificate signature algorithm. Absent for certificate types
+            whose requests are not signed
+        content:
+          type: string
+          description: Certificate request content
+        displayName:
+          type: string
+          description: "Name to show for the certificate: the common name of an X.509\
+            \ certificate, the identifier of a certificate type without one"
+        commonName:
+          type: string
+          description: Certificate common name. Absent for certificate types without
+            a common name
+        attributes:
+          type: array
+          description: CSR Attributes
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        signatureAttributes:
+          type: array
+          description: Signature Attributes
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        keyUuid:
+          type: string
+          description: UUID of the Key
+        complianceStatus:
+          $ref: "#/components/schemas/ComplianceStatus"
+          description: Certificate request compliance status
+        subjectDn:
+          type: string
+          description: Subject DN of the Certificate
+        subjectAlternativeNames:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Subject alternative names
+        altSignatureAlgorithm:
+          type: string
+          description: Certificate alternative signature algorithm
+        altPublicKeyAlgorithm:
+          type: string
+          description: Alternative public key algorithm of a hybrid request
+        altSignatureAttributes:
+          type: array
+          description: Alternative Signature Attributes
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        altKeyUuid:
+          type: string
+          description: UUID of the Alternative Key
+      required:
+      - certificateRequestFormat
+      - certificateType
+      - complianceStatus
+      - content
+      - displayName
+      - uuid
     CertificateContentDto:
       type: object
       properties:
         uuid:
           type: string
           description: UUID of the Certificate
+        displayName:
+          type: string
+          description: "Name to show for the certificate: the common name of an X.509\
+            \ certificate, the identifier of a certificate type without one"
         commonName:
           type: string
-          description: Certificate common name
+          description: "Certificate common name. Absent when the certificate has no\
+            \ common name: its type has none, or the subject of an X.509 certificate\
+            \ has none (a registration with only alternative names)"
         serialNumber:
           type: string
-          description: Certificate serial number
+          description: Certificate serial number. Absent for certificate types without
+            one
         certificateContent:
           type: string
           description: Base64 encoded Certificate content
       required:
       - certificateContent
-      - commonName
-      - serialNumber
+      - displayName
       - uuid
     CertificateComplianceCheckDto:
       type: object
@@ -4920,18 +5004,26 @@ components:
         relationType:
           $ref: "#/components/schemas/CertificateRelationType"
           description: Relation type
+        displayName:
+          type: string
+          description: "Name to show for the certificate: the common name of an X.509\
+            \ certificate, the identifier of a certificate type without one"
         commonName:
           type: string
-          description: Common name
+          description: "Common name. Absent when the certificate has no common name:\
+            \ its type has none, or the subject of an X.509 certificate has none (a\
+            \ registration with only alternative names)"
         subjectDn:
           type: string
-          description: Subject distinguished name
+          description: "Subject distinguished name. Absent when the certificate has\
+            \ no subject distinguished name: its type has none, or an X.509 certificate\
+            \ was registered with only alternative names."
         issuerCommonName:
           type: string
           description: Issuer common name
         issuerDn:
           type: string
-          description: Issuer distinguished name
+          description: Issuer distinguished name. X.509 only; absent for other types.
         serialNumber:
           type: string
           description: Certificate serial number
@@ -4940,16 +5032,20 @@ components:
           description: Certificate fingerprint
         publicKeyAlgorithm:
           type: string
-          description: Public key algorithm
+          description: "Public key algorithm. Absent when the certificate has no public\
+            \ key: its type has none, or the certificate is registered and not yet\
+            \ issued"
         altPublicKeyAlgorithm:
           type: string
-          description: Alternative public key algorithm
+          description: Alternative public key algorithm. X.509 only; absent for other
+            types.
         signatureAlgorithm:
           type: string
           description: Signature algorithm
         altSignatureAlgorithm:
           type: string
-          description: Alternative signature algorithm
+          description: Alternative signature algorithm. X.509 only; absent for other
+            types.
         notBefore:
           type: string
           format: date-time
@@ -4960,11 +5056,9 @@ components:
           description: Not after date
       required:
       - certificateType
-      - commonName
-      - publicKeyAlgorithm
+      - displayName
       - relationType
       - state
-      - subjectDn
       - uuid
     CertificateEventHistoryDto:
       type: object

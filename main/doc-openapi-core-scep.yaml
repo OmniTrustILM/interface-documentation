@@ -2092,9 +2092,15 @@ components:
         uuid:
           type: string
           description: UUID of the Certificate
+        displayName:
+          type: string
+          description: "Name to show for the certificate: the common name of an X.509\
+            \ certificate, the identifier of a certificate type without one"
         commonName:
           type: string
-          description: Certificate common name
+          description: "Certificate common name. Absent when the certificate has no\
+            \ common name: its type has none, or the subject of an X.509 certificate\
+            \ has none (a registration with only alternative names)"
         serialNumber:
           type: string
           description: Certificate serial number
@@ -2103,10 +2109,13 @@ components:
           description: Certificate issuer common name
         issuerDn:
           type: string
-          description: Issuer DN of the Certificate
+          description: Issuer DN of the Certificate. X.509 only; absent for other
+            types.
         subjectDn:
           type: string
-          description: Subject DN of the Certificate
+          description: "Subject DN of the Certificate. Absent when the certificate\
+            \ has no subject distinguished name: its type has none, or an X.509 certificate\
+            \ was registered with only alternative names."
         notBefore:
           type: string
           format: date-time
@@ -2117,27 +2126,35 @@ components:
           description: Certificate expiration date
         publicKeyAlgorithm:
           type: string
-          description: Public key algorithm
+          description: "Public key algorithm. Absent when the certificate has no public\
+            \ key: its type has none, or the certificate is registered and not yet\
+            \ issued"
         altPublicKeyAlgorithm:
           type: string
-          description: Alternative Public key algorithm
+          description: Alternative Public key algorithm. X.509 only; absent for other
+            types.
         signatureAlgorithm:
           type: string
           description: Certificate signature algorithm
         altSignatureAlgorithm:
           type: string
-          description: Certificate alternative signature algorithm
+          description: Certificate alternative signature algorithm. X.509 only; absent
+            for other types.
         hybridCertificate:
           type: boolean
-          description: Indicator whether the certificate is hybrid
+          description: Indicator whether the certificate is hybrid. False for types
+            without a hybrid form.
         keySize:
           type: integer
           format: int32
-          description: Certificate key size
+          description: "Certificate key size. Absent when the certificate has no public\
+            \ key: its type has none, or the certificate is registered and not yet\
+            \ issued"
         altKeySize:
           type: integer
           format: int32
-          description: Certificate key size of the alternative key
+          description: Certificate key size of the alternative key. X.509 only; absent
+            for other types.
         state:
           $ref: "#/components/schemas/CertificateState"
           description: State of the Certificate
@@ -2166,7 +2183,7 @@ components:
           description: Certificate type
         issuerSerialNumber:
           type: string
-          description: Serial number of the issuer
+          description: Serial number of the issuer. X.509 only; absent for other types.
         complianceStatus:
           $ref: "#/components/schemas/ComplianceStatus"
           description: Certificate compliance status
@@ -2212,14 +2229,11 @@ components:
                 data: disaster-recovery
       required:
       - certificateType
-      - commonName
       - complianceStatus
+      - displayName
       - hybridCertificate
-      - keySize
       - privateKeyAvailability
-      - publicKeyAlgorithm
       - state
-      - subjectDn
       - uuid
       - validationStatus
     CertificateState:
