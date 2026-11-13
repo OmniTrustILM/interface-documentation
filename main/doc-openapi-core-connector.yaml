@@ -4311,10 +4311,7 @@ components:
       - notification
       - secret
       - signatureFormatting
-      - cadesFormatting
-      - jadesFormatting
-      - padesFormatting
-      - xadesFormatting
+      - contentSigningFormatting
     ConnectorInterfaceDto:
       type: object
       description: "An interface a connector implements: its code, its version, and\
@@ -4426,10 +4423,6 @@ components:
       - signerBoundAtCreation
       - secretVersioning
       - secretRotation
-      - contentSigning
-      - levelTimestamped
-      - levelLongTerm
-      - levelArchival
       - timestamping
       - certificateRegistration
       - certificateStatusPolling
@@ -4765,6 +4758,10 @@ components:
           description: Interfaces supported and implemented by the connector
           items:
             $ref: "#/components/schemas/ConnectorInterfaceInfo"
+        contentSigningDeclaration:
+          $ref: "#/components/schemas/ContentSigningDeclaration"
+          description: Content-signing families the connector declares; present when
+            it implements the contentSigningFormatting interface
       required:
       - interfaces
       - version
@@ -4808,6 +4805,134 @@ components:
       required:
       - code
       - version
+    ContentSigningDeclaration:
+      type: object
+      description: "Declaration of families served by a content-signing formatting\
+        \ connector; an object, so it can gain connector-wide facts without a break"
+      properties:
+        families:
+          type: array
+          description: "Families the connector serves, each with a unique code"
+          items:
+            $ref: "#/components/schemas/SignatureFamilyDeclaration"
+          minItems: 1
+      required:
+      - families
+    DocumentTransferMode:
+      type: string
+      enum:
+      - inline
+      - digestOnly
+    SignatureAlgorithm:
+      type: string
+      description: "Signature algorithm, named by its code. It says nothing about\
+        \ a digest an operation takes as a parameter of its own. Only the RSA, RSA-PSS\
+        \ and ECDSA codes spell their digest out: such an algorithm hashes its input\
+        \ with that digest and signs the result, so naming the algorithm names that\
+        \ digest. RSA-PSS codes use MGF1 with the same hash as the code, a salt as\
+        \ long as that hash's output, and trailer field 1. The other algorithms take\
+        \ their input whole and hash it inside as their standard defines. For them\
+        \ the platform records the digest it pairs the algorithm with and applies\
+        \ to the document itself, one layer above the signature algorithm (in CMS,\
+        \ the message-digest algorithm, as RFC 8419, RFC 9882 and RFC 9814 specify).\
+        \ Ed25519 commits to SHA-512, FALCON-1024 commits to SHA-512, ML-DSA-44 commits\
+        \ to SHA-512, ML-DSA-65 commits to SHA-512, ML-DSA-87 commits to SHA-512,\
+        \ SLH-DSA-SHA2-128S commits to SHA-256, SLH-DSA-SHA2-128F commits to SHA-256,\
+        \ SLH-DSA-SHA2-192S commits to SHA-512, SLH-DSA-SHA2-192F commits to SHA-512,\
+        \ SLH-DSA-SHA2-256S commits to SHA-512, SLH-DSA-SHA2-256F commits to SHA-512,\
+        \ and Ed448 commits to SHAKE256, which is not a DigestAlgorithm value."
+      enum:
+      - SHA256withRSA
+      - SHA384withRSA
+      - SHA512withRSA
+      - SHA256withRSAandMGF1
+      - SHA384withRSAandMGF1
+      - SHA512withRSAandMGF1
+      - SHA256withECDSA
+      - SHA384withECDSA
+      - SHA512withECDSA
+      - Ed25519
+      - Ed448
+      - FALCON-1024
+      - ML-DSA-44
+      - ML-DSA-65
+      - ML-DSA-87
+      - SLH-DSA-SHA2-128S
+      - SLH-DSA-SHA2-128F
+      - SLH-DSA-SHA2-192S
+      - SLH-DSA-SHA2-192F
+      - SLH-DSA-SHA2-256S
+      - SLH-DSA-SHA2-256F
+    SignatureFamilyDeclaration:
+      type: object
+      description: Signature family a formatting connector serves
+      properties:
+        code:
+          type: string
+          description: Code of the family
+          example: pades
+          pattern: "^[a-z][a-z0-9-]*$"
+        label:
+          type: string
+          description: Name of the family shown to an operator
+          example: PAdES
+          minLength: 1
+        description:
+          type: string
+          description: Standard and document format the family follows
+          example: "PDF Advanced Electronic Signatures, ETSI EN 319 142"
+        levels:
+          type: array
+          description: "Levels the family reaches, from SIGNED upwards without a gap;\
+            \ the last one is the family's ceiling"
+          items:
+            $ref: "#/components/schemas/SignatureLevelDeclaration"
+          minItems: 1
+        transferModes:
+          type: array
+          description: Transfer modes the family signs a document from
+          items:
+            $ref: "#/components/schemas/DocumentTransferMode"
+          minItems: 1
+          uniqueItems: true
+        signatureAlgorithms:
+          type: array
+          description: "Signature algorithms the family supports, at least one; absent\
+            \ when the family accepts every algorithm the platform can sign with"
+          items:
+            $ref: "#/components/schemas/SignatureAlgorithm"
+          maxItems: 2147483647
+          minItems: 1
+          uniqueItems: true
+      required:
+      - code
+      - label
+      - levels
+      - transferModes
+    SignatureLevel:
+      type: string
+      description: "Level a signature has reached, ordered from SIGNED up to ARCHIVAL\
+        \ with each level containing the one before it"
+      enum:
+      - signed
+      - timestamped
+      - long_term
+      - archival
+    SignatureLevelDeclaration:
+      type: object
+      description: "Level a family reaches, with the name the family gives it"
+      properties:
+        level:
+          $ref: "#/components/schemas/SignatureLevel"
+          description: Level reached
+        name:
+          type: string
+          description: Name the family gives the level
+          example: PAdES-B-T
+          minLength: 1
+      required:
+      - level
+      - name
     PaginationRequestDto:
       type: object
       properties:
@@ -5354,7 +5479,6 @@ components:
       - SecretState
       - ManagedSigningType
       - QcType
-      - SignatureFamily
       - SignatureLevel
       - SignatureParameterGroup
       - SigningProtocol

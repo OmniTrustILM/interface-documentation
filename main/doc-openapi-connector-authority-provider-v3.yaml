@@ -4360,10 +4360,7 @@ components:
       - notification
       - secret
       - signatureFormatting
-      - cadesFormatting
-      - jadesFormatting
-      - padesFormatting
-      - xadesFormatting
+      - contentSigningFormatting
     PaginationRequestDto:
       type: object
       properties:
@@ -4542,10 +4539,6 @@ components:
       - signerBoundAtCreation
       - secretVersioning
       - secretRotation
-      - contentSigning
-      - levelTimestamped
-      - levelLongTerm
-      - levelArchival
       - timestamping
       - certificateRegistration
       - certificateStatusPolling

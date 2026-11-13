@@ -2354,10 +2354,7 @@ components:
       - notification
       - secret
       - signatureFormatting
-      - cadesFormatting
-      - jadesFormatting
-      - padesFormatting
-      - xadesFormatting
+      - contentSigningFormatting
     ConnectorInterfaceDto:
       type: object
       description: "An interface a connector implements: its code, its version, and\
@@ -2396,10 +2393,6 @@ components:
       - signerBoundAtCreation
       - secretVersioning
       - secretRotation
-      - contentSigning
-      - levelTimestamped
-      - levelLongTerm
-      - levelArchival
       - timestamping
       - certificateRegistration
       - certificateStatusPolling

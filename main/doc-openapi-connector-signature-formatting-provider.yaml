@@ -965,10 +965,7 @@ components:
       - notification
       - secret
       - signatureFormatting
-      - cadesFormatting
-      - jadesFormatting
-      - padesFormatting
-      - xadesFormatting
+      - contentSigningFormatting
     CredentialAttributeContentData:
       type: object
       properties:
@@ -3387,10 +3384,6 @@ components:
       - signerBoundAtCreation
       - secretVersioning
       - secretRotation
-      - contentSigning
-      - levelTimestamped
-      - levelLongTerm
-      - levelArchival
       - timestamping
       - certificateRegistration
       - certificateStatusPolling

@@ -2262,7 +2262,6 @@ components:
       - SecretState
       - ManagedSigningType
       - QcType
-      - SignatureFamily
       - SignatureLevel
       - SignatureParameterGroup
       - SigningProtocol
