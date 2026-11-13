@@ -441,6 +441,14 @@ groups:
     interfaces:
       - com.otilm.api.interfaces.core.web.EntityInstanceController
 
+  - id: doc-openapi-core-est
+    groupName: core-est
+    title: EST API
+    indexCategory: core
+    description: REST API for managing EST Profiles in the platform
+    interfaces:
+      - com.otilm.api.interfaces.core.web.EstProfileController
+
   - id: doc-openapi-core-group
     groupName: core-group
     title: Group API
@@ -661,6 +669,7 @@ groups:
       - com.otilm.api.interfaces.core.web.DiscoveryController
       - com.otilm.api.interfaces.core.web.EntityInstanceController
       - com.otilm.api.interfaces.core.web.EnumController
+      - com.otilm.api.interfaces.core.web.EstProfileController
       - com.otilm.api.interfaces.core.web.EventController
       - com.otilm.api.interfaces.core.web.GlobalMetadataController
       - com.otilm.api.interfaces.core.web.GroupController
@@ -742,6 +751,14 @@ groups:
     interfaces:
       - com.otilm.api.interfaces.core.scep.ScepController
       - com.otilm.api.interfaces.core.scep.ScepRaProfileController
+
+  - id: doc-openapi-protocol-est
+    groupName: protocol-est
+    title: EST API
+    indexCategory: protocol
+    description: EST API according to the RFC 7030
+    interfaces:
+      - com.otilm.api.interfaces.core.est.EstController
 
 # ---------------------------------------------------------------------------
 # common
