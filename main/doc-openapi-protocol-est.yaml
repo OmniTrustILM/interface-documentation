@@ -1,0 +1,973 @@
+openapi: 3.1.0
+info:
+  title: EST API
+  description: EST API according to the RFC 7030
+  contact:
+    name: ILM
+    url: https://www.otilm.com
+    email: ilm@omnitrust.com
+  license:
+    name: "Apache License, Version 2.0"
+    url: https://github.com/OmniTrustILM/interface-documentation/blob/main/LICENSE.md
+  version: 2.21.0-SNAPSHOT
+  x-logo:
+    url: images/ilm-logo.svg
+externalDocs:
+  description: ILM Documentation
+  url: https://docs.otilm.com
+servers:
+- url: https://demo.otilm.com/api
+  description: ILM Demo server
+tags:
+- name: EST operations
+  description: "Interfaces used by EST clients (RFC 7030). Every operation is available\
+    \ without a label and with one label, which names an EST Profile or an RA Profile\
+    \ with EST activated. Request and response bodies are base64-encoded DER (RFC\
+    \ 4648, section 4) and error bodies are plain text. Clients authenticate as the\
+    \ authentication policy of the selected EST Profile requires."
+paths:
+  /v1/protocols/.well-known/est/{label}/simplereenroll:
+    post:
+      tags:
+      - EST operations
+      summary: Renew or rekey a client certificate
+      description: "The client authenticates with the certificate it renews; the same\
+        \ public key renews it, a new public key rekeys it"
+      externalDocs:
+        description: "RFC 7030, section 4.2.2"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.2.2
+      operationId: estSimpleReenroll
+      parameters:
+      - name: label
+        in: path
+        description: EST Profile or RA Profile name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/pkcs10:
+            schema:
+              type: string
+              description: Base64-encoded DER PKCS#10 certification request
+        required: true
+      responses:
+        "200":
+          description: Issued certificate
+          content:
+            application/pkcs7-mime; smime-type=certs-only:
+              schema:
+                type: string
+                description: Base64-encoded certs-only CMS
+        "202":
+          description: The certificate is not issued yet; repeat the same request
+            later
+          headers:
+            Retry-After:
+              description: Seconds to wait before repeating
+              style: simple
+              schema:
+                type: integer
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "400":
+          description: "The request is not a base64-encoded DER PKCS#10 certification\
+            \ request, its signature does not verify, it changes the subject name,\
+            \ or it does not meet the policy of the RA Profile; the last answer adds\
+            \ the reason from the policy"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: "Authentication is required, or under certificateRegistration\
+            \ the request does not match an active certificate registration"
+          headers:
+            WWW-Authenticate:
+              description: Basic challenge
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "403":
+          description: "The client certificate is not accepted, the request does not\
+            \ match the client certificate, the certificate request was rejected,\
+            \ renewal with the same key or with a new key is not allowed, or the certificate\
+            \ is not yet due for renewal"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "409":
+          description: The certificate already has a pending renewal
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "413":
+          description: The request is too large.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "415":
+          description: The content type must be application/pkcs10.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: "The service is temporarily unavailable, or the certificate\
+            \ could not be issued (The certificate could not be issued. Try again\
+            \ later.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/simplereenroll:
+    post:
+      tags:
+      - EST operations
+      summary: Renew or rekey a client certificate
+      description: "The client authenticates with the certificate it renews; the same\
+        \ public key renews it, a new public key rekeys it"
+      externalDocs:
+        description: "RFC 7030, section 4.2.2"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.2.2
+      operationId: estSimpleReenroll_1
+      parameters: []
+      requestBody:
+        content:
+          application/pkcs10:
+            schema:
+              type: string
+              description: Base64-encoded DER PKCS#10 certification request
+        required: true
+      responses:
+        "200":
+          description: Issued certificate
+          content:
+            application/pkcs7-mime; smime-type=certs-only:
+              schema:
+                type: string
+                description: Base64-encoded certs-only CMS
+        "202":
+          description: The certificate is not issued yet; repeat the same request
+            later
+          headers:
+            Retry-After:
+              description: Seconds to wait before repeating
+              style: simple
+              schema:
+                type: integer
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "400":
+          description: "The request is not a base64-encoded DER PKCS#10 certification\
+            \ request, its signature does not verify, it changes the subject name,\
+            \ or it does not meet the policy of the RA Profile; the last answer adds\
+            \ the reason from the policy"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: "Authentication is required, or under certificateRegistration\
+            \ the request does not match an active certificate registration"
+          headers:
+            WWW-Authenticate:
+              description: Basic challenge
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "403":
+          description: "The client certificate is not accepted, the request does not\
+            \ match the client certificate, the certificate request was rejected,\
+            \ renewal with the same key or with a new key is not allowed, or the certificate\
+            \ is not yet due for renewal"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "409":
+          description: The certificate already has a pending renewal
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "413":
+          description: The request is too large.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "415":
+          description: The content type must be application/pkcs10.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: "The service is temporarily unavailable, or the certificate\
+            \ could not be issued (The certificate could not be issued. Try again\
+            \ later.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/{label}/simpleenroll:
+    post:
+      tags:
+      - EST operations
+      summary: Enroll a client
+      externalDocs:
+        description: "RFC 7030, section 4.2.1"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.2.1
+      operationId: estSimpleEnroll
+      parameters:
+      - name: label
+        in: path
+        description: EST Profile or RA Profile name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/pkcs10:
+            schema:
+              type: string
+              description: Base64-encoded DER PKCS#10 certification request
+        required: true
+      responses:
+        "200":
+          description: Issued certificate
+          content:
+            application/pkcs7-mime; smime-type=certs-only:
+              schema:
+                type: string
+                description: Base64-encoded certs-only CMS
+        "202":
+          description: The certificate is not issued yet; repeat the same request
+            later
+          headers:
+            Retry-After:
+              description: Seconds to wait before repeating
+              style: simple
+              schema:
+                type: integer
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "400":
+          description: "The request is not a base64-encoded DER PKCS#10 certification\
+            \ request, its signature does not verify, or it does not meet the policy\
+            \ of the RA Profile; the last answer adds the reason from the policy"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: "Authentication is required, or under certificateRegistration\
+            \ the request does not match an active certificate registration"
+          headers:
+            WWW-Authenticate:
+              description: Basic challenge
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "403":
+          description: "The client certificate is not accepted, the request does not\
+            \ match the client certificate, or the certificate request was rejected"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "413":
+          description: The request is too large.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "415":
+          description: The content type must be application/pkcs10.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: "The service is temporarily unavailable, or the certificate\
+            \ could not be issued (The certificate could not be issued. Try again\
+            \ later.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/simpleenroll:
+    post:
+      tags:
+      - EST operations
+      summary: Enroll a client
+      externalDocs:
+        description: "RFC 7030, section 4.2.1"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.2.1
+      operationId: estSimpleEnroll_1
+      parameters: []
+      requestBody:
+        content:
+          application/pkcs10:
+            schema:
+              type: string
+              description: Base64-encoded DER PKCS#10 certification request
+        required: true
+      responses:
+        "200":
+          description: Issued certificate
+          content:
+            application/pkcs7-mime; smime-type=certs-only:
+              schema:
+                type: string
+                description: Base64-encoded certs-only CMS
+        "202":
+          description: The certificate is not issued yet; repeat the same request
+            later
+          headers:
+            Retry-After:
+              description: Seconds to wait before repeating
+              style: simple
+              schema:
+                type: integer
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "400":
+          description: "The request is not a base64-encoded DER PKCS#10 certification\
+            \ request, its signature does not verify, or it does not meet the policy\
+            \ of the RA Profile; the last answer adds the reason from the policy"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: "Authentication is required, or under certificateRegistration\
+            \ the request does not match an active certificate registration"
+          headers:
+            WWW-Authenticate:
+              description: Basic challenge
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "403":
+          description: "The client certificate is not accepted, the request does not\
+            \ match the client certificate, or the certificate request was rejected"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "413":
+          description: The request is too large.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "415":
+          description: The content type must be application/pkcs10.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: "The service is temporarily unavailable, or the certificate\
+            \ could not be issued (The certificate could not be issued. Try again\
+            \ later.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/serverkeygen:
+    post:
+      tags:
+      - EST operations
+      summary: Enroll with a server-generated key
+      description: "The certificate request supplies the subject and requested extensions.\
+        \ Without keyRecovery the generated key has the type and size of the request's\
+        \ public key; with keyRecovery the EST Profile's key attributes decide. The\
+        \ key value and the signature are ignored. The private key is returned without\
+        \ additional encryption. The operation never answers 202: it waits for the\
+        \ certificate and answers 503 when it is not issued in time"
+      externalDocs:
+        description: "RFC 7030, section 4.4"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.4
+      operationId: estServerKeyGeneration
+      parameters: []
+      requestBody:
+        content:
+          application/pkcs10:
+            schema:
+              type: string
+              description: Base64-encoded DER PKCS#10 certification request
+        required: true
+      responses:
+        "200":
+          description: Private key and issued certificate
+          content:
+            multipart/mixed:
+              schema:
+                type: string
+                description: Base64-encoded PKCS#8 private key part and certs-only
+                  CMS part
+        "400":
+          description: "The request is not a base64-encoded DER PKCS#10 certification\
+            \ request, it does not meet the policy of the RA Profile (the answer adds\
+            \ the reason), or it asks for an encrypted key (Encrypted key delivery\
+            \ is not supported.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: "Authentication is required, or under certificateRegistration\
+            \ the request does not match an active certificate registration"
+          headers:
+            WWW-Authenticate:
+              description: Basic challenge
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "403":
+          description: "The client certificate is not accepted, the request does not\
+            \ match the client certificate, the certificate request was rejected,\
+            \ the EST Profile does not generate keys (Server-side key generation is\
+            \ not enabled.), or the RA Profile asks for an approval (Server-side key\
+            \ generation is not available for this route.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "413":
+          description: The request is too large.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "415":
+          description: The content type must be application/pkcs10.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: "The service is temporarily unavailable, the certificate could\
+            \ not be issued (The certificate could not be issued. Try again later.),\
+            \ or it was not issued within the time the client waits (The certificate\
+            \ could not be issued in time.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/{label}/serverkeygen:
+    post:
+      tags:
+      - EST operations
+      summary: Enroll with a server-generated key
+      description: "The certificate request supplies the subject and requested extensions.\
+        \ Without keyRecovery the generated key has the type and size of the request's\
+        \ public key; with keyRecovery the EST Profile's key attributes decide. The\
+        \ key value and the signature are ignored. The private key is returned without\
+        \ additional encryption. The operation never answers 202: it waits for the\
+        \ certificate and answers 503 when it is not issued in time"
+      externalDocs:
+        description: "RFC 7030, section 4.4"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.4
+      operationId: estServerKeyGeneration_1
+      parameters:
+      - name: label
+        in: path
+        description: EST Profile or RA Profile name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/pkcs10:
+            schema:
+              type: string
+              description: Base64-encoded DER PKCS#10 certification request
+        required: true
+      responses:
+        "200":
+          description: Private key and issued certificate
+          content:
+            multipart/mixed:
+              schema:
+                type: string
+                description: Base64-encoded PKCS#8 private key part and certs-only
+                  CMS part
+        "400":
+          description: "The request is not a base64-encoded DER PKCS#10 certification\
+            \ request, it does not meet the policy of the RA Profile (the answer adds\
+            \ the reason), or it asks for an encrypted key (Encrypted key delivery\
+            \ is not supported.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          description: "Authentication is required, or under certificateRegistration\
+            \ the request does not match an active certificate registration"
+          headers:
+            WWW-Authenticate:
+              description: Basic challenge
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "403":
+          description: "The client certificate is not accepted, the request does not\
+            \ match the client certificate, the certificate request was rejected,\
+            \ the EST Profile does not generate keys (Server-side key generation is\
+            \ not enabled.), or the RA Profile asks for an approval (Server-side key\
+            \ generation is not available for this route.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "413":
+          description: The request is too large.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "415":
+          description: The content type must be application/pkcs10.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: "The service is temporarily unavailable, the certificate could\
+            \ not be issued (The certificate could not be issued. Try again later.),\
+            \ or it was not issued within the time the client waits (The certificate\
+            \ could not be issued in time.)"
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/csrattrs:
+    get:
+      tags:
+      - EST operations
+      summary: Get CSR attributes
+      externalDocs:
+        description: "RFC 7030, section 4.5, updated by RFC 9908"
+        url: https://www.rfc-editor.org/rfc/rfc9908
+      operationId: estCsrAttributes
+      parameters: []
+      responses:
+        "200":
+          description: Attributes the CA expects in certification requests
+          content:
+            application/csrattrs:
+              schema:
+                type: string
+                description: Base64-encoded DER CsrAttrs
+        "204":
+          description: No attributes are requested
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: CSR attributes are not available (The service is temporarily
+            unavailable. Try again later.)
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/{label}/csrattrs:
+    get:
+      tags:
+      - EST operations
+      summary: Get CSR attributes
+      externalDocs:
+        description: "RFC 7030, section 4.5, updated by RFC 9908"
+        url: https://www.rfc-editor.org/rfc/rfc9908
+      operationId: estCsrAttributes_1
+      parameters:
+      - name: label
+        in: path
+        description: EST Profile or RA Profile name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Attributes the CA expects in certification requests
+          content:
+            application/csrattrs:
+              schema:
+                type: string
+                description: Base64-encoded DER CsrAttrs
+        "204":
+          description: No attributes are requested
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: CSR attributes are not available (The service is temporarily
+            unavailable. Try again later.)
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/{label}/cacerts:
+    get:
+      tags:
+      - EST operations
+      summary: Distribute CA certificates
+      externalDocs:
+        description: "RFC 7030, section 4.1"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.1
+      operationId: estCaCertificates
+      parameters:
+      - name: label
+        in: path
+        description: EST Profile or RA Profile name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: CA certificate chain
+          content:
+            application/pkcs7-mime:
+              schema:
+                type: string
+                description: Base64-encoded certs-only CMS
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: CA certificates are not available (The service is temporarily
+            unavailable. Try again later.)
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+  /v1/protocols/.well-known/est/cacerts:
+    get:
+      tags:
+      - EST operations
+      summary: Distribute CA certificates
+      externalDocs:
+        description: "RFC 7030, section 4.1"
+        url: https://www.rfc-editor.org/rfc/rfc7030#section-4.1
+      operationId: estCaCertificates_1
+      parameters: []
+      responses:
+        "200":
+          description: CA certificate chain
+          content:
+            application/pkcs7-mime:
+              schema:
+                type: string
+                description: Base64-encoded certs-only CMS
+        "404":
+          description: No EST service for the label (Not found.)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "405":
+          description: The operation does not accept the HTTP method (The method is
+            not allowed for this operation.)
+          headers:
+            Allow:
+              description: The method the operation accepts
+              style: simple
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: The request could not be processed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "503":
+          description: CA certificates are not available (The service is temporarily
+            unavailable. Try again later.)
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+components: {}

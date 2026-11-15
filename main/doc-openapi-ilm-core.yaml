@@ -79,6 +79,8 @@ tags:
   description: Workflow Rules Management API
 - name: Enums
   description: Enums API
+- name: EST Profile Management
+  description: Enrollment over Secure Transport (EST) Profile Management API
 - name: Connector Authentication
   description: Connector Authentication API
 - name: Cryptographic Key Management
@@ -5393,6 +5395,157 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/estProfiles/{uuid}:
+    get:
+      tags:
+      - EST Profile Management
+      summary: Details of an EST Profile
+      operationId: getEstProfile
+      parameters:
+      - name: uuid
+        in: path
+        description: EST Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: EST Profile details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstProfileDetailDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+    put:
+      tags:
+      - EST Profile Management
+      summary: Update EST Profile
+      operationId: updateEstProfile
+      parameters:
+      - name: uuid
+        in: path
+        description: EST Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EstProfileEditRequestDto"
+        required: true
+      responses:
+        "200":
+          description: EST Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstProfileDetailDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+    delete:
+      tags:
+      - EST Profile Management
+      summary: Delete EST Profile
+      operationId: deleteEstProfile
+      parameters:
+      - name: uuid
+        in: path
+        description: EST Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: EST Profile deleted
+        "422":
+          description: EST Profile is activated on RA Profiles
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/entities/{entityUuid}:
     get:
       tags:
@@ -14395,6 +14548,100 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/estProfiles:
+    get:
+      tags:
+      - EST Profile Management
+      summary: List EST Profiles
+      operationId: listEstProfiles
+      responses:
+        "200":
+          description: EST Profiles retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EstProfileDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+    post:
+      tags:
+      - EST Profile Management
+      summary: Add new EST Profile
+      operationId: createEstProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EstProfileRequestDto"
+        required: true
+      responses:
+        "201":
+          description: New EST Profile added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstProfileDetailDto"
+        "409":
+          description: Already Exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/entities:
     post:
       tags:
@@ -22127,6 +22374,219 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/estProfiles/{uuid}/raProfiles/{raProfileUuid}:
+    patch:
+      tags:
+      - EST Profile Management
+      summary: Set the RA Profile of an EST Profile
+      description: The RA Profile serves requests sent to the EST Profile's own label
+      operationId: updateEstProfileRaProfile
+      parameters:
+      - name: uuid
+        in: path
+        description: EST Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: raProfileUuid
+        in: path
+        description: RA Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: RA Profile set
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/estProfiles/{uuid}/enable:
+    patch:
+      tags:
+      - EST Profile Management
+      summary: Enable EST Profile
+      operationId: enableEstProfile
+      parameters:
+      - name: uuid
+        in: path
+        description: EST Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: EST Profile enabled
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/estProfiles/{uuid}/disable:
+    patch:
+      tags:
+      - EST Profile Management
+      summary: Disable EST Profile
+      operationId: disableEstProfile
+      parameters:
+      - name: uuid
+        in: path
+        description: EST Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: EST Profile disabled
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/estProfiles/enable:
+    patch:
+      tags:
+      - EST Profile Management
+      summary: Enable multiple EST Profiles
+      operationId: bulkEnableEstProfiles
+      requestBody:
+        description: EST Profile UUIDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+            example:
+            - c2f685d4-6a3e-11ec-90d6-0242ac120003
+            - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
+        required: true
+      responses:
+        "204":
+          description: EST Profiles enabled
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/estProfiles/disable:
+    patch:
+      tags:
+      - EST Profile Management
+      summary: Disable multiple EST Profiles
+      operationId: bulkDisableEstProfiles
+      requestBody:
+        description: EST Profile UUIDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+            example:
+            - c2f685d4-6a3e-11ec-90d6-0242ac120003
+            - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
+        required: true
+      responses:
+        "204":
+          description: EST Profiles disabled
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/entities/{entityUuid}/locations/{locationUuid}/enable:
     patch:
       tags:
@@ -34748,6 +35208,108 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/estProfiles/delete:
+    delete:
+      tags:
+      - EST Profile Management
+      summary: Delete multiple EST Profiles
+      operationId: bulkDeleteEstProfiles
+      requestBody:
+        description: EST Profile UUIDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+            example:
+            - c2f685d4-6a3e-11ec-90d6-0242ac120003
+            - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
+        required: true
+      responses:
+        "200":
+          description: Delete results per EST Profile
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/estProfiles/delete/force:
+    delete:
+      tags:
+      - EST Profile Management
+      summary: Force delete multiple EST Profiles
+      description: Deactivates the EST Profiles on their RA Profiles before deleting
+        them
+      operationId: forceDeleteEstProfiles
+      requestBody:
+        description: EST Profile UUIDs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+            example:
+            - c2f685d4-6a3e-11ec-90d6-0242ac120003
+            - b9b09548-a97c-4c6a-a06a-e4ee6fc2da98
+        required: true
+      responses:
+        "200":
+          description: Delete results per EST Profile
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/connectors/force:
     delete:
       tags:
@@ -43142,6 +43704,267 @@ components:
             $ref: "#/components/schemas/RequestAttribute"
       required:
       - name
+    EstAuthenticationPolicy:
+      type: string
+      enum:
+      - certificateRegistration
+      - raBasic
+      - vendorMtls
+      - raMtls
+    EstProfileEditRequestDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the EST Profile
+          examples:
+          - Devices enrolling with vendor certificates
+        raProfileUuid:
+          type: string
+          format: uuid
+          description: UUID of the RA Profile that serves requests sent to the EST
+            Profile's own label
+          examples:
+          - 6b55de1c-844f-11ec-a8a3-0242ac120002
+        systemDefault:
+          type: boolean
+          default: false
+          description: Serve requests sent without a label. At most one EST Profile
+            is the system default
+        authenticationPolicy:
+          $ref: "#/components/schemas/EstAuthenticationPolicy"
+          description: How clients authenticate to enroll or to receive a server-generated
+            key
+        basicCredentialSecretUuids:
+          type: array
+          description: UUIDs of basic-auth Secrets RAs authenticate with. Only for
+            the raBasic policy. A Secret counts only when its source vault profile
+            is enabled
+          items:
+            type: string
+            format: uuid
+        trustedCaCertificateUuids:
+          type: array
+          description: UUIDs of CA certificates that client certificates must chain
+            to. Only for the vendorMtls and raMtls policies
+          items:
+            type: string
+            format: uuid
+        allowRenewal:
+          type: boolean
+          default: true
+          description: Allow reenrollment with the current key
+        allowRekey:
+          type: boolean
+          default: true
+          description: Allow reenrollment with a new key
+        renewalThreshold:
+          type: integer
+          format: int32
+          description: Days before expiry from which reenrollment is allowed. Empty
+            or 0 allows it from half of the certificate validity
+          minimum: 0
+        serverKeyGeneration:
+          type: boolean
+          default: false
+          description: Allow server-side key generation through /serverkeygen. Without
+            keyRecovery the key is generated in memory and returned to the client;
+            it is not kept
+        keyRecovery:
+          type: boolean
+          default: false
+          description: "Generate server-side keys on the key recovery token profile\
+            \ and keep them there, linked to the issued certificate, for recovery.\
+            \ Requires serverKeyGeneration. Saving checks the token profile (see keyRecoveryTokenProfileUuid)"
+        keyRecoveryTokenProfileUuid:
+          type: string
+          format: uuid
+          description: "UUID of the token profile that generates and keeps recoverable\
+            \ keys. Saving requires that the token profile is enabled, its connector\
+            \ supports key export, a key pair can be exported, a v2 token profile\
+            \ allows the SIGN usage, and keyRecoveryKeyAttributes are valid for the\
+            \ connector. A token profile used for key recovery cannot be deleted or\
+            \ disabled"
+          examples:
+          - 6b55de1c-844f-11ec-a8a3-0242ac120002
+        keyRecoveryKeyAttributes:
+          type: array
+          description: Key creation attributes for the key recovery token profile.
+            Saving validates them against the connector and refuses secret-typed content
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        issueWaitTimeout:
+          type: integer
+          format: int32
+          default: 10
+          description: "Seconds that enroll and reenroll wait for the certificate\
+            \ before answering 202, at most 300. 0 answers at once. The wait holds\
+            \ the HTTP request, so it must stay below the timeout of the gateway in\
+            \ front of the platform"
+          maximum: 300
+          minimum: 0
+        retryAfter:
+          type: integer
+          format: int32
+          default: 30
+          description: "Seconds a client is told to wait, as Retry-After, before it\
+            \ asks again after a 202, at most 86400 (one day)"
+          maximum: 86400
+          minimum: 1
+        serverKeyGenerationTimeout:
+          type: integer
+          format: int32
+          default: 30
+          description: "Seconds that /serverkeygen waits for the certificate before\
+            \ answering that it could not be issued in time, at most 300. The wait\
+            \ holds the HTTP request, so it must stay below the timeout of the gateway\
+            \ in front of the platform"
+          maximum: 300
+          minimum: 1
+        issueCertificateAttributes:
+          type: array
+          description: Attributes to issue certificates through the EST Profile's
+            own RA Profile
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        customAttributes:
+          type: array
+          description: List of Custom Attributes for EST Profile
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        certificateAssociations:
+          $ref: "#/components/schemas/ProtocolCertificateAssociationsRequestDto"
+          description: "Owner, groups and custom attributes applied to certificates\
+            \ issued through the EST Profile"
+      required:
+      - authenticationPolicy
+    EstProfileDetailDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: Object identifier
+          examples:
+          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+        name:
+          type: string
+          description: Object Name
+          examples:
+          - Name
+        enabled:
+          type: boolean
+          description: Enabled flag - true = enabled; false = disabled
+        description:
+          type: string
+          description: EST Profile description
+          examples:
+          - Devices enrolling with vendor certificates
+        systemDefault:
+          type: boolean
+          description: Whether the EST Profile serves requests sent without a label
+        authenticationPolicy:
+          $ref: "#/components/schemas/EstAuthenticationPolicy"
+          description: How clients authenticate to enroll or to receive a server-generated
+            key
+        raProfile:
+          $ref: "#/components/schemas/SimplifiedRaProfileDto"
+          description: RA Profile that serves requests sent to the EST Profile's own
+            label
+        serverKeyGeneration:
+          type: boolean
+          description: Whether /serverkeygen is allowed. Without keyRecovery the generated
+            key is returned and not kept
+        keyRecovery:
+          type: boolean
+          description: Whether server-generated keys are created on the key recovery
+            token profile and kept there for recovery
+        label:
+          type: string
+          description: Label EST clients use to reach the EST Profile
+          examples:
+          - est-devices
+        estUrl:
+          type: string
+          description: EST URL of the EST Profile. Empty until the EST Profile has
+            an RA Profile
+          examples:
+          - https://your-domain.com/.well-known/est/est-devices
+        basicCredentialSecrets:
+          type: array
+          description: Basic-auth Secrets RAs authenticate with. A Secret counts only
+            when its source vault profile is enabled
+          items:
+            $ref: "#/components/schemas/NameAndUuidDto"
+        trustedCaCertificates:
+          type: array
+          description: CA certificates that client certificates must chain to
+          items:
+            $ref: "#/components/schemas/NameAndUuidDto"
+        allowRenewal:
+          type: boolean
+          description: Whether reenrollment with the current key is allowed
+        allowRekey:
+          type: boolean
+          description: Whether reenrollment with a new key is allowed
+        renewalThreshold:
+          type: integer
+          format: int32
+          description: Days before expiry from which reenrollment is allowed. Empty
+            or 0 allows it from half of the certificate validity
+        keyRecoveryTokenProfile:
+          $ref: "#/components/schemas/NameAndUuidDto"
+          description: "Token profile that generates and keeps recoverable keys. It\
+            \ was enabled, export-capable and allowed signing when the EST Profile\
+            \ was saved, and cannot be deleted or disabled while the EST Profile uses\
+            \ it"
+        keyRecoveryKeyAttributes:
+          type: array
+          description: "Key creation attributes for the key recovery token profile,\
+            \ validated against its connector when the EST Profile was saved"
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        issueWaitTimeout:
+          type: integer
+          format: int32
+          description: Seconds that enroll and reenroll wait for the certificate before
+            answering 202
+        retryAfter:
+          type: integer
+          format: int32
+          description: "Seconds a client is told to wait, as Retry-After, before it\
+            \ asks again after a 202"
+        serverKeyGenerationTimeout:
+          type: integer
+          format: int32
+          description: Seconds that /serverkeygen waits for the certificate
+        issueCertificateAttributes:
+          type: array
+          description: Attributes to issue certificates through the EST Profile's
+            own RA Profile
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        customAttributes:
+          type: array
+          description: List of Custom Attributes
+          items:
+            $ref: "#/components/schemas/ResponseAttribute"
+        certificateAssociations:
+          $ref: "#/components/schemas/ProtocolCertificateAssociationsDto"
+          description: "Owner, groups and custom attributes applied to certificates\
+            \ issued through the EST Profile"
+      required:
+      - allowRekey
+      - allowRenewal
+      - authenticationPolicy
+      - enabled
+      - issueWaitTimeout
+      - keyRecovery
+      - name
+      - retryAfter
+      - serverKeyGeneration
+      - serverKeyGenerationTimeout
+      - systemDefault
+      - uuid
     EntityInstanceUpdateRequestDto:
       type: object
       properties:
@@ -48397,6 +49220,141 @@ components:
       required:
       - containerDigest
       - entries
+    EstProfileRequestDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the EST Profile
+          examples:
+          - Devices enrolling with vendor certificates
+        raProfileUuid:
+          type: string
+          format: uuid
+          description: UUID of the RA Profile that serves requests sent to the EST
+            Profile's own label
+          examples:
+          - 6b55de1c-844f-11ec-a8a3-0242ac120002
+        systemDefault:
+          type: boolean
+          default: false
+          description: Serve requests sent without a label. At most one EST Profile
+            is the system default
+        authenticationPolicy:
+          $ref: "#/components/schemas/EstAuthenticationPolicy"
+          description: How clients authenticate to enroll or to receive a server-generated
+            key
+        basicCredentialSecretUuids:
+          type: array
+          description: UUIDs of basic-auth Secrets RAs authenticate with. Only for
+            the raBasic policy. A Secret counts only when its source vault profile
+            is enabled
+          items:
+            type: string
+            format: uuid
+        trustedCaCertificateUuids:
+          type: array
+          description: UUIDs of CA certificates that client certificates must chain
+            to. Only for the vendorMtls and raMtls policies
+          items:
+            type: string
+            format: uuid
+        allowRenewal:
+          type: boolean
+          default: true
+          description: Allow reenrollment with the current key
+        allowRekey:
+          type: boolean
+          default: true
+          description: Allow reenrollment with a new key
+        renewalThreshold:
+          type: integer
+          format: int32
+          description: Days before expiry from which reenrollment is allowed. Empty
+            or 0 allows it from half of the certificate validity
+          minimum: 0
+        serverKeyGeneration:
+          type: boolean
+          default: false
+          description: Allow server-side key generation through /serverkeygen. Without
+            keyRecovery the key is generated in memory and returned to the client;
+            it is not kept
+        keyRecovery:
+          type: boolean
+          default: false
+          description: "Generate server-side keys on the key recovery token profile\
+            \ and keep them there, linked to the issued certificate, for recovery.\
+            \ Requires serverKeyGeneration. Saving checks the token profile (see keyRecoveryTokenProfileUuid)"
+        keyRecoveryTokenProfileUuid:
+          type: string
+          format: uuid
+          description: "UUID of the token profile that generates and keeps recoverable\
+            \ keys. Saving requires that the token profile is enabled, its connector\
+            \ supports key export, a key pair can be exported, a v2 token profile\
+            \ allows the SIGN usage, and keyRecoveryKeyAttributes are valid for the\
+            \ connector. A token profile used for key recovery cannot be deleted or\
+            \ disabled"
+          examples:
+          - 6b55de1c-844f-11ec-a8a3-0242ac120002
+        keyRecoveryKeyAttributes:
+          type: array
+          description: Key creation attributes for the key recovery token profile.
+            Saving validates them against the connector and refuses secret-typed content
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        issueWaitTimeout:
+          type: integer
+          format: int32
+          default: 10
+          description: "Seconds that enroll and reenroll wait for the certificate\
+            \ before answering 202, at most 300. 0 answers at once. The wait holds\
+            \ the HTTP request, so it must stay below the timeout of the gateway in\
+            \ front of the platform"
+          maximum: 300
+          minimum: 0
+        retryAfter:
+          type: integer
+          format: int32
+          default: 30
+          description: "Seconds a client is told to wait, as Retry-After, before it\
+            \ asks again after a 202, at most 86400 (one day)"
+          maximum: 86400
+          minimum: 1
+        serverKeyGenerationTimeout:
+          type: integer
+          format: int32
+          default: 30
+          description: "Seconds that /serverkeygen waits for the certificate before\
+            \ answering that it could not be issued in time, at most 300. The wait\
+            \ holds the HTTP request, so it must stay below the timeout of the gateway\
+            \ in front of the platform"
+          maximum: 300
+          minimum: 1
+        issueCertificateAttributes:
+          type: array
+          description: Attributes to issue certificates through the EST Profile's
+            own RA Profile
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        customAttributes:
+          type: array
+          description: List of Custom Attributes for EST Profile
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        certificateAssociations:
+          $ref: "#/components/schemas/ProtocolCertificateAssociationsRequestDto"
+          description: "Owner, groups and custom attributes applied to certificates\
+            \ issued through the EST Profile"
+        name:
+          type: string
+          description: Name of the EST Profile. It is the profile's label in EST URLs
+            and cannot be changed later
+          examples:
+          - est-devices
+          minLength: 1
+      required:
+      - authenticationPolicy
+      - name
     EntityInstanceRequestDto:
       type: object
       properties:
@@ -53281,6 +54239,65 @@ components:
           - OUT_OF_SERVICE
       required:
       - status
+    EstProfileDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: Object identifier
+          examples:
+          - 7b55ge1c-844f-11dc-a8a3-0242ac120002
+        name:
+          type: string
+          description: Object Name
+          examples:
+          - Name
+        enabled:
+          type: boolean
+          description: Enabled flag - true = enabled; false = disabled
+        description:
+          type: string
+          description: EST Profile description
+          examples:
+          - Devices enrolling with vendor certificates
+        systemDefault:
+          type: boolean
+          description: Whether the EST Profile serves requests sent without a label
+        authenticationPolicy:
+          $ref: "#/components/schemas/EstAuthenticationPolicy"
+          description: How clients authenticate to enroll or to receive a server-generated
+            key
+        raProfile:
+          $ref: "#/components/schemas/SimplifiedRaProfileDto"
+          description: RA Profile that serves requests sent to the EST Profile's own
+            label
+        serverKeyGeneration:
+          type: boolean
+          description: Whether /serverkeygen is allowed. Without keyRecovery the generated
+            key is returned and not kept
+        keyRecovery:
+          type: boolean
+          description: Whether server-generated keys are created on the key recovery
+            token profile and kept there for recovery
+        label:
+          type: string
+          description: Label EST clients use to reach the EST Profile
+          examples:
+          - est-devices
+        estUrl:
+          type: string
+          description: EST URL of the EST Profile. Empty until the EST Profile has
+            an RA Profile
+          examples:
+          - https://your-domain.com/.well-known/est/est-devices
+      required:
+      - authenticationPolicy
+      - enabled
+      - keyRecovery
+      - name
+      - serverKeyGeneration
+      - systemDefault
+      - uuid
     EnumItemDto:
       type: object
       properties:
