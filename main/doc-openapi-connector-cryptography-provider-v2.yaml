@@ -6544,6 +6544,7 @@ components:
       - cryptoAssets
       - scepProfiles
       - cmpProfiles
+      - estProfiles
       - authorities
       - raProfiles
       - certificates

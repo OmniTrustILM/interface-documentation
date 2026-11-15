@@ -2600,6 +2600,7 @@ components:
       - cryptoAssets
       - scepProfiles
       - cmpProfiles
+      - estProfiles
       - authorities
       - raProfiles
       - certificates
@@ -3050,6 +3051,7 @@ components:
       - ProtectionMethod
       - CmpProfileVariant
       - ProtocolChallengeSource
+      - EstAuthenticationPolicy
       - AcmeIdentifierMatchType
       - AcmeIdentifierAuthorizationMode
       - AttributeType

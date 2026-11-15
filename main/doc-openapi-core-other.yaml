@@ -4170,6 +4170,7 @@ components:
       - cryptoAssets
       - scepProfiles
       - cmpProfiles
+      - estProfiles
       - authorities
       - raProfiles
       - certificates
@@ -5375,6 +5376,8 @@ components:
       - scepCertificatePoll
       - scepTransactionCheck
       - cmpConfirm
+      - estCsrAttributes
+      - estServerKeyGeneration
       - upload
       - sync
       - retry
@@ -6175,6 +6178,7 @@ components:
       - ProtectionMethod
       - CmpProfileVariant
       - ProtocolChallengeSource
+      - EstAuthenticationPolicy
       - AcmeIdentifierMatchType
       - AcmeIdentifierAuthorizationMode
       - AttributeType

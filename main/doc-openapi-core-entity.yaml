@@ -2997,6 +2997,7 @@ components:
       - ProtectionMethod
       - CmpProfileVariant
       - ProtocolChallengeSource
+      - EstAuthenticationPolicy
       - AcmeIdentifierMatchType
       - AcmeIdentifierAuthorizationMode
       - AttributeType

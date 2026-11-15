@@ -3821,6 +3821,7 @@ components:
       - acme
       - scep
       - cmp
+      - est
     CertificateProtocolDto:
       type: object
       properties:
@@ -4270,6 +4271,7 @@ components:
       - cryptoAssets
       - scepProfiles
       - cmpProfiles
+      - estProfiles
       - authorities
       - raProfiles
       - certificates
@@ -5308,6 +5310,7 @@ components:
       - ProtectionMethod
       - CmpProfileVariant
       - ProtocolChallengeSource
+      - EstAuthenticationPolicy
       - AcmeIdentifierMatchType
       - AcmeIdentifierAuthorizationMode
       - AttributeType
