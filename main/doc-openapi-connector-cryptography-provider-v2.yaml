@@ -5769,9 +5769,11 @@ components:
         A key pair the token holds. Any later request accepts its metadata exactly like metadata returned at
         creation.
       properties:
-        label:
+        storageName:
           type: string
-          description: Label the token keeps for the key
+          description: "Name the token shows for the key, such as a PKCS#11 label,\
+            \ a keystore alias or a KMS key name; it may be absent or shared by several\
+            \ keys"
         keyPairMeta:
           type: array
           description: "Connector-defined metadata for the pair as a whole. It must\
@@ -5811,7 +5813,7 @@ components:
       properties:
         keyRequestType:
           $ref: "#/components/schemas/KeyRequestType"
-        label:
+        storageName:
           type: string
     ListedSecretKeyV2Dto:
       type: object
@@ -5820,9 +5822,11 @@ components:
         A secret key the token holds. Any later request accepts its metadata exactly like metadata returned at
         creation.
       properties:
-        label:
+        storageName:
           type: string
-          description: Label the token keeps for the key
+          description: "Name the token shows for the key, such as a PKCS#11 label,\
+            \ a keystore alias or a KMS key name; it may be absent or shared by several\
+            \ keys"
         keyMeta:
           type: array
           description: "Connector-defined metadata of the key. It must identify the\
@@ -5969,9 +5973,11 @@ components:
       description: "A key the token holds that the platform cannot onboard, with the\
         \ reason"
       properties:
-        label:
+        storageName:
           type: string
-          description: Label the token keeps for the key
+          description: "Name the token shows for the key, such as a PKCS#11 label,\
+            \ a keystore alias or a KMS key name; it may be absent or shared by several\
+            \ keys"
         reason:
           $ref: "#/components/schemas/UnusableKeyReason"
           description: Reason the platform cannot onboard the key
