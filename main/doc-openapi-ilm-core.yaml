@@ -153,8 +153,6 @@ tags:
   description: Global Metadata API
 - name: Callback
   description: Callback API
-- name: Signature Parameters
-  description: Signature Parameters API
 - name: Location Management
   description: Location Management API
 - name: Authority Management
@@ -28931,41 +28929,6 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
-  /v1/signatureParameters/groups:
-    get:
-      tags:
-      - Signature Parameters
-      summary: List signature parameter groups
-      description: "Returns, for each signature family that has signature parameters,\
-        \ its signature parameter groups and the request fields each group governs.\
-        \ A signing request may set a field only when its Signing Profile allows the\
-        \ field's group. Any authenticated user may call this operation."
-      operationId: listSignatureParameterGroups
-      responses:
-        "200":
-          description: Signature parameter groups retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SignatureFamilyParameterGroups"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorMessageDto"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
-        "500":
-          description: Internal Server Error
   /v1/secrets/{uuid}/versions:
     get:
       tags:
@@ -53342,44 +53305,6 @@ components:
       - signingTime
       - timestampTokenSerialNumbers
       - uuid
-    SignatureFamilyParameterGroups:
-      type: object
-      description: "Signature parameter groups of one signature family, each with\
-        \ the fields it governs"
-      properties:
-        family:
-          type: string
-          description: Signature family whose parameters the groups govern
-          example: pades
-          pattern: "^[a-z][a-z0-9-]*$"
-        groups:
-          type: array
-          description: "Groups governing the family's parameters, in the order the\
-            \ `SignatureParameterGroup` enum lists them"
-          items:
-            $ref: "#/components/schemas/SignatureParameterGroupFields"
-      required:
-      - family
-      - groups
-    SignatureParameterGroupFields:
-      type: object
-      description: Signature parameter group with the paths of the fields it governs
-      properties:
-        group:
-          $ref: "#/components/schemas/SignatureParameterGroup"
-          description: Group governing the fields
-        fields:
-          type: array
-          description: "Paths of the fields the group governs, in the order the family's\
-            \ parameters declare them. A path joins property names with dots, from\
-            \ the family's signature parameters down to the field."
-          example:
-          - visibleSignature.placement.page
-          items:
-            type: string
-      required:
-      - fields
-      - group
     BrandingSettingsDto:
       type: object
       properties:
