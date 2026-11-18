@@ -1198,9 +1198,9 @@ paths:
         \ profile attributes and request attributes, with the connector's default\
         \ values. A request attribute's `properties.group` names its permission group,\
         \ which the Signing Profile's `allowedRequestAttributes` may list. family\
-        \ and maxLevel together name the workflow the Signing Profile will run, and\
-        \ the connector must be able to serve it; the descriptor set follows from\
-        \ maxLevel, so family does not narrow the returned descriptors. The signingProfileUuid\
+        \ and level together name the workflow the Signing Profile will run, and the\
+        \ connector must be able to serve it; the descriptor set follows from level,\
+        \ so family does not narrow the returned descriptors. The signingProfileUuid\
         \ parameter is used for authorization only and does not affect the returned\
         \ descriptors."
       operationId: listContentSigningFormattingConnectorAttributes
@@ -1221,9 +1221,9 @@ paths:
           type: string
           pattern: "^[a-z][a-z0-9-]*$"
         example: pades
-      - name: maxLevel
+      - name: level
         in: query
-        description: Highest signature level the Signing Profile may reach
+        description: Signature level the Signing Profile produces
         required: true
         schema:
           $ref: "#/components/schemas/SignatureLevel"
@@ -1739,17 +1739,17 @@ components:
             \ be omitted for delegated signing."
           example: pades
           pattern: "^[a-z][a-z0-9-]*$"
-        maxLevel:
+        level:
           $ref: "#/components/schemas/SignatureLevel"
-          description: Highest signature level a request may ask for. A request asking
-            for more is rejected. Required for ILM-managed signing; must be omitted
-            for delegated signing.
+          description: "Signature level at which the profile signs every document:\
+            \ a level the selected formatting connector declares for the family. Required\
+            \ for ILM-managed signing; must be omitted for delegated signing."
         timestampSource:
           $ref: "#/components/schemas/TimestampSourceRequestDto"
           description: "Source of the timestamps embedded at level TIMESTAMPED and\
-            \ above. Required when maxLevel is TIMESTAMPED or higher, and must be\
-            \ omitted when maxLevel is SIGNED, which embeds no timestamp. Must be\
-            \ omitted for delegated signing."
+            \ above. Required when level is TIMESTAMPED or higher, and must be omitted\
+            \ when level is SIGNED, which embeds no timestamp. Must be omitted for\
+            \ delegated signing."
         requireNonRepudiation:
           type: boolean
           description: "Demand the nonRepudiation key-usage bit specifically, for\
@@ -3351,15 +3351,14 @@ components:
             signing is used; null for delegated signing.
           example: pades
           pattern: "^[a-z][a-z0-9-]*$"
-        maxLevel:
+        level:
           $ref: "#/components/schemas/SignatureLevel"
-          description: Highest signature level a request may ask for. A request asking
-            for more is rejected. Present only when ILM-managed signing is used; null
-            for delegated signing.
+          description: Signature level at which the profile signs every document.
+            Present only when ILM-managed signing is used; null for delegated signing.
         timestampSource:
           $ref: "#/components/schemas/TimestampSourceDto"
           description: Source of the timestamps embedded at level TIMESTAMPED and
-            above. Set when maxLevel is TIMESTAMPED or higher.
+            above. Set when level is TIMESTAMPED or higher.
         requireNonRepudiation:
           type: boolean
           default: false
