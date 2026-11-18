@@ -200,6 +200,8 @@ tags:
   description: Cryptographic Operations Controller API
 - name: Custom OID Management
   description: Custom OID Management API
+- name: Protected Resource Metadata
+  description: OAuth Protected Resource Metadata (RFC 9728) of the API
 - name: OAuth2 Login Management v2
   description: OAuth2 Login Management v2 API
 - name: Vault Profile Management
@@ -34898,6 +34900,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+  /.well-known/oauth-protected-resource/api:
+    get:
+      tags:
+      - Protected Resource Metadata
+      summary: Get the OAuth Protected Resource Metadata of the API
+      operationId: getProtectedResourceMetadata
+      responses:
+        "200":
+          description: Metadata retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProtectedResourceMetadataDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "500":
+          description: Internal Server Error
+      servers:
+      - url: https://demo.otilm.com
+        description: Platform Demo server
   /v2/complianceProfiles/force:
     delete:
       tags:
@@ -56578,6 +56610,65 @@ components:
       - status
       - totalOrders
       - uuid
+    ProtectedResourceAuthorizationServerDto:
+      type: object
+      description: Authorization server that applications can use to obtain a token
+        for the API
+      properties:
+        issuer:
+          type: string
+          description: Issuer identifier of the authorization server
+        name:
+          type: string
+          description: Name to show to users
+        client_id:
+          type: string
+          description: Public client ID to use with PKCE
+        resource:
+          type: string
+          description: Resource indicator (RFC 8707) to send to the authorization
+            server
+        scopes:
+          type: array
+          description: Scopes to request
+          items:
+            type: string
+      required:
+      - issuer
+      - name
+      - scopes
+    ProtectedResourceMetadataDto:
+      type: object
+      description: OAuth Protected Resource Metadata (RFC 9728) of the API
+      properties:
+        resource:
+          type: string
+          description: Resource identifier of the API
+        resource_name:
+          type: string
+          description: Name of the API
+        authorization_servers:
+          type: array
+          description: Issuer identifiers of the authorization servers that applications
+            can use
+          items:
+            type: string
+        bearer_methods_supported:
+          type: array
+          description: Ways of sending a bearer token to the API
+          items:
+            type: string
+        otilm_authorization_servers:
+          type: array
+          description: Sign-in details for each authorization server in authorization_servers
+          items:
+            $ref: "#/components/schemas/ProtectedResourceAuthorizationServerDto"
+      required:
+      - authorization_servers
+      - bearer_methods_supported
+      - otilm_authorization_servers
+      - resource
+      - resource_name
     ComplianceRuleDeletionRequestDto:
       type: object
       properties:
