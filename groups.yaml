@@ -504,6 +504,7 @@ groups:
       - com.otilm.api.interfaces.core.web.EnumController
       - com.otilm.api.interfaces.core.web.InfoController
       - com.otilm.api.interfaces.core.web.ListViewController
+      - com.otilm.api.interfaces.core.web.ProtectedResourceMetadataController
       - com.otilm.api.interfaces.core.web.ResourceController
       - com.otilm.api.interfaces.core.web.SettingController
       - com.otilm.api.interfaces.core.web.StatisticsController
@@ -679,6 +680,7 @@ groups:
       - com.otilm.api.interfaces.core.web.NotificationController
       - com.otilm.api.interfaces.core.web.NotificationInstanceController
       - com.otilm.api.interfaces.core.web.NotificationProfileController
+      - com.otilm.api.interfaces.core.web.ProtectedResourceMetadataController
       - com.otilm.api.interfaces.core.web.ProxyController
       - com.otilm.api.interfaces.core.web.RAProfileManagementController
       - com.otilm.api.interfaces.core.web.ResourceController
