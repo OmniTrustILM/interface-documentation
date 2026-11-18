@@ -3487,6 +3487,15 @@ paths:
       responses:
         "200":
           description: OAuth2 Provider settings retrieved
+          headers:
+            ETag:
+              description: Strong entity tag of the stored provider settings. Send
+                it as `If-Match` on the update to refuse the update when the provider
+                changed since this read. The client secret does not contribute to
+                the tag.
+              style: simple
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -3511,12 +3520,21 @@ paths:
       tags:
       - Settings
       summary: Update OAuth2 Provider settings
+      description: "With `If-Match`, the update is refused with 412 when the tag no\
+        \ longer matches the stored provider settings; `*` matches any existing provider.\
+        \ Without the header the update applies unconditionally."
       operationId: updateOAuth2ProviderSettings
       parameters:
       - name: providerName
         in: path
         description: OAuth2 Provider Name
         required: true
+        schema:
+          type: string
+      - name: If-Match
+        in: header
+        description: Entity tag from the provider's read
+        required: false
         schema:
           type: string
       requestBody:
@@ -3528,6 +3546,13 @@ paths:
       responses:
         "204":
           description: Setting updated
+        "412":
+          description: "`If-Match` does not match the stored provider settings, or\
+            \ names a provider that does not exist"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
         "400":
           description: Bad Request
           content:
@@ -41449,6 +41474,34 @@ components:
             $ref: "#/components/schemas/OAuth2ProviderSettingsDto"
       required:
       - disableLocalhostUser
+    OAuth2ApplicationSettingsDto:
+      type: object
+      description: Settings for applications that sign in through this provider to
+        call the API
+      properties:
+        enabled:
+          type: boolean
+          default: false
+          description: Whether the provider is advertised to applications as an authorization
+            server for the API. Requires the provider's issuer URL.
+        name:
+          type: string
+          description: Name shown to users of an application. The provider name is
+            used when not set.
+        clientId:
+          type: string
+          description: Public client ID that applications use with PKCE. Must differ
+            from the provider's client ID.
+        scopes:
+          type: array
+          default: []
+          description: Scopes that applications request from the provider.
+          items:
+            type: string
+        resource:
+          type: string
+          description: "Resource indicator (RFC 8707) that applications send to the\
+            \ provider: an absolute http or https URI without credentials or a fragment."
     OAuth2ProviderSettingsDto:
       type: object
       properties:
@@ -41533,6 +41586,10 @@ components:
           description: "The claim inside the outermost act object that identifies\
             \ the immediate delegate. The delegate is read from the signature-validated\
             \ access token, never from user info claims."
+        applications:
+          $ref: "#/components/schemas/OAuth2ApplicationSettingsDto"
+          description: Sign-in for applications through this provider. Not set means
+            disabled.
       required:
       - name
     OAuth2ProviderSettingsUpdateDto:
@@ -41616,6 +41673,10 @@ components:
           description: "The claim inside the outermost act object that identifies\
             \ the immediate delegate. The delegate is read from the signature-validated\
             \ access token, never from user info claims."
+        applications:
+          $ref: "#/components/schemas/OAuth2ApplicationSettingsDto"
+          description: Sign-in for applications through this provider. Not set means
+            disabled.
     SecretUpdateRequestDto:
       type: object
       properties:
@@ -53215,6 +53276,10 @@ components:
           description: "The claim inside the outermost act object that identifies\
             \ the immediate delegate. The delegate is read from the signature-validated\
             \ access token, never from user info claims."
+        applications:
+          $ref: "#/components/schemas/OAuth2ApplicationSettingsDto"
+          description: Sign-in for applications through this provider. Not set means
+            disabled.
         name:
           type: string
           description: Name of OAuth2 Provider
