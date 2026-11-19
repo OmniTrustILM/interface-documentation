@@ -1983,6 +1983,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - discoveryIncremental
     NameAndUuidDto:
       type: object
       properties:
@@ -3079,6 +3080,7 @@ components:
       - CertificateRequestFormat
       - DiscoveryStatus
       - DiscoveryMessageSeverity
+      - DiscoveryWindowMode
       - CertificateProtocol
       - CertificateSubjectType
       - CertificateKeyUsage

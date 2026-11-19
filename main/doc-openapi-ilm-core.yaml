@@ -37429,6 +37429,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - discoveryIncremental
     FunctionGroupCode:
       type: string
       enum:
@@ -49259,10 +49260,35 @@ components:
             \ run targets. Omit for a v1 Discovery Provider."
           propertyNames:
             $ref: "#/components/schemas/Resource"
+        window:
+          $ref: "#/components/schemas/DiscoveryWindowDto"
+          description: Which part of the target to discover. Absent means a full discovery.
       required:
       - attributes
       - connectorUuid
       - name
+    DiscoveryWindowDto:
+      type: object
+      properties:
+        mode:
+          $ref: "#/components/schemas/DiscoveryWindowMode"
+          description: How much of the target the discovery covers. sinceLastSuccessfulRun
+            is accepted only when scheduling a discovery.
+        lookback:
+          type: string
+          format: duration
+          description: "How far back from the start of the run to discover, as an\
+            \ ISO-8601 duration. Required, and positive, for lookback; not allowed\
+            \ for the other modes."
+          example: P1D
+      required:
+      - mode
+    DiscoveryWindowMode:
+      type: string
+      enum:
+      - full
+      - sinceLastSuccessfulRun
+      - lookback
     ScheduleDiscoveryDto:
       type: object
       properties:
@@ -51926,6 +51952,7 @@ components:
       - CertificateRequestFormat
       - DiscoveryStatus
       - DiscoveryMessageSeverity
+      - DiscoveryWindowMode
       - CertificateProtocol
       - CertificateSubjectType
       - CertificateKeyUsage
@@ -54073,6 +54100,17 @@ components:
           - "null"
           format: date-time
           description: When the discovery finished
+        window:
+          $ref: "#/components/schemas/DiscoveryWindowDto"
+          description: The window the discovery was asked to cover. Absent means a
+            full discovery.
+        discoverSince:
+          type:
+          - string
+          - "null"
+          format: date-time
+          description: "The instant the run discovered from, resolved from the window\
+            \ when it started. Null for a full discovery."
         totalCertificatesDiscovered:
           type: integer
           format: int32

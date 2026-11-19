@@ -2974,6 +2974,7 @@ components:
       - CertificateRequestFormat
       - DiscoveryStatus
       - DiscoveryMessageSeverity
+      - DiscoveryWindowMode
       - CertificateProtocol
       - CertificateSubjectType
       - CertificateKeyUsage

@@ -3107,6 +3107,12 @@ components:
             description: "A delivery mode code, such as buffered or checkpointed;\
               \ more may be added."
             example: checkpointed
+        discoverSince:
+          type: string
+          format: date-time
+          description: "Discover only items created or changed at or after this instant,\
+            \ as far as the technology can tell; absent means a full discovery. Sent\
+            \ only to a connector whose discovery interface advertises discoveryIncremental."
       required:
       - resources
       - runId
@@ -3946,6 +3952,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - discoveryIncremental
     InfoResponse:
       type: object
       properties:

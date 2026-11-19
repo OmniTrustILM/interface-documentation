@@ -4429,6 +4429,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - discoveryIncremental
     FunctionGroupCode:
       type: string
       enum:
@@ -5429,6 +5430,7 @@ components:
       - CertificateRequestFormat
       - DiscoveryStatus
       - DiscoveryMessageSeverity
+      - DiscoveryWindowMode
       - CertificateProtocol
       - CertificateSubjectType
       - CertificateKeyUsage

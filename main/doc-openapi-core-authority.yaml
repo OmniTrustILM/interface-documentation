@@ -2399,6 +2399,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - discoveryIncremental
     NameAndUuidDto:
       type: object
       properties:

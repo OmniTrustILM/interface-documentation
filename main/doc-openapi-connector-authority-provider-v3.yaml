@@ -4547,6 +4547,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - discoveryIncremental
     InfoResponse:
       type: object
       properties:
