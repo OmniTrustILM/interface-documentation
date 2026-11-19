@@ -2986,6 +2986,7 @@ components:
       - KeyUsage
       - KeyRequestType
       - TokenKeyStatus
+      - TokenKeyOnboardingOutcome
       - KeyCompromiseReason
       - TokenInstanceStatus
       - DigestAlgorithm

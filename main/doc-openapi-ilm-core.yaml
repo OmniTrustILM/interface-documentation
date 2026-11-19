@@ -47437,6 +47437,15 @@ components:
             $ref: "#/components/schemas/TokenKeyOnboardingResultDto"
       required:
       - results
+    TokenKeyOnboardingOutcome:
+      type: string
+      description: What became of one key selected for onboarding
+      enum:
+      - onboarded
+      - joinedExistingKey
+      - nameTaken
+      - blocked
+      - failed
     TokenKeyOnboardingResultDto:
       type: object
       description: What became of one selected key
@@ -47446,13 +47455,13 @@ components:
           description: "Metadata of the key pair, as the request sent it"
           items:
             $ref: "#/components/schemas/MetadataAttribute"
-        onboarded:
-          type: boolean
-          description: Whether the key was onboarded
-        intoExistingKey:
-          type: boolean
-          description: Whether the private key joined the inventory key that held
-            the public key
+        outcome:
+          $ref: "#/components/schemas/TokenKeyOnboardingOutcome"
+          description: What became of the key
+        status:
+          $ref: "#/components/schemas/TokenKeyStatus"
+          description: Status that blocked the key; present only when `outcome` is
+            `blocked` and a status applies
         keyUuid:
           type: string
           format: uuid
@@ -47466,11 +47475,31 @@ components:
             \ see that key in detail."
         reason:
           type: string
-          description: Why the key was skipped
+          description: Platform's summary of why the key was not onboarded
+        diagnostic:
+          type: string
+          description: "Text of the token instance's connector naming the cause behind\
+            \ a key that was not onboarded and how to fix it, alongside the platform's\
+            \ `reason`. Clients display it and never parse it."
+          maxLength: 1000
       required:
-      - intoExistingKey
       - keyPairMeta
-      - onboarded
+      - outcome
+    TokenKeyStatus:
+      type: string
+      description: Onboarding status of a key found in the key storage
+      enum:
+      - onboardable
+      - onboardableIntoKey
+      - inInventory
+      - inInventoryWithoutToken
+      - importInProgress
+      - publicKeyUnavailable
+      - unaddressable
+      - refused
+      - unsupportedKeyType
+      - unreadable
+      - gone
     KeyRequestType:
       type: string
       enum:
@@ -51909,6 +51938,7 @@ components:
       - KeyUsage
       - KeyRequestType
       - TokenKeyStatus
+      - TokenKeyOnboardingOutcome
       - KeyCompromiseReason
       - TokenInstanceStatus
       - DigestAlgorithm
@@ -52500,7 +52530,13 @@ components:
           description: Name the platform suggests for the onboarded key
         reason:
           type: string
-          description: Why the key cannot be onboarded
+          description: Platform's summary of why the key cannot be onboarded
+        diagnostic:
+          type: string
+          description: "Text of the token instance's connector naming the cause behind\
+            \ the status and how to fix it, alongside the platform's `reason`. Clients\
+            \ display it and never parse it."
+          maxLength: 1000
       required:
       - status
     TokenKeyListResponseDto:
@@ -52534,20 +52570,6 @@ components:
       - pageNumber
       - totalItems
       - totalPages
-    TokenKeyStatus:
-      type: string
-      description: Onboarding status of a key found in the key storage
-      enum:
-      - onboardable
-      - onboardableIntoKey
-      - inInventory
-      - inInventoryWithoutToken
-      - importInProgress
-      - noPublicKey
-      - noUsableId
-      - unsupportedKeyType
-      - unreadable
-      - gone
     KeyEventHistoryDto:
       type: object
       properties:

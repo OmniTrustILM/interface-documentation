@@ -5734,35 +5734,85 @@ components:
       - keys
       - tokenAttributes
       - tokenProfileAttributes
-    KeyResolutionOutcome:
+    KeyDataV2:
+      type: object
+      description: Type-specific key descriptor. Secret and private keys never contain
+        key material.
+      discriminator:
+        propertyName: type
+        mapping:
+          Secret: "#/components/schemas/SecretKeyDataV2Dto"
+          Public: "#/components/schemas/PublicKeyDataV2Dto"
+          Private: "#/components/schemas/PrivateKeyDataV2Dto"
+      oneOf:
+      - $ref: "#/components/schemas/SecretKeyDataV2Dto"
+      - $ref: "#/components/schemas/PublicKeyDataV2Dto"
+      - $ref: "#/components/schemas/PrivateKeyDataV2Dto"
+      properties:
+        type:
+          $ref: "#/components/schemas/KeyTypeV2"
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+        length:
+          type: integer
+          format: int32
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+    KeyEntryStatus:
       type: string
       enum:
-      - found
-      - notFound
-      - ambiguous
+      - available
+      - refused
+      - unaddressable
       - unsupportedType
       - unreadable
+      - notFound
       - invalidHandle
     KeyResolutionV2Dto:
       type: object
       additionalProperties: false
       properties:
+        status:
+          $ref: "#/components/schemas/KeyEntryStatus"
+          description: Connector's report on the key
+        diagnostic:
+          type: string
+          description: "Operator text naming the cause behind the status and how to\
+            \ fix it, such as a PKCS#11 return code. Clients display it and never\
+            \ parse it, and the connector must keep secrets such as a PIN out of it."
+          maxLength: 1000
+        storageName:
+          type: string
+          description: "Name the token shows for the key, such as a PKCS#11 label,\
+            \ a keystore alias or a KMS key name; it may be absent or shared by several\
+            \ keys"
+        key:
+          $ref: "#/components/schemas/ListedKeyV2"
+          description: Key of the requested key request type; present exactly when
+            `status` is `available` or `refused`
+        keyData:
+          $ref: "#/components/schemas/KeyDataV2"
+          description: "Descriptor of a key the entry carries without `key`: a private\
+            \ key for a key pair request, a secret key for a secret key request; absent\
+            \ when the connector cannot read it or the token holds no matching key"
         identifier:
           type: string
           description: Identifier of the handle this result answers
           examples:
           - "0"
           minLength: 1
-        outcome:
-          $ref: "#/components/schemas/KeyResolutionOutcome"
-          description: Outcome of the resolution
-        key:
-          $ref: "#/components/schemas/ListedKeyV2"
-          description: "Key the token holds under the handle, in the listing's shape.\
-            \ Present only when `outcome` is `found`."
       required:
       - identifier
-      - outcome
+      - status
+    KeyTypeV2:
+      type: string
+      description: Key type supported by the v2 connector contract
+      enum:
+      - Secret
+      - Public
+      - Private
     ListedKeyPairV2Dto:
       type: object
       additionalProperties: false
@@ -5770,17 +5820,12 @@ components:
         A key pair the token holds. Any later request accepts its metadata exactly like metadata returned at
         creation.
       properties:
-        storageName:
-          type: string
-          description: "Name the token shows for the key, such as a PKCS#11 label,\
-            \ a keystore alias or a KMS key name; it may be absent or shared by several\
-            \ keys"
         keyPairMeta:
           type: array
           description: "Connector-defined metadata for the pair as a whole. It must\
             \ identify the pair durably. The key resolution takes it back as the key's\
             \ handle. Each metadata name appears once, and every content item carries\
-            \ data. A key that cannot meet this is reported in `unusableKeys`."
+            \ data. A key that cannot meet this is listed as `unaddressable`."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -5814,8 +5859,6 @@ components:
       properties:
         keyRequestType:
           $ref: "#/components/schemas/KeyRequestType"
-        storageName:
-          type: string
     ListedSecretKeyV2Dto:
       type: object
       additionalProperties: false
@@ -5823,11 +5866,6 @@ components:
         A secret key the token holds. Any later request accepts its metadata exactly like metadata returned at
         creation.
       properties:
-        storageName:
-          type: string
-          description: "Name the token shows for the key, such as a PKCS#11 label,\
-            \ a keystore alias or a KMS key name; it may be absent or shared by several\
-            \ keys"
         keyMeta:
           type: array
           description: "Connector-defined metadata of the key. It must identify the\
@@ -5835,8 +5873,8 @@ components:
             \ creation returned: a secret key has no public key, so the platform recognises\
             \ one it already holds by this metadata alone. The key resolution takes\
             \ it back as the key's handle. Each metadata name appears once, and every\
-            \ content item carries data. A key that cannot meet this is reported in\
-            \ `unusableKeys`."
+            \ content item carries data. A key that cannot meet this is listed as\
+            \ `unaddressable`."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -5892,9 +5930,8 @@ components:
         limit:
           type: integer
           format: int32
-          description: "Number of keys to return. The page holds exactly this many\
-            \ entries, `items` and `unusableKeys` together, unless the listing ends\
-            \ first."
+          description: Number of keys to return; the page holds exactly this many
+            entries unless the listing ends first
           maximum: 1000
           minimum: 1
       required:
@@ -5903,91 +5940,54 @@ components:
       - offset
       - tokenAttributes
       - tokenProfileAttributes
-    KeyDataV2:
-      type: object
-      description: Type-specific key descriptor. Secret and private keys never contain
-        key material.
-      discriminator:
-        propertyName: type
-        mapping:
-          Secret: "#/components/schemas/SecretKeyDataV2Dto"
-          Public: "#/components/schemas/PublicKeyDataV2Dto"
-          Private: "#/components/schemas/PrivateKeyDataV2Dto"
-      oneOf:
-      - $ref: "#/components/schemas/SecretKeyDataV2Dto"
-      - $ref: "#/components/schemas/PublicKeyDataV2Dto"
-      - $ref: "#/components/schemas/PrivateKeyDataV2Dto"
-      properties:
-        type:
-          $ref: "#/components/schemas/KeyTypeV2"
-        algorithm:
-          $ref: "#/components/schemas/KeyAlgorithm"
-        length:
-          type: integer
-          format: int32
-        metadata:
-          type: array
-          items:
-            $ref: "#/components/schemas/MetadataAttribute"
-    KeyTypeV2:
-      type: string
-      description: Key type supported by the v2 connector contract
-      enum:
-      - Secret
-      - Public
-      - Private
     ListKeysResponseV2Dto:
       type: object
       additionalProperties: false
       properties:
         items:
           type: array
-          description: "Keys of the requested page, each of the requested key request\
-            \ type"
+          description: "Entries of the requested page, one per key, in the token's\
+            \ order; the status `invalidHandle` is reserved for resolutions"
           items:
-            $ref: "#/components/schemas/ListedKeyV2"
-        unusableKeys:
-          type: array
-          description: "Keys on this page that cannot be offered for onboarding, each\
-            \ with its reason"
-          items:
-            $ref: "#/components/schemas/UnusableKeyV2Dto"
+            $ref: "#/components/schemas/ListedKeyEntryV2Dto"
         totalItems:
           type: integer
           format: int64
-          description: "Number of keys in the whole listing. Each appears once on\
-            \ its page, as a listed or an unusable key."
+          description: "Number of keys in the whole listing; each appears once, on\
+            \ its page"
           minimum: 0
       required:
       - items
       - totalItems
-    UnusableKeyReason:
-      type: string
-      enum:
-      - unaddressable
-      - unsupportedType
-      - unreadable
-      - notFound
-    UnusableKeyV2Dto:
+    ListedKeyEntryV2Dto:
       type: object
       additionalProperties: false
-      description: "A key the token holds that the platform cannot onboard, with the\
-        \ reason"
       properties:
+        status:
+          $ref: "#/components/schemas/KeyEntryStatus"
+          description: Connector's report on the key
+        diagnostic:
+          type: string
+          description: "Operator text naming the cause behind the status and how to\
+            \ fix it, such as a PKCS#11 return code. Clients display it and never\
+            \ parse it, and the connector must keep secrets such as a PIN out of it."
+          maxLength: 1000
         storageName:
           type: string
           description: "Name the token shows for the key, such as a PKCS#11 label,\
             \ a keystore alias or a KMS key name; it may be absent or shared by several\
             \ keys"
-        reason:
-          $ref: "#/components/schemas/UnusableKeyReason"
-          description: Reason the platform cannot onboard the key
+        key:
+          $ref: "#/components/schemas/ListedKeyV2"
+          description: Key of the requested key request type; present exactly when
+            `status` is `available` or `refused`
         keyData:
           $ref: "#/components/schemas/KeyDataV2"
-          description: "Descriptor of the key: a private key for a key pair listing,\
-            \ a secret key for a secret key listing"
+          description: "Descriptor of a key the entry carries without `key`: a private\
+            \ key for a key pair request, a secret key for a secret key request; absent\
+            \ when the connector cannot read it or the token holds no matching key"
       required:
-      - reason
+      - status
     EncryptedKeyMaterialV2Dto:
       type: object
       additionalProperties: false
