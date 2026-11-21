@@ -59,6 +59,11 @@ tags:
   description: Compliance Profile Management v2 API
 - name: Signing Profile Management
   description: Signing Profile Management API
+- name: Native Signing
+  description: "Native Signing API. Synchronous signing operations for server-side\
+    \ integrations, authorized against the Signing Profile that is used. The Signing\
+    \ Profile must have the ILM Native API activated; otherwise the operation answers\
+    \ 422."
 - name: Custom Attributes
   description: Custom Attributes API
 - name: Connector Management v2
@@ -12554,6 +12559,97 @@ paths:
           description: Internal Server Error
         "404":
           description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/signing/signingProfiles/{signingProfileUuid}/documents/sign:
+    post:
+      tags:
+      - Native Signing
+      summary: Sign documents
+      description: "Sign every document of the request at the Signing Profile's signature\
+        \ level and return the signing outputs in request order. The request succeeds\
+        \ or fails as a whole: a failed request returns no output and writes no signing\
+        \ record for its documents. A retry is a new signing. A signing failure names\
+        \ the item by its identifier; a validation failure names the field path by\
+        \ item index."
+      operationId: signDocument
+      parameters:
+      - name: signingProfileUuid
+        in: path
+        description: Signing Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignDocumentRequest"
+        required: true
+      responses:
+        "200":
+          description: Documents signed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignDocumentResponse"
+        "404":
+          description: Signing Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: "Request cannot be processed: the Signing Profile is disabled,\
+            \ has the ILM Native API inactive, does not sign content or does not accept\
+            \ the transfer mode, the request body violates a field validation rule,\
+            \ the request carries more items than the platform's items-per-request\
+            \ cap, `digestAlgorithm` differs from the digest the Signing Profile's\
+            \ signature algorithm commits to, the Signing Profile refuses a request\
+            \ attribute, or the formatting connector refuses a document"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "502":
+          description: A connector or the signer failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: A connector or the time source is unavailable; retry after
+            the Retry-After interval
+          headers:
+            Retry-After:
+              description: Seconds after which the request may be retried
+              style: simple
+              schema:
+                type: integer
           content:
             application/json:
               schema:
@@ -47823,6 +47919,106 @@ components:
       - pageNumber
       - totalItems
       - totalPages
+    SignDocumentItem:
+      type: object
+      description: "Document to sign, identified by the caller"
+      properties:
+        identifier:
+          type: string
+          description: Identifier used to correlate the item with its result; unique
+            within the request
+          examples:
+          - contract-2026-17
+          minLength: 1
+        document:
+          type: string
+          format: byte
+          description: "Document to sign, base64-encoded in JSON. Required when `transferMode`\
+            \ is `inline`; absent otherwise."
+        documentDigest:
+          type: string
+          format: byte
+          description: "Digest of the document to sign, base64-encoded in JSON. Required\
+            \ when `transferMode` is `digestOnly`, and its decoded length must match\
+            \ the output size of `digestAlgorithm` in bytes; absent otherwise."
+      required:
+      - identifier
+    SignDocumentRequest:
+      type: object
+      description: "Documents to sign at the Signing Profile's signature level, inline\
+        \ or as digests"
+      properties:
+        transferMode:
+          $ref: "#/components/schemas/DocumentTransferMode"
+          description: How every item of the request carries its document
+        digestAlgorithm:
+          $ref: "#/components/schemas/DigestAlgorithm"
+          description: Algorithm that produced every item's `documentDigest`. Required
+            when `transferMode` is `digestOnly` and must be the digest the Signing
+            Profile's signature algorithm commits to; absent otherwise.
+        items:
+          type: array
+          description: "Documents to sign, each with an identifier unique within the\
+            \ request. The platform's `maxItemsPerRequest` signing setting bounds\
+            \ how many a request may carry, with a default of 100."
+          items:
+            $ref: "#/components/schemas/SignDocumentItem"
+          minItems: 1
+        requestAttributes:
+          type: array
+          description: "Values the request sets for request attributes, each allowed\
+            \ by the Signing Profile; the formatting connector merges them over the\
+            \ profile's values. Each value takes the version of its attribute definition.\
+            \ Absent means none."
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - items
+      - transferMode
+    SignDocumentResponse:
+      type: object
+      description: Signing outputs of every request item
+      properties:
+        results:
+          type: array
+          description: "One result per request item, in request order"
+          items:
+            $ref: "#/components/schemas/SignDocumentResult"
+          minItems: 1
+      required:
+      - results
+    SignDocumentResult:
+      type: object
+      description: Signing output of one request item
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the corresponding request item
+          examples:
+          - contract-2026-17
+        signingRecordUuid:
+          type: string
+          format: uuid
+          description: "UUID of this item's signing record; absent when the Signing\
+            \ Profile's record policy disables recording, or when a `best_effort`\
+            \ record could not be staged. A `best_effort` record may still be lost\
+            \ after it is staged."
+        output:
+          type: string
+          format: byte
+          description: "Signing output, base64-encoded in JSON: the signed document,\
+            \ the detached signature or the container, as the Signing Profile's signature\
+            \ format produces"
+        mediaType:
+          type: string
+          description: "Media type of `output`, as the formatting connector names\
+            \ it"
+          examples:
+          - application/pdf
+      required:
+      - identifier
+      - mediaType
+      - output
     PaginationResponseDtoSecretDto:
       type: object
       properties:
