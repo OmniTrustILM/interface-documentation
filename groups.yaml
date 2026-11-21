@@ -143,6 +143,21 @@ groups:
       - com.otilm.api.interfaces.connector.v2.ComplianceController
       - com.otilm.api.interfaces.connector.v2.ComplianceRuleController
 
+  - id: doc-openapi-connector-content-signing-formatting-provider
+    groupName: connector-content-signing-formatting-provider
+    title: Content Signing Formatting Provider API
+    indexCategory: connector
+    description: REST API for implementations of custom Content Signing Formatting Provider
+    serverUrl: https://demo.otilm.com
+    extensions:
+      x-metrics-profile: "`com.otilm.api.interfaces.connector.common.v2.MetricsController.METRICS_CONFIG`"
+    interfaces:
+      - com.otilm.api.interfaces.connector.common.v2.AttributesController
+      - com.otilm.api.interfaces.connector.common.v2.HealthController
+      - com.otilm.api.interfaces.connector.common.v2.InfoController
+      - com.otilm.api.interfaces.connector.common.v2.MetricsController
+      - com.otilm.api.interfaces.connector.signing.contentsigning.ContentSigningFormattingController
+
   - id: doc-openapi-connector-credential-provider
     groupName: connector-credential-provider
     title: Credential Provider API
@@ -481,6 +496,14 @@ groups:
     interfaces:
       - com.otilm.api.interfaces.core.web.LocationManagementController
 
+  - id: doc-openapi-core-native-signing
+    groupName: core-native-signing
+    title: Native Signing API
+    indexCategory: core
+    description: REST API for signing documents with a Signing Profile through the ILM Native API
+    interfaces:
+      - com.otilm.api.interfaces.core.web.NativeSigningController
+
   - id: doc-openapi-core-notification
     groupName: core-notification
     title: Notification API
@@ -677,6 +700,7 @@ groups:
       - com.otilm.api.interfaces.core.web.InspectionController
       - com.otilm.api.interfaces.core.web.ListViewController
       - com.otilm.api.interfaces.core.web.LocationManagementController
+      - com.otilm.api.interfaces.core.web.NativeSigningController
       - com.otilm.api.interfaces.core.web.NotificationController
       - com.otilm.api.interfaces.core.web.NotificationInstanceController
       - com.otilm.api.interfaces.core.web.NotificationProfileController
