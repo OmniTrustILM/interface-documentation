@@ -486,9 +486,9 @@ paths:
             \ names an algorithm the key does not support (errorCode PARAMETER_UNSUPPORTED),\
             \ or `signatureActivation` is missing (errorCode VALIDATION_FAILED), or\
             \ the connector does not implement the requested signatureInputMode, or\
-            \ prehashedDigest is not defined for the selected signatureAlgorithm (errorCode\
-            \ PARAMETER_UNSUPPORTED), or a prehashedDigest item is not the length\
-            \ of the digest the signatureAlgorithm fixes (errorCode VALIDATION_FAILED)"
+            \ dataDigest is not defined for the selected signatureAlgorithm (errorCode\
+            \ PARAMETER_UNSUPPORTED), or a dataDigest item is not the length of the\
+            \ digest the signatureAlgorithm fixes (errorCode VALIDATION_FAILED)"
           content:
             application/problem+json:
               schema:
@@ -5093,17 +5093,17 @@ components:
           $ref: "#/components/schemas/SignatureInputMode"
           description: "How the connector treats each data item. Absent means data,\
             \ and callers omit the field for data mode because released connectors\
-            \ refuse unknown properties. Under prehashedDigest each item is already\
-            \ the digest the selected signature algorithm fixes and is never hashed\
-            \ again: RSA PKCS#1 v1.5 wraps it in a DigestInfo per RFC 8017 section\
-            \ 9.2 with explicit NULL parameters; RSA-PSS and ECDSA sign it with the\
-            \ parameters the signature algorithm code fixes. prehashedDigest is defined\
-            \ for RSA PKCS#1 v1.5, RSA-PSS and ECDSA signature algorithm codes only:\
-            \ any other code answers 422 PARAMETER_UNSUPPORTED, and an item whose\
-            \ length is not the output length of the fixed digest answers 422 VALIDATION_FAILED.\
-            \ A connector answers 422 PARAMETER_UNSUPPORTED to any signatureInputMode\
-            \ it does not implement and never ignores the field; one that implements\
-            \ prehashedDigest advertises the prehashedSigning feature flag."
+            \ refuse unknown properties. Under dataDigest each item is already the\
+            \ digest the selected signature algorithm fixes and is never hashed again:\
+            \ RSA PKCS#1 v1.5 wraps it in a DigestInfo per RFC 8017 section 9.2 with\
+            \ explicit NULL parameters; RSA-PSS and ECDSA sign it with the parameters\
+            \ the signature algorithm code fixes. dataDigest is defined for RSA PKCS#1\
+            \ v1.5, RSA-PSS and ECDSA signature algorithm codes only: any other code\
+            \ answers 422 PARAMETER_UNSUPPORTED, and an item whose length is not the\
+            \ output length of the fixed digest answers 422 VALIDATION_FAILED. A connector\
+            \ answers 422 PARAMETER_UNSUPPORTED to any signatureInputMode it does\
+            \ not implement and never ignores the field; one that implements dataDigest\
+            \ advertises the dataDigestSigning feature flag."
         signatureAttributes:
           type: array
           description: "Batch-wide signature settings. Must include exactly one v3\
@@ -5128,13 +5128,15 @@ components:
       - tokenProfileAttributes
     SignatureInputMode:
       type: string
-      description: "Whether each data item is the data itself or its digest. A hash-then-sign\
-        \ algorithm computes a digest of the data and signs that digest, while a pure\
-        \ algorithm signs the data itself. The platform sends prehashedDigest for\
-        \ raw signing, where its caller has already computed the digest"
+      description: "Whether each data item is the data to be signed or its digest.\
+        \ Under data the signer applies the complete signature algorithm, including\
+        \ any hashing the algorithm defines. Under dataDigest each item is already\
+        \ the digest of the data, as the signature algorithm fixes it. The platform\
+        \ sends dataDigest for raw signing, where its caller has already computed\
+        \ the digest"
       enum:
       - data
-      - prehashedDigest
+      - dataDigest
     OperationEventType:
       type: string
       description: "Reported step of a signature activation, from a closed list"
@@ -6691,7 +6693,7 @@ components:
       - keyImport
       - keyExport
       - keyList
-      - prehashedSigning
+      - dataDigestSigning
       - signerBoundAtCreation
       - secretVersioning
       - secretRotation

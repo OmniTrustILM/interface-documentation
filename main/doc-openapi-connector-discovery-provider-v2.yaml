@@ -3942,7 +3942,7 @@ components:
       - keyImport
       - keyExport
       - keyList
-      - prehashedSigning
+      - dataDigestSigning
       - signerBoundAtCreation
       - secretVersioning
       - secretRotation
