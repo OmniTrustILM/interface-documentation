@@ -4487,6 +4487,7 @@ components:
       - PrivateKeyInfo
       - EncryptedPrivateKeyInfo
       - Custom
+      - AlgorithmIdentifier
     KeyItemDetailDto:
       type: object
       properties:
@@ -4520,8 +4521,8 @@ components:
           - integer
           - "null"
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits; absent when the platform cannot size the
+            key.
           minimum: 1
         metadata:
           type: array
@@ -4550,6 +4551,14 @@ components:
           default: false
           description: Whether this key may be exported. Set when the key is created
             or imported and never raised afterwards; it can only be lowered to false.
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
       required:
       - complianceStatus
       - enabled
@@ -5391,8 +5400,8 @@ components:
           - integer
           - "null"
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits; absent when the platform cannot size the
+            key.
           minimum: 1
         usage:
           type: array
@@ -5434,6 +5443,14 @@ components:
               - contentType: string
                 reference: Disaster recovery
                 data: disaster-recovery
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
         removableFromInventory:
           type: boolean
           description: Whether the key this item belongs to meets the conditions for
@@ -5598,6 +5615,14 @@ components:
             \ the status and how to fix it, alongside the platform's `reason`. Clients\
             \ display it and never parse it."
           maxLength: 1000
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
       required:
       - status
     TokenKeyListResponseDto:
@@ -6637,8 +6662,8 @@ components:
           - integer
           - "null"
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits; absent when the platform cannot size the
+            key.
           minimum: 1
         usage:
           type: array
@@ -6680,6 +6705,14 @@ components:
               - contentType: string
                 reference: Disaster recovery
                 data: disaster-recovery
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
       required:
       - associations
       - complianceStatus

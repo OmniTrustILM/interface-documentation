@@ -5544,7 +5544,8 @@ components:
     PrivateKeyDataV2Dto:
       type: object
       additionalProperties: false
-      description: Private-key descriptor without key material
+      description: "Private-key descriptor without key material, which names the key's\
+        \ parameters by their AlgorithmIdentifier when the connector can read them"
       properties:
         type:
           type: string
@@ -5558,9 +5559,17 @@ components:
         length:
           type: integer
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: "Key length in bits. The connector must state it when `algorithmIdentifier`\
+            \ carries no size, as for RSA. The platform reads the size from the public\
+            \ key or from `algorithmIdentifier` first."
           minimum: 1
+        algorithmIdentifier:
+          type: string
+          format: byte
+          description: "Base64-encoded DER AlgorithmIdentifier naming the key's parameters,\
+            \ as SubjectPublicKeyInfo and PKCS#8 carry it. The connector must send\
+            \ it when it can read the parameters, and in a key pair it must equal\
+            \ the AlgorithmIdentifier of `publicKeySpki` byte for byte."
         metadata:
           type: array
           description: "Non-sensitive, provider-specific descriptive metadata"
@@ -5583,16 +5592,16 @@ components:
           minItems: 1
         keyData:
           $ref: "#/components/schemas/PublicKeyDataV2Dto"
-          description: "Public-key descriptor, optionally carrying the public key\
-            \ as SPKI"
+          description: Public-key descriptor carrying the public key as DER SubjectPublicKeyInfo
       required:
       - keyData
       - keyMeta
     PublicKeyDataV2Dto:
       type: object
       additionalProperties: false
-      description: Public-key descriptor with an SPKI representation. Algorithm Unknown
-        accepts any parseable public SPKI and skips algorithm-family matching.
+      description: Public-key descriptor carrying the public key as DER SubjectPublicKeyInfo.
+        Algorithm Unknown accepts any parseable public SPKI and skips algorithm-family
+        matching.
       properties:
         type:
           type: string
@@ -5603,12 +5612,6 @@ components:
         algorithm:
           $ref: "#/components/schemas/KeyAlgorithm"
           description: Cryptographic algorithm of the key
-        length:
-          type: integer
-          format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
-          minimum: 1
         metadata:
           type: array
           description: "Non-sensitive, provider-specific descriptive metadata"
@@ -5617,7 +5620,13 @@ components:
         publicKeySpki:
           type: string
           format: byte
-          description: Base64-encoded DER SubjectPublicKeyInfo.
+          description: Public key of `algorithm` as base64-encoded DER SubjectPublicKeyInfo
+        length:
+          type: string
+          format: int32
+          deprecated: true
+          description: "Key length in bits, as connectors released before 2.21.0 send\
+            \ it; ignored, since the platform reads the size from `publicKeySpki`"
       required:
       - algorithm
       - publicKeySpki
@@ -5673,8 +5682,7 @@ components:
         length:
           type: integer
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits
           minimum: 1
         metadata:
           type: array
@@ -5683,6 +5691,7 @@ components:
             $ref: "#/components/schemas/MetadataAttribute"
       required:
       - algorithm
+      - length
       - type
     KeyHandleV2Dto:
       type: object
@@ -5755,9 +5764,6 @@ components:
           $ref: "#/components/schemas/KeyTypeV2"
         algorithm:
           $ref: "#/components/schemas/KeyAlgorithm"
-        length:
-          type: integer
-          format: int32
         metadata:
           type: array
           items:

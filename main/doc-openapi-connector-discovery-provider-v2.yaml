@@ -2987,12 +2987,21 @@ components:
             \ connectors and certificates, without exposing key material"
         publicKeyFormat:
           $ref: "#/components/schemas/KeyFormat"
-          description: "Format of publicKey, typically SubjectPublicKeyInfo. Present\
-            \ only with publicKey."
+          description: "Format of `publicKey`, one of `Raw`, `SubjectPublicKeyInfo`\
+            \ or `Custom`; present only with `publicKey`, and taken as SubjectPublicKeyInfo\
+            \ when absent."
         publicKey:
           type: string
           description: "Base64-encoded public key. Absent for a PRIVATE_KEY, SECRET_KEY\
             \ or SPLIT_KEY key."
+        algorithmIdentifier:
+          type: string
+          format: byte
+          description: "Base64-encoded DER AlgorithmIdentifier naming the key's parameters,\
+            \ as SubjectPublicKeyInfo and PKCS#8 carry it. The provider must send\
+            \ it, when it can read the parameters, for a private or split key and\
+            \ for a public key without a SubjectPublicKeyInfo `publicKey`, and must\
+            \ omit it for a secret key and beside a SubjectPublicKeyInfo `publicKey`."
       required:
       - algorithm
       - resource
@@ -3050,6 +3059,7 @@ components:
       - PrivateKeyInfo
       - EncryptedPrivateKeyInfo
       - Custom
+      - AlgorithmIdentifier
     KeyType:
       type: string
       enum:

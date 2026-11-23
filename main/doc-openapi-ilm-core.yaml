@@ -43363,6 +43363,7 @@ components:
       - PrivateKeyInfo
       - EncryptedPrivateKeyInfo
       - Custom
+      - AlgorithmIdentifier
     KeyItemDetailDto:
       type: object
       properties:
@@ -43396,8 +43397,8 @@ components:
           - integer
           - "null"
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits; absent when the platform cannot size the
+            key.
           minimum: 1
         metadata:
           type: array
@@ -43426,6 +43427,14 @@ components:
           default: false
           description: Whether this key may be exported. Set when the key is created
             or imported and never raised afterwards; it can only be lowered to false.
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
       required:
       - complianceStatus
       - enabled
@@ -45635,8 +45644,8 @@ components:
           - integer
           - "null"
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits; absent when the platform cannot size the
+            key.
           minimum: 1
         usage:
           type: array
@@ -45678,6 +45687,14 @@ components:
               - contentType: string
                 reference: Disaster recovery
                 data: disaster-recovery
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
       required:
       - associations
       - complianceStatus
@@ -48946,8 +48963,8 @@ components:
           - integer
           - "null"
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits; absent when the platform cannot size the
+            key.
           minimum: 1
         usage:
           type: array
@@ -48989,6 +49006,14 @@ components:
               - contentType: string
                 reference: Disaster recovery
                 data: disaster-recovery
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
         removableFromInventory:
           type: boolean
           description: Whether the key this item belongs to meets the conditions for
@@ -52760,6 +52785,14 @@ components:
             \ the status and how to fix it, alongside the platform's `reason`. Clients\
             \ display it and never parse it."
           maxLength: 1000
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
       required:
       - status
     TokenKeyListResponseDto:
@@ -54617,12 +54650,21 @@ components:
             \ connectors and certificates, without exposing key material"
         publicKeyFormat:
           $ref: "#/components/schemas/KeyFormat"
-          description: "Format of publicKey, typically SubjectPublicKeyInfo. Present\
-            \ only with publicKey."
+          description: "Format of `publicKey`, one of `Raw`, `SubjectPublicKeyInfo`\
+            \ or `Custom`; present only with `publicKey`, and taken as SubjectPublicKeyInfo\
+            \ when absent."
         publicKey:
           type: string
           description: "Base64-encoded public key. Absent for a PRIVATE_KEY, SECRET_KEY\
             \ or SPLIT_KEY key."
+        algorithmIdentifier:
+          type: string
+          format: byte
+          description: "Base64-encoded DER AlgorithmIdentifier naming the key's parameters,\
+            \ as SubjectPublicKeyInfo and PKCS#8 carry it. The provider must send\
+            \ it, when it can read the parameters, for a private or split key and\
+            \ for a public key without a SubjectPublicKeyInfo `publicKey`, and must\
+            \ omit it for a secret key and beside a SubjectPublicKeyInfo `publicKey`."
       required:
       - algorithm
       - resource
@@ -54678,6 +54720,11 @@ components:
             \ item was found. Absent when there is none."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
+        keyDescription:
+          $ref: "#/components/schemas/KeyDescriptionDto"
+          description: "Algorithm, parameter set and size the platform derives from\
+            \ the payload of a key item; absent for other resources and for a key\
+            \ payload the platform cannot read."
       required:
       - newlyDiscovered
       - processed
@@ -54685,6 +54732,28 @@ components:
       - sequence
       - uniqueRef
       - uuid
+    KeyDescriptionDto:
+      type: object
+      description: "Algorithm, parameter set and size of a discovered key, as the\
+        \ platform derives them from the key's payload"
+      properties:
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+          description: Algorithm of the key
+        parameterSet:
+          type: string
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
+        length:
+          type: integer
+          format: int32
+          description: Key length in bits; absent when the platform cannot size the
+            key.
+          minimum: 1
+      required:
+      - algorithm
     PaginationResponseDtoDiscoveryItemDto:
       type: object
       properties:

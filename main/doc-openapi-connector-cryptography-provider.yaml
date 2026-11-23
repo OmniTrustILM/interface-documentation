@@ -3620,7 +3620,7 @@ components:
           description: Cryptographic algorithm of the Key
         format:
           $ref: "#/components/schemas/KeyFormat"
-          description: Format of the Key
+          description: "Format of the key, which selects the shape of `value`"
         value:
           description: Value of the Key
           oneOf:

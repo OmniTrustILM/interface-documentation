@@ -3997,6 +3997,7 @@ components:
       - PrivateKeyInfo
       - EncryptedPrivateKeyInfo
       - Custom
+      - AlgorithmIdentifier
     KeyItemDto:
       type: object
       properties:
@@ -4065,8 +4066,8 @@ components:
           - integer
           - "null"
           format: int32
-          description: "Key length in bits. Required for RSA, ECDSA and AES; optional\
-            \ otherwise."
+          description: Key length in bits; absent when the platform cannot size the
+            key.
           minimum: 1
         usage:
           type: array
@@ -4108,6 +4109,14 @@ components:
               - contentType: string
                 reference: Disaster recovery
                 data: disaster-recovery
+        parameterSet:
+          type:
+          - string
+          - "null"
+          description: "Name of the key's standardized parameters: the curve of an\
+            \ ECDSA key or the parameter set of a post-quantum key, such as P-256\
+            \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
+            \ size, and for a key the platform cannot name."
       required:
       - associations
       - complianceStatus
