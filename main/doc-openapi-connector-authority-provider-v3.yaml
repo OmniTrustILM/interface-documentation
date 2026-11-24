@@ -1057,6 +1057,66 @@ paths:
       - CertificateTLSAuth: []
       - NoAuth: []
       - BasicAuth: []
+  /v3/authorityProvider/authorities/certificateTypes:
+    post:
+      tags:
+      - Authority Management v3
+      summary: List supported certificate types
+      description: "List the certificate types the authority issues, or the types\
+        \ it issues through one RA profile when the RA profile attributes are given.\
+        \ Each type appears at most once, and X.509 is listed like any other type:\
+        \ a non-empty response is the whole answer, and an empty one means X.509 only.\
+        \ Core ignores a listed type it does not know, and refuses a response in which\
+        \ it knows none. Optional endpoint — see responses."
+      operationId: listCertificateTypes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateTypesRequestDtoV3"
+        required: true
+      responses:
+        "200":
+          description: Supported certificate types retrieved; an empty array means
+            X.509 only
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportedCertificateTypeDtoV3"
+        "404":
+          description: Not Found. Endpoint not found or not implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "501":
+          description: Connector declines the operation (ErrorCode.OPERATION_NOT_SUPPORTED)
+            — Core treats the authority as issuing X.509 only
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportedCertificateTypeDtoV3"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+      security:
+      - ConnectorAPIKeyAuth: []
+      - CertificateTLSAuth: []
+      - NoAuth: []
+      - BasicAuth: []
   /v3/authorityProvider/authorities/caCertificates:
     post:
       tags:
@@ -4274,6 +4334,32 @@ components:
             \ and revoked-entry data from the CRL itself."
       required:
       - crl
+    CertificateTypesRequestDtoV3:
+      type: object
+      properties:
+        authorityAttributes:
+          type: array
+          description: Authority attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        raProfileAttributes:
+          type: array
+          description: RA profile attributes. Given when the types of one RA profile
+            are asked for; absent when the types of the authority as a whole are asked
+            for
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+      required:
+      - authorityAttributes
+    SupportedCertificateTypeDtoV3:
+      type: object
+      description: Certificate type an authority issues
+      properties:
+        certificateType:
+          $ref: "#/components/schemas/CertificateType"
+          description: Type of the Certificate
+      required:
+      - certificateType
     CaCertificatesRequestDtoV3:
       type: object
       properties:

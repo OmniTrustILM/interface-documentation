@@ -2089,6 +2089,75 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/authorities/{authorityUuid}/raProfiles/{raProfileUuid}/certificateTypes:
+    get:
+      tags:
+      - RA Profile Management
+      summary: List supported Certificate types
+      description: "Return the certificate types that can be issued through this RA\
+        \ profile, as its certificate authority reports them. An authority that does\
+        \ not report its types issues X.509 only."
+      operationId: listRaProfileSupportedCertificateTypes
+      parameters:
+      - name: authorityUuid
+        in: path
+        description: Authority Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: raProfileUuid
+        in: path
+        description: RA Profile UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Supported certificate types obtained
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportedCertificateTypeDto"
+        "404":
+          description: RA Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/authorities/{authorityUuid}/raProfiles/{raProfileUuid}/caCertificates:
     get:
       tags:
@@ -5087,6 +5156,15 @@ components:
       required:
       - name
       - uuid
+    SupportedCertificateTypeDto:
+      type: object
+      description: Certificate type that can be issued through an RA profile
+      properties:
+        certificateType:
+          $ref: "#/components/schemas/CertificateType"
+          description: Type of the Certificate
+      required:
+      - certificateType
     CertificateComplianceResultDto:
       type: object
       properties:
