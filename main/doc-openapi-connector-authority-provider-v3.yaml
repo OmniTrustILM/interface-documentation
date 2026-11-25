@@ -4780,7 +4780,8 @@ components:
           description: Version of the implemented connector interface
         features:
           type: array
-          description: Features supported by the connector interface
+          description: "Feature flags the connector advertises for the interface:\
+            \ capabilities it supports and restrictions it declares"
           items:
             $ref: "#/components/schemas/FeatureFlag"
       required:
@@ -4794,7 +4795,7 @@ components:
       - asynchronous
       - keyImport
       - keyExport
-      - keyList
+      - unlistableToken
       - dataDigestSigning
       - signerBoundAtCreation
       - secretVersioning

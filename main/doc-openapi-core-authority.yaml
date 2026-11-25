@@ -2358,8 +2358,8 @@ components:
     ConnectorInterfaceDto:
       type: object
       description: "An interface a connector implements: its code, its version, and\
-        \ the features it supports. The version decides which generation of the provider\
-        \ contract Core speaks to that connector."
+        \ the feature flags it advertises. The version decides which generation of\
+        \ the provider contract Core speaks to that connector."
       properties:
         uuid:
           type: string
@@ -2373,7 +2373,8 @@ components:
           description: Version of the implemented connector interface
         features:
           type: array
-          description: Features supported by the connector interface
+          description: "Feature flags the connector advertises for the interface:\
+            \ capabilities it supports and restrictions it declares"
           items:
             $ref: "#/components/schemas/FeatureFlag"
       required:
@@ -2388,7 +2389,7 @@ components:
       - asynchronous
       - keyImport
       - keyExport
-      - keyList
+      - unlistableToken
       - dataDigestSigning
       - signerBoundAtCreation
       - secretVersioning

@@ -1173,7 +1173,8 @@ paths:
       summary: Resolve key handles
       description: "Return the key the token holds under each handle a listing returned,\
         \ or why it cannot. An error about one key goes into that key's result. Only\
-        \ a fault of the whole token fails the request."
+        \ a fault of the whole token fails the request. The platform calls it unless\
+        \ the connector declares `unlistableToken`."
       operationId: resolveKeys
       requestBody:
         content:
@@ -1234,7 +1235,8 @@ paths:
       summary: List keys
       description: "Return one page of the keys the token holds, including keys created\
         \ outside the platform. An error about one key goes into that key's entry.\
-        \ Only a fault of the whole token fails the request."
+        \ Only a fault of the whole token fails the request. The platform calls it\
+        \ unless the connector declares `unlistableToken`."
       operationId: listKeys
       requestBody:
         content:
@@ -6684,7 +6686,8 @@ components:
           description: Version of the implemented connector interface
         features:
           type: array
-          description: Features supported by the connector interface
+          description: "Feature flags the connector advertises for the interface:\
+            \ capabilities it supports and restrictions it declares"
           items:
             $ref: "#/components/schemas/FeatureFlag"
       required:
@@ -6698,7 +6701,7 @@ components:
       - asynchronous
       - keyImport
       - keyExport
-      - keyList
+      - unlistableToken
       - dataDigestSigning
       - signerBoundAtCreation
       - secretVersioning
