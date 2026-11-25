@@ -1617,6 +1617,7 @@ components:
       - certificate_action_performed
       - certificate_discovered
       - certificate_expiring
+      - certificate_renewal_due
       - certificate_not_compliant
       - certificate_uploaded
       - certificate_registered
@@ -1847,6 +1848,7 @@ components:
       enum:
       - setField
       - sendNotification
+      - renewCertificate
     FilterConditionOperator:
       type: string
       enum:

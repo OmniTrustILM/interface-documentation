@@ -1547,6 +1547,63 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDocument"
       security: []
+  /v1/protocols/acme/{acmeProfileName}/renewal-info/{certId}:
+    get:
+      tags:
+      - ACME operations
+      summary: Get Renewal Information
+      externalDocs:
+        description: "RFC 9773, section 4.2"
+        url: https://datatracker.ietf.org/doc/html/rfc9773#section-4.2
+      operationId: getRenewalInfo
+      parameters:
+      - name: acmeProfileName
+        in: path
+        description: ACME Profile name
+        required: true
+        schema:
+          type: string
+      - name: certId
+        in: path
+        description: "Certificate identifier: the base64url-encoded authority key\
+          \ identifier and serial number, joined by `.`"
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Renewal information retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenewalInfo"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDocument"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "500":
+          description: Internal Server Error
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDocument"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDocument"
+      security: []
   /v1/protocols/acme/{acmeProfileName}/directory:
     get:
       tags:
@@ -1570,6 +1627,63 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Directory"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDocument"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "500":
+          description: Internal Server Error
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDocument"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDocument"
+      security: []
+  /v1/protocols/acme/raProfile/{raProfileName}/renewal-info/{certId}:
+    get:
+      tags:
+      - ACME RA Profile
+      summary: Get Renewal Information
+      externalDocs:
+        description: "RFC 9773, section 4.2"
+        url: https://datatracker.ietf.org/doc/html/rfc9773#section-4.2
+      operationId: getRenewalInfo_1
+      parameters:
+      - name: raProfileName
+        in: path
+        description: RA Profile name
+        required: true
+        schema:
+          type: string
+      - name: certId
+        in: path
+        description: "Certificate identifier: the base64url-encoded authority key\
+          \ identifier and serial number, joined by `.`"
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Renewal information retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenewalInfo"
         "400":
           description: Bad Request
           content:
@@ -1784,6 +1898,11 @@ components:
           description: URL to download the Certificate
           examples:
           - https://someserver.com/api/v1/protocols/acme/cert/YT65KFut6
+        replaces:
+          type: string
+          description: Certificate identifier of the certificate this Order replaces
+          examples:
+          - aYhba4dGQEHhs3uEe6CuLN4ByNQ.AIdlQyE
       required:
       - status
     CertificateFinalizeRequest:
@@ -1812,6 +1931,11 @@ components:
           type: string
           format: date-time
           description: Requested value of notAfter field in the certificate
+        replaces:
+          type: string
+          description: Certificate identifier of the certificate this Order replaces
+          examples:
+          - aYhba4dGQEHhs3uEe6CuLN4ByNQ.AIdlQyE
       required:
       - identifiers
     ExternalAccountBinding:
@@ -1990,6 +2114,38 @@ components:
       required:
       - identifier
       - status
+    RenewalInfo:
+      type: object
+      properties:
+        suggestedWindow:
+          $ref: "#/components/schemas/SuggestedWindow"
+          description: Time window in which the ACME client is suggested to start
+            renewing the certificate
+        explanationURL:
+          type: string
+          description: URL of a page explaining why the suggested window was chosen
+          examples:
+          - https://some-server.com/renewal-explanation
+      required:
+      - suggestedWindow
+    SuggestedWindow:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+          description: Start of the suggested renewal window (RFC 3339)
+          examples:
+          - 2026-01-01T00:00:00Z
+        end:
+          type: string
+          format: date-time
+          description: End of the suggested renewal window (RFC 3339)
+          examples:
+          - 2026-01-02T00:00:00Z
+      required:
+      - end
+      - start
     Directory:
       type: object
       properties:
@@ -2026,6 +2182,12 @@ components:
         meta:
           $ref: "#/components/schemas/DirectoryMeta"
           description: Metadata for the Directory object
+        renewalInfo:
+          type: string
+          description: "URL of the ACME Renewal Information resource, present when\
+            \ renewal information is enabled for the ACME Profile"
+          examples:
+          - http://some-server.com/v1/protocols/acme/renewal-info
       required:
       - keyChange
       - meta

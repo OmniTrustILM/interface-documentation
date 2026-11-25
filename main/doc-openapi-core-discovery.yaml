@@ -3024,6 +3024,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - certificateRenewalInfo
       - discoveryIncremental
     DiscoveryDeliveryMode:
       type: string
@@ -3314,6 +3315,7 @@ components:
       - certificate_action_performed
       - certificate_discovered
       - certificate_expiring
+      - certificate_renewal_due
       - certificate_not_compliant
       - certificate_uploaded
       - certificate_registered
@@ -4695,6 +4697,7 @@ components:
       - CertificateSubjectType
       - CertificateKeyUsage
       - CertificateRelationType
+      - RenewalWindowSource
       - OidCategory
       - KeyAlgorithm
       - KeyFormat

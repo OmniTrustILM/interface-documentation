@@ -3712,10 +3712,62 @@ components:
           $ref: "#/components/schemas/RaProfileCertificateRequestAttributesDto"
           description: Static certificate-request-attribute set configured for the
             RA Profile
+        renewalSettings:
+          $ref: "#/components/schemas/RaProfileRenewalSettingsDto"
+          description: Renewal window settings of the RA Profile
       required:
       - enabled
       - name
       - uuid
+    RaProfileRenewalSettingsDto:
+      type: object
+      properties:
+        windowEnabled:
+          type: boolean
+          description: Indicator whether a renewal window is computed for certificates
+            of the RA profile
+        windowStartPercent:
+          type: integer
+          format: int32
+          description: Start of the renewal window as a percentage of the certificate
+            validity period
+          maximum: 99
+          minimum: 1
+        windowEndPercent:
+          type: integer
+          format: int32
+          description: End of the renewal window as a percentage of the certificate
+            validity period
+          maximum: 99
+          minimum: 1
+        useAuthorityRenewalInfo:
+          type: boolean
+          description: Indicator whether the renewal window suggested by the certificate
+            authority is used when available
+        autoRenewalEnabled:
+          type: boolean
+          description: Indicator whether certificates of the RA profile are renewed
+            automatically when their renewal window starts
+        autoRenewalMaxAttempts:
+          type: integer
+          format: int32
+          description: Number of failed automatic renewals after which a certificate
+            is no longer renewed automatically
+          maximum: 20
+          minimum: 1
+        authorityRenewalInfoSupported:
+          type: boolean
+          description: Indicator whether the authority of the RA profile can suggest
+            renewal windows
+          readOnly: true
+      required:
+      - authorityRenewalInfoSupported
+      - autoRenewalEnabled
+      - autoRenewalMaxAttempts
+      - useAuthorityRenewalInfo
+      - windowEnabled
+      - windowEndPercent
+      - windowStartPercent
     ValueSourceBindingDto:
       type: object
       description: Core-side value-source binding onto a request-attribute definition;

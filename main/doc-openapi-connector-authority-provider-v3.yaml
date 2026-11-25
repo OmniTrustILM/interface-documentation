@@ -363,6 +363,72 @@ paths:
       - CertificateTLSAuth: []
       - NoAuth: []
       - BasicAuth: []
+  /v3/authorityProvider/certificates/renewalInfo:
+    post:
+      tags:
+      - Certificate Management v3
+      summary: Get certificate renewal information
+      description: |-
+        Return the CA's advised renewal window for a batch of 1 to 50 certificates.
+
+        Optional endpoint. Only connectors that declare the `certificateRenewalInfo` feature flag serve it. Only the Core refresh job calls it.
+      operationId: renewalInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateRenewalInfoRequestDtoV3"
+        required: true
+      responses:
+        "200":
+          description: Batch processed. The outcome of each item is in the `status`
+            of its result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateRenewalInfoResponseDtoV3"
+        "422":
+          description: "Invalid request, such as more than 50 items or a duplicate\
+            \ `reference`"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateRenewalInfoResponseDtoV3"
+        "429":
+          description: Rate limited by the CA — Core backs the batch off
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateRenewalInfoResponseDtoV3"
+        "503":
+          description: CA unavailable — Core backs the batch off
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateRenewalInfoResponseDtoV3"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "404":
+          description: Not Found. Endpoint not found or not implemented
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetailExtended"
+      security:
+      - ConnectorAPIKeyAuth: []
+      - CertificateTLSAuth: []
+      - NoAuth: []
+      - BasicAuth: []
   /v3/authorityProvider/certificates/renew:
     post:
       tags:
@@ -3955,6 +4021,112 @@ components:
       - none
       - connectorCallback
       - staticList
+    CertificateRenewalInfoRequestDtoV3:
+      type: object
+      properties:
+        authorityAttributes:
+          type: array
+          description: Authority attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        raProfileAttributes:
+          type: array
+          description: RA profile attributes
+          items:
+            $ref: "#/components/schemas/RequestAttribute"
+        certificates:
+          type: array
+          description: "Certificates to look up, 1 to 50 per request. Each `reference`\
+            \ must be unique within the request."
+          items:
+            $ref: "#/components/schemas/CertificateRenewalInfoRequestItemDtoV3"
+          maxItems: 50
+          minItems: 1
+      required:
+      - authorityAttributes
+      - certificates
+      - raProfileAttributes
+    CertificateRenewalInfoRequestItemDtoV3:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: "Opaque reference chosen by Core, unique within the request\
+            \ and echoed back in the result"
+          minLength: 1
+        certificate:
+          type: string
+          format: byte
+          description: Base64 of the DER-encoded certificate to look up at the upstream
+            CA
+          minLength: 1
+        meta:
+          type: array
+          description: "Connector-defined metadata Core stored for the certificate,\
+            \ when it has any"
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
+      required:
+      - certificate
+      - reference
+    CertificateRenewalInfoResponseDtoV3:
+      type: object
+      properties:
+        retryAfter:
+          type: integer
+          format: int32
+          description: Default number of seconds until Core should ask again. Applies
+            to results without their own `retryAfter`.
+          minimum: 0
+        results:
+          type: array
+          description: One result per request item. Core treats a missing item as
+            status `retry`.
+          items:
+            $ref: "#/components/schemas/CertificateRenewalInfoResultDtoV3"
+      required:
+      - results
+    CertificateRenewalInfoResultDtoV3:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: Reference of the request item this result answers
+        status:
+          $ref: "#/components/schemas/CertificateRenewalInfoStatusV3"
+          description: Outcome for the certificate
+        windowStart:
+          type: string
+          format: date-time
+          description: Start of the window in which the CA advises renewing. Required
+            when `status` is `available`. A start in the past means renew now.
+        windowEnd:
+          type: string
+          format: date-time
+          description: "End of the renewal window, after `windowStart`. Required when\
+            \ `status` is `available`."
+        explanationUrl:
+          type: string
+          description: URL of a page explaining the CA's advice
+        retryAfter:
+          type: integer
+          format: int32
+          description: Seconds until Core should ask again for this certificate
+          minimum: 0
+        reason:
+          type: string
+          description: Human-readable explanation of the outcome. Must not contain
+            raw internal error messages.
+      required:
+      - reference
+      - status
+    CertificateRenewalInfoStatusV3:
+      type: string
+      enum:
+      - available
+      - unknown
+      - notSupported
+      - retry
     CertificateKeyUsage:
       type: string
       enum:
@@ -4633,6 +4805,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - certificateRenewalInfo
       - discoveryIncremental
     InfoResponse:
       type: object

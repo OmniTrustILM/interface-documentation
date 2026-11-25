@@ -1983,6 +1983,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - certificateRenewalInfo
       - discoveryIncremental
     NameAndUuidDto:
       type: object
@@ -3085,6 +3086,7 @@ components:
       - CertificateSubjectType
       - CertificateKeyUsage
       - CertificateRelationType
+      - RenewalWindowSource
       - OidCategory
       - KeyAlgorithm
       - KeyFormat

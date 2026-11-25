@@ -426,6 +426,61 @@ paths:
       - SessionAuth: []
       - CertificateAuth: []
       - BearerJWTAuth: []
+  /v1/certificates/earlyRenewal:
+    post:
+      tags:
+      - Certificate Inventory
+      summary: Request early renewal of multiple certificates
+      description: "Marks the certificates with the provided UUIDs for early renewal,\
+        \ spread over the requested period"
+      operationId: bulkRequestEarlyRenewal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkEarlyRenewalRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Early renewal requested for the certificates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkOperationResponse"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+      security:
+      - SessionAuth: []
+      - CertificateAuth: []
+      - BearerJWTAuth: []
   /v1/certificates/delete:
     post:
       tags:
@@ -2067,6 +2122,11 @@ components:
           type: string
           format: date-time
           description: Certificate expiration date
+        renewalWindowStart:
+          type: string
+          format: date-time
+          description: Start of the renewal window; empty when the certificate has
+            no renewal window
         publicKeyAlgorithm:
           type: string
           description: "Public key algorithm. Absent when the certificate has no public\
@@ -3599,19 +3659,31 @@ components:
       - privateKey
       - secretKey
       - signingRequest
-    RemoveCertificateDto:
+    BulkEarlyRenewalRequestDto:
       type: object
       properties:
+        spreadSeconds:
+          type: integer
+          format: int64
+          description: Period in seconds over which the early renewals are spread
+          maximum: 2592000
+          minimum: 3600
+        explanationUrl:
+          type: string
+          description: Absolute http(s) URL explaining the reason for the early renewal
+          maxLength: 2048
+          minLength: 0
+          pattern: ^https?://\S+$
         uuids:
           type: array
-          description: List of Certificate UUIDs
+          description: UUIDs of the certificates to renew early
           items:
             type: string
-        filters:
-          type: array
-          description: Certificate filter input
-          items:
-            $ref: "#/components/schemas/SearchFilterRequestDto"
+            format: uuid
+          minItems: 1
+      required:
+      - spreadSeconds
+      - uuids
     BulkOperationResponse:
       type: object
       properties:
@@ -3633,6 +3705,19 @@ components:
       - failedItem
       - message
       - status
+    RemoveCertificateDto:
+      type: object
+      properties:
+        uuids:
+          type: array
+          description: List of Certificate UUIDs
+          items:
+            type: string
+        filters:
+          type: array
+          description: Certificate filter input
+          items:
+            $ref: "#/components/schemas/SearchFilterRequestDto"
     CertificateRequestFormat:
       type: string
       enum:
@@ -3701,6 +3786,24 @@ components:
       required:
       - issueAttributes
       - raProfileUuid
+    AutoRenewalMode:
+      type: string
+      enum:
+      - location
+      - ilmKey
+      - none
+    CertificateAutoRenewalDto:
+      type: object
+      properties:
+        mode:
+          $ref: "#/components/schemas/AutoRenewalMode"
+          description: How the certificate is renewed automatically
+        blockedReason:
+          type: string
+          description: Reason the certificate cannot be renewed automatically. Present
+            only when `mode` is `none`.
+      required:
+      - mode
     CertificateComplianceResultDto:
       type: object
       properties:
@@ -3888,6 +3991,42 @@ components:
       - expired
       - locked
       - closed
+    CertificateRenewalInfoDto:
+      type: object
+      properties:
+        windowStart:
+          type: string
+          format: date-time
+          description: Start of the suggested renewal window
+        windowEnd:
+          type: string
+          format: date-time
+          description: End of the suggested renewal window
+        explanationUrl:
+          type: string
+          description: "URL with an explanation of the renewal window, provided by\
+            \ the certificate authority"
+        source:
+          $ref: "#/components/schemas/RenewalWindowSource"
+          description: Origin of the renewal window
+        updatedAt:
+          type: string
+          format: date-time
+          description: Time the renewal window was last updated
+        due:
+          type: boolean
+          description: "Indicates whether the renewal window has started, so the certificate\
+            \ is due for renewal"
+        autoRenewal:
+          $ref: "#/components/schemas/CertificateAutoRenewalDto"
+          description: Automatic renewal of the certificate; absent when automatic
+            renewal is not enabled for it
+      required:
+      - due
+      - source
+      - updatedAt
+      - windowEnd
+      - windowStart
     CertificateRequestDto:
       type: object
       description: Certificate request dependent on the certificate type
@@ -4259,6 +4398,12 @@ components:
       - esign
       - eseal
       - web
+    RenewalWindowSource:
+      type: string
+      enum:
+      - policy
+      - authority
+      - forced
     Resource:
       type: string
       enum:
@@ -4482,6 +4627,11 @@ components:
           type: string
           format: date-time
           description: Certificate expiration date
+        renewalWindowStart:
+          type: string
+          format: date-time
+          description: Start of the renewal window; empty when the certificate has
+            no renewal window
         publicKeyAlgorithm:
           type: string
           description: "Public key algorithm. Absent when the certificate has no public\
@@ -4599,6 +4749,10 @@ components:
           items:
             $ref: "#/components/schemas/LocationDto"
           uniqueItems: true
+        renewalInfo:
+          $ref: "#/components/schemas/CertificateRenewalInfoDto"
+          description: Renewal window of the Certificate; absent when the certificate
+            has no renewal window
         registration:
           $ref: "#/components/schemas/CertificateRegistrationDetailDto"
           description: Pre-registration authorization status; present only for certificates
@@ -5111,6 +5265,7 @@ components:
           - Archive certificate
           - Unarchive certificate
           - Download Keystore
+          - Update renewal window
         status:
           type: string
           description: Event result
@@ -5301,6 +5456,7 @@ components:
       - CertificateSubjectType
       - CertificateKeyUsage
       - CertificateRelationType
+      - RenewalWindowSource
       - OidCategory
       - KeyAlgorithm
       - KeyFormat

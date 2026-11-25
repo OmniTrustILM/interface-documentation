@@ -3153,6 +3153,24 @@ components:
       required:
       - certificate
       - customAttributes
+    AutoRenewalMode:
+      type: string
+      enum:
+      - location
+      - ilmKey
+      - none
+    CertificateAutoRenewalDto:
+      type: object
+      properties:
+        mode:
+          $ref: "#/components/schemas/AutoRenewalMode"
+          description: How the certificate is renewed automatically
+        blockedReason:
+          type: string
+          description: Reason the certificate cannot be renewed automatically. Present
+            only when `mode` is `none`.
+      required:
+      - mode
     CertificateComplianceResultDto:
       type: object
       properties:
@@ -3235,6 +3253,11 @@ components:
           type: string
           format: date-time
           description: Certificate expiration date
+        renewalWindowStart:
+          type: string
+          format: date-time
+          description: Start of the renewal window; empty when the certificate has
+            no renewal window
         publicKeyAlgorithm:
           type: string
           description: "Public key algorithm. Absent when the certificate has no public\
@@ -3490,6 +3513,42 @@ components:
       - expired
       - locked
       - closed
+    CertificateRenewalInfoDto:
+      type: object
+      properties:
+        windowStart:
+          type: string
+          format: date-time
+          description: Start of the suggested renewal window
+        windowEnd:
+          type: string
+          format: date-time
+          description: End of the suggested renewal window
+        explanationUrl:
+          type: string
+          description: "URL with an explanation of the renewal window, provided by\
+            \ the certificate authority"
+        source:
+          $ref: "#/components/schemas/RenewalWindowSource"
+          description: Origin of the renewal window
+        updatedAt:
+          type: string
+          format: date-time
+          description: Time the renewal window was last updated
+        due:
+          type: boolean
+          description: "Indicates whether the renewal window has started, so the certificate\
+            \ is due for renewal"
+        autoRenewal:
+          $ref: "#/components/schemas/CertificateAutoRenewalDto"
+          description: Automatic renewal of the certificate; absent when automatic
+            renewal is not enabled for it
+      required:
+      - due
+      - source
+      - updatedAt
+      - windowEnd
+      - windowStart
     CertificateRequestDto:
       type: object
       description: Certificate request dependent on the certificate type
@@ -3920,6 +3979,12 @@ components:
       - esign
       - eseal
       - web
+    RenewalWindowSource:
+      type: string
+      enum:
+      - policy
+      - authority
+      - forced
     Resource:
       type: string
       enum:
@@ -4166,6 +4231,11 @@ components:
           type: string
           format: date-time
           description: Certificate expiration date
+        renewalWindowStart:
+          type: string
+          format: date-time
+          description: Start of the renewal window; empty when the certificate has
+            no renewal window
         publicKeyAlgorithm:
           type: string
           description: "Public key algorithm. Absent when the certificate has no public\
@@ -4283,6 +4353,10 @@ components:
           items:
             $ref: "#/components/schemas/LocationDto"
           uniqueItems: true
+        renewalInfo:
+          $ref: "#/components/schemas/CertificateRenewalInfoDto"
+          description: Renewal window of the Certificate; absent when the certificate
+            has no renewal window
         registration:
           $ref: "#/components/schemas/CertificateRegistrationDetailDto"
           description: Pre-registration authorization status; present only for certificates

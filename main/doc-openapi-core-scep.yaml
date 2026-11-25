@@ -2124,6 +2124,11 @@ components:
           type: string
           format: date-time
           description: Certificate expiration date
+        renewalWindowStart:
+          type: string
+          format: date-time
+          description: Start of the renewal window; empty when the certificate has
+            no renewal window
         publicKeyAlgorithm:
           type: string
           description: "Public key algorithm. Absent when the certificate has no public\

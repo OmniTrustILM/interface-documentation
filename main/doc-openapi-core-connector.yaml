@@ -4429,6 +4429,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - certificateRenewalInfo
       - discoveryIncremental
     FunctionGroupCode:
       type: string
@@ -5435,6 +5436,7 @@ components:
       - CertificateSubjectType
       - CertificateKeyUsage
       - CertificateRelationType
+      - RenewalWindowSource
       - OidCategory
       - KeyAlgorithm
       - KeyFormat

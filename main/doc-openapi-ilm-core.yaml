@@ -17304,6 +17304,57 @@ paths:
                 $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
         "500":
           description: Internal Server Error
+  /v1/certificates/earlyRenewal:
+    post:
+      tags:
+      - Certificate Inventory
+      summary: Request early renewal of multiple certificates
+      description: "Marks the certificates with the provided UUIDs for early renewal,\
+        \ spread over the requested period"
+      operationId: bulkRequestEarlyRenewal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkEarlyRenewalRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Early renewal requested for the certificates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkOperationResponse"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/certificates/delete:
     post:
       tags:
@@ -18187,6 +18238,80 @@ paths:
               - Error Message 2
         "404":
           description: Authority not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/authorities/{authorityUuid}/raProfiles/{raProfileUuid}/earlyRenewal:
+    post:
+      tags:
+      - RA Profile Management
+      summary: Request early renewal of the certificates of RA Profile
+      operationId: requestRaProfileEarlyRenewal
+      parameters:
+      - name: authorityUuid
+        in: path
+        description: Authority Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: raProfileUuid
+        in: path
+        description: RA Profile UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EarlyRenewalRequestDto"
+        required: true
+      responses:
+        "200":
+          description: Early renewal requested for the certificates of RA Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RaProfileEarlyRenewalResponseDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "404":
+          description: RA Profile not found
           content:
             application/json:
               schema:
@@ -24032,6 +24157,80 @@ paths:
       responses:
         "200":
           description: Configuration of request attributes of RA Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RaProfileDto"
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "404":
+          description: RA Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "502":
+          description: Connector Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: Connector Communication Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/authorities/{authorityUuid}/raProfiles/{raProfileUuid}/renewal:
+    patch:
+      tags:
+      - RA Profile Management
+      summary: Update renewal window settings of RA Profile
+      operationId: updateRaProfileRenewalSettings
+      parameters:
+      - name: authorityUuid
+        in: path
+        description: Authority Instance UUID
+        required: true
+        schema:
+          type: string
+      - name: raProfileUuid
+        in: path
+        description: RA Profile UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RaProfileRenewalSettingsUpdateDto"
+        required: true
+      responses:
+        "200":
+          description: Renewal window settings of RA Profile updated
           content:
             application/json:
               schema:
@@ -37655,6 +37854,7 @@ components:
       - certificateRequestStructured
       - certificateIdentityOverride
       - discoveryStopResume
+      - certificateRenewalInfo
       - discoveryIncremental
     FunctionGroupCode:
       type: string
@@ -38993,6 +39193,7 @@ components:
       - certificate_action_performed
       - certificate_discovered
       - certificate_expiring
+      - certificate_renewal_due
       - certificate_not_compliant
       - certificate_uploaded
       - certificate_registered
@@ -39178,6 +39379,7 @@ components:
       enum:
       - setField
       - sendNotification
+      - renewCertificate
     RuleDetailDto:
       type: object
       properties:
@@ -41354,6 +41556,54 @@ components:
           description: Maximum failed challenge-verification attempts before the registration
             authorization locks
           minimum: 1
+    CertificateRenewalInfoSettingsUpdateDto:
+      type: object
+      properties:
+        refreshMinInterval:
+          type: integer
+          format: int32
+          default: 3600
+          description: Lower bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshMaxInterval:
+          type: integer
+          format: int32
+          default: 86400
+          description: Upper bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshDefaultInterval:
+          type: integer
+          format: int32
+          default: 21600
+          description: Delay in seconds between refreshes when the CA suggests no
+            retry interval
+          maximum: 604800
+          minimum: 60
+        refreshBatchSize:
+          type: integer
+          format: int32
+          default: 20
+          description: Certificates asked about per request to the connector
+          maximum: 50
+          minimum: 1
+        refreshRecheckInterval:
+          type: integer
+          format: int32
+          default: 604800
+          description: Delay in seconds before Core checks again a certificate for
+            which the CA answered `unknown` or `notSupported`
+          maximum: 31536000
+          minimum: 3600
+      required:
+      - refreshBatchSize
+      - refreshDefaultInterval
+      - refreshMaxInterval
+      - refreshMinInterval
+      - refreshRecheckInterval
     CertificateRequestAttributesSettingsUpdateDto:
       type: object
       description: Request to set the editable platform default request-attribute
@@ -41383,6 +41633,10 @@ components:
         upload:
           $ref: "#/components/schemas/CertificateUploadSettingsUpdateDto"
           description: Certificate upload settings
+        renewalInfo:
+          $ref: "#/components/schemas/CertificateRenewalInfoSettingsUpdateDto"
+          description: Settings of the refresh of certificate renewal information
+            obtained from authorities
     CertificateUploadSettingsUpdateDto:
       type: object
       properties:
@@ -42365,6 +42619,11 @@ components:
           type: string
           format: date-time
           description: Certificate expiration date
+        renewalWindowStart:
+          type: string
+          format: date-time
+          description: Start of the renewal window; empty when the certificate has
+            no renewal window
         publicKeyAlgorithm:
           type: string
           description: "Public key algorithm. Absent when the certificate has no public\
@@ -44633,10 +44892,62 @@ components:
           $ref: "#/components/schemas/RaProfileCertificateRequestAttributesDto"
           description: Static certificate-request-attribute set configured for the
             RA Profile
+        renewalSettings:
+          $ref: "#/components/schemas/RaProfileRenewalSettingsDto"
+          description: Renewal window settings of the RA Profile
       required:
       - enabled
       - name
       - uuid
+    RaProfileRenewalSettingsDto:
+      type: object
+      properties:
+        windowEnabled:
+          type: boolean
+          description: Indicator whether a renewal window is computed for certificates
+            of the RA profile
+        windowStartPercent:
+          type: integer
+          format: int32
+          description: Start of the renewal window as a percentage of the certificate
+            validity period
+          maximum: 99
+          minimum: 1
+        windowEndPercent:
+          type: integer
+          format: int32
+          description: End of the renewal window as a percentage of the certificate
+            validity period
+          maximum: 99
+          minimum: 1
+        useAuthorityRenewalInfo:
+          type: boolean
+          description: Indicator whether the renewal window suggested by the certificate
+            authority is used when available
+        autoRenewalEnabled:
+          type: boolean
+          description: Indicator whether certificates of the RA profile are renewed
+            automatically when their renewal window starts
+        autoRenewalMaxAttempts:
+          type: integer
+          format: int32
+          description: Number of failed automatic renewals after which a certificate
+            is no longer renewed automatically
+          maximum: 20
+          minimum: 1
+        authorityRenewalInfoSupported:
+          type: boolean
+          description: Indicator whether the authority of the RA profile can suggest
+            renewal windows
+          readOnly: true
+      required:
+      - authorityRenewalInfoSupported
+      - autoRenewalEnabled
+      - autoRenewalMaxAttempts
+      - useAuthorityRenewalInfo
+      - windowEnabled
+      - windowEndPercent
+      - windowStartPercent
     ValueSourceBindingDto:
       type: object
       description: Core-side value-source binding onto a request-attribute definition;
@@ -45126,6 +45437,21 @@ components:
             \ the order, and needs at least one pre-authorized identifier - to stop\
             \ a profile accepting orders at all, disable new orders instead. Omitting\
             \ the property keeps the profile's current mode."
+        renewalInfoEnabled:
+          type: boolean
+          description: Serve ACME Renewal Information (RFC 9773) for certificates
+            issued through this ACME Profile. Omitting the property keeps the profile's
+            current value.
+          example: false
+        renewalInfoRetryAfter:
+          type: integer
+          format: int32
+          description: Polling interval in seconds suggested to ACME clients in the
+            `Retry-After` header of the renewal information response. Omitting the
+            property keeps the profile's current value.
+          example: 21600
+          maximum: 86400
+          minimum: 300
       required:
       - issueCertificateAttributes
       - revokeCertificateAttributes
@@ -45242,6 +45568,19 @@ components:
           $ref: "#/components/schemas/AcmeIdentifierAuthorizationMode"
           description: What happens to an ordered identifier the pre-authorization
             policy does not cover.
+        renewalInfoEnabled:
+          type: boolean
+          default: false
+          description: ACME Renewal Information (RFC 9773) is served for this ACME
+            Profile
+          example: false
+        renewalInfoRetryAfter:
+          type: integer
+          format: int32
+          default: 21600
+          description: Polling interval in seconds suggested to ACME clients in the
+            `Retry-After` header of the renewal information response
+          example: 21600
       required:
       - enabled
       - name
@@ -45474,6 +45813,24 @@ components:
       required:
       - certificate
       - customAttributes
+    AutoRenewalMode:
+      type: string
+      enum:
+      - location
+      - ilmKey
+      - none
+    CertificateAutoRenewalDto:
+      type: object
+      properties:
+        mode:
+          $ref: "#/components/schemas/AutoRenewalMode"
+          description: How the certificate is renewed automatically
+        blockedReason:
+          type: string
+          description: Reason the certificate cannot be renewed automatically. Present
+            only when `mode` is `none`.
+      required:
+      - mode
     CertificateComplianceResultDto:
       type: object
       properties:
@@ -45618,6 +45975,42 @@ components:
       - expired
       - locked
       - closed
+    CertificateRenewalInfoDto:
+      type: object
+      properties:
+        windowStart:
+          type: string
+          format: date-time
+          description: Start of the suggested renewal window
+        windowEnd:
+          type: string
+          format: date-time
+          description: End of the suggested renewal window
+        explanationUrl:
+          type: string
+          description: "URL with an explanation of the renewal window, provided by\
+            \ the certificate authority"
+        source:
+          $ref: "#/components/schemas/RenewalWindowSource"
+          description: Origin of the renewal window
+        updatedAt:
+          type: string
+          format: date-time
+          description: Time the renewal window was last updated
+        due:
+          type: boolean
+          description: "Indicates whether the renewal window has started, so the certificate\
+            \ is due for renewal"
+        autoRenewal:
+          $ref: "#/components/schemas/CertificateAutoRenewalDto"
+          description: Automatic renewal of the certificate; absent when automatic
+            renewal is not enabled for it
+      required:
+      - due
+      - source
+      - updatedAt
+      - windowEnd
+      - windowStart
     CertificateRequestDto:
       type: object
       description: Certificate request dependent on the certificate type
@@ -45843,6 +46236,12 @@ components:
       - esign
       - eseal
       - web
+    RenewalWindowSource:
+      type: string
+      enum:
+      - policy
+      - authority
+      - forced
     X509CertificateDetail:
       type: object
       properties:
@@ -45881,6 +46280,11 @@ components:
           type: string
           format: date-time
           description: Certificate expiration date
+        renewalWindowStart:
+          type: string
+          format: date-time
+          description: Start of the renewal window; empty when the certificate has
+            no renewal window
         publicKeyAlgorithm:
           type: string
           description: "Public key algorithm. Absent when the certificate has no public\
@@ -45998,6 +46402,10 @@ components:
           items:
             $ref: "#/components/schemas/LocationDto"
           uniqueItems: true
+        renewalInfo:
+          $ref: "#/components/schemas/CertificateRenewalInfoDto"
+          description: Renewal window of the Certificate; absent when the certificate
+            has no renewal window
         registration:
           $ref: "#/components/schemas/CertificateRegistrationDetailDto"
           description: Pre-registration authorization status; present only for certificates
@@ -50542,19 +50950,31 @@ components:
       - created
       - existing
       - adopted
-    RemoveCertificateDto:
+    BulkEarlyRenewalRequestDto:
       type: object
       properties:
+        spreadSeconds:
+          type: integer
+          format: int64
+          description: Period in seconds over which the early renewals are spread
+          maximum: 2592000
+          minimum: 3600
+        explanationUrl:
+          type: string
+          description: Absolute http(s) URL explaining the reason for the early renewal
+          maxLength: 2048
+          minLength: 0
+          pattern: ^https?://\S+$
         uuids:
           type: array
-          description: List of Certificate UUIDs
+          description: UUIDs of the certificates to renew early
           items:
             type: string
-        filters:
-          type: array
-          description: Certificate filter input
-          items:
-            $ref: "#/components/schemas/SearchFilterRequestDto"
+            format: uuid
+          minItems: 1
+      required:
+      - spreadSeconds
+      - uuids
     BulkOperationResponse:
       type: object
       properties:
@@ -50576,6 +50996,19 @@ components:
       - failedItem
       - message
       - status
+    RemoveCertificateDto:
+      type: object
+      properties:
+        uuids:
+          type: array
+          description: List of Certificate UUIDs
+          items:
+            type: string
+        filters:
+          type: array
+          description: Certificate filter input
+          items:
+            $ref: "#/components/schemas/SearchFilterRequestDto"
     ClientCertificateRequestDto:
       type: object
       properties:
@@ -51129,6 +51562,32 @@ components:
       required:
       - attributes
       - name
+    EarlyRenewalRequestDto:
+      type: object
+      properties:
+        spreadSeconds:
+          type: integer
+          format: int64
+          description: Period in seconds over which the early renewals are spread
+          maximum: 2592000
+          minimum: 3600
+        explanationUrl:
+          type: string
+          description: Absolute http(s) URL explaining the reason for the early renewal
+          maxLength: 2048
+          minLength: 0
+          pattern: ^https?://\S+$
+      required:
+      - spreadSeconds
+    RaProfileEarlyRenewalResponseDto:
+      type: object
+      properties:
+        certificatesAffected:
+          type: integer
+          format: int64
+          description: Number of certificates of the RA profile marked for early renewal
+      required:
+      - certificatesAffected
     ActorRecord:
       type: object
       properties:
@@ -51381,6 +51840,7 @@ components:
       - getAssociations
       - listVersions
       - getProxyInstallation
+      - requestEarlyRenewal
       - listCertificateProfiles
       - listCas
     OperationResult:
@@ -51674,6 +52134,21 @@ components:
             \ it through the usual http-01 and dns-01 flow. 'preauthorizedOnly' refuses\
             \ the order, and needs at least one pre-authorized identifier - to stop\
             \ a profile accepting orders at all, disable new orders instead."
+        renewalInfoEnabled:
+          type: boolean
+          default: false
+          description: Serve ACME Renewal Information (RFC 9773) for certificates
+            issued through this ACME Profile
+          example: false
+        renewalInfoRetryAfter:
+          type: integer
+          format: int32
+          default: 21600
+          description: Polling interval in seconds suggested to ACME clients in the
+            `Retry-After` header of the renewal information response
+          example: 21600
+          maximum: 86400
+          minimum: 300
       required:
       - issueCertificateAttributes
       - name
@@ -51996,6 +52471,48 @@ components:
           type: boolean
           description: Whether an external CSR violating the resolved set is rejected
             (true) or accepted with warnings (false); null inherits the platform default
+    RaProfileRenewalSettingsUpdateDto:
+      type: object
+      properties:
+        windowEnabled:
+          type: boolean
+          default: false
+          description: Indicator whether a renewal window is computed for certificates
+            of the RA profile
+        windowStartPercent:
+          type: integer
+          format: int32
+          default: 67
+          description: Start of the renewal window as a percentage of the certificate
+            validity period; must be lower than the end
+          maximum: 99
+          minimum: 1
+        windowEndPercent:
+          type: integer
+          format: int32
+          default: 80
+          description: End of the renewal window as a percentage of the certificate
+            validity period; must be higher than the start
+          maximum: 99
+          minimum: 1
+        useAuthorityRenewalInfo:
+          type: boolean
+          default: false
+          description: Indicator whether the renewal window suggested by the certificate
+            authority is used when available
+        autoRenewalEnabled:
+          type: boolean
+          default: false
+          description: Indicator whether certificates of the RA profile are renewed
+            automatically when their renewal window starts
+        autoRenewalMaxAttempts:
+          type: integer
+          format: int32
+          default: 5
+          description: Number of failed automatic renewals after which a certificate
+            is no longer renewed automatically
+          maximum: 20
+          minimum: 1
     ActivateScepForRaProfileRequestDto:
       type: object
       properties:
@@ -52317,6 +52834,7 @@ components:
       - CertificateSubjectType
       - CertificateKeyUsage
       - CertificateRelationType
+      - RenewalWindowSource
       - OidCategory
       - KeyAlgorithm
       - KeyFormat
@@ -53527,6 +54045,54 @@ components:
           description: Maximum failed challenge-verification attempts before the registration
             authorization locks
           minimum: 1
+    CertificateRenewalInfoSettingsDto:
+      type: object
+      properties:
+        refreshMinInterval:
+          type: integer
+          format: int32
+          default: 3600
+          description: Lower bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshMaxInterval:
+          type: integer
+          format: int32
+          default: 86400
+          description: Upper bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshDefaultInterval:
+          type: integer
+          format: int32
+          default: 21600
+          description: Delay in seconds between refreshes when the CA suggests no
+            retry interval
+          maximum: 604800
+          minimum: 60
+        refreshBatchSize:
+          type: integer
+          format: int32
+          default: 20
+          description: Certificates asked about per request to the connector
+          maximum: 50
+          minimum: 1
+        refreshRecheckInterval:
+          type: integer
+          format: int32
+          default: 604800
+          description: Delay in seconds before Core checks again a certificate for
+            which the CA answered `unknown` or `notSupported`
+          maximum: 31536000
+          minimum: 3600
+      required:
+      - refreshBatchSize
+      - refreshDefaultInterval
+      - refreshMaxInterval
+      - refreshMinInterval
+      - refreshRecheckInterval
     CertificateRequestAttributesSettingsDto:
       type: object
       description: Editable platform default request-attribute definitions (terminal
@@ -53554,6 +54120,10 @@ components:
           $ref: "#/components/schemas/CertificateUploadSettingsDto"
           description: "Certificate upload settings, which govern ownership of certificates\
             \ added by manual upload and by file import"
+        renewalInfo:
+          $ref: "#/components/schemas/CertificateRenewalInfoSettingsDto"
+          description: Settings of the refresh of certificate renewal information
+            obtained from authorities
     CertificateUploadSettingsDto:
       type: object
       properties:
@@ -55935,6 +56505,7 @@ components:
           - Archive certificate
           - Unarchive certificate
           - Download Keystore
+          - Update renewal window
         status:
           type: string
           description: Event result

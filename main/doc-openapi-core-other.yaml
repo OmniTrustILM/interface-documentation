@@ -2126,6 +2126,54 @@ components:
           description: Maximum failed challenge-verification attempts before the registration
             authorization locks
           minimum: 1
+    CertificateRenewalInfoSettingsUpdateDto:
+      type: object
+      properties:
+        refreshMinInterval:
+          type: integer
+          format: int32
+          default: 3600
+          description: Lower bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshMaxInterval:
+          type: integer
+          format: int32
+          default: 86400
+          description: Upper bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshDefaultInterval:
+          type: integer
+          format: int32
+          default: 21600
+          description: Delay in seconds between refreshes when the CA suggests no
+            retry interval
+          maximum: 604800
+          minimum: 60
+        refreshBatchSize:
+          type: integer
+          format: int32
+          default: 20
+          description: Certificates asked about per request to the connector
+          maximum: 50
+          minimum: 1
+        refreshRecheckInterval:
+          type: integer
+          format: int32
+          default: 604800
+          description: Delay in seconds before Core checks again a certificate for
+            which the CA answered `unknown` or `notSupported`
+          maximum: 31536000
+          minimum: 3600
+      required:
+      - refreshBatchSize
+      - refreshDefaultInterval
+      - refreshMaxInterval
+      - refreshMinInterval
+      - refreshRecheckInterval
     CertificateRequestAttributesSettingsUpdateDto:
       type: object
       description: Request to set the editable platform default request-attribute
@@ -2155,6 +2203,10 @@ components:
         upload:
           $ref: "#/components/schemas/CertificateUploadSettingsUpdateDto"
           description: Certificate upload settings
+        renewalInfo:
+          $ref: "#/components/schemas/CertificateRenewalInfoSettingsUpdateDto"
+          description: Settings of the refresh of certificate renewal information
+            obtained from authorities
     CertificateType:
       type: string
       enum:
@@ -4340,6 +4392,7 @@ components:
       - certificate_action_performed
       - certificate_discovered
       - certificate_expiring
+      - certificate_renewal_due
       - certificate_not_compliant
       - certificate_uploaded
       - certificate_registered
@@ -5527,6 +5580,7 @@ components:
       - getAssociations
       - listVersions
       - getProxyInstallation
+      - requestEarlyRenewal
       - listCertificateProfiles
       - listCas
     OperationResult:
@@ -5956,6 +6010,54 @@ components:
           description: Maximum failed challenge-verification attempts before the registration
             authorization locks
           minimum: 1
+    CertificateRenewalInfoSettingsDto:
+      type: object
+      properties:
+        refreshMinInterval:
+          type: integer
+          format: int32
+          default: 3600
+          description: Lower bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshMaxInterval:
+          type: integer
+          format: int32
+          default: 86400
+          description: Upper bound in seconds for the delay between two refreshes
+            of a certificate's renewal window
+          maximum: 604800
+          minimum: 60
+        refreshDefaultInterval:
+          type: integer
+          format: int32
+          default: 21600
+          description: Delay in seconds between refreshes when the CA suggests no
+            retry interval
+          maximum: 604800
+          minimum: 60
+        refreshBatchSize:
+          type: integer
+          format: int32
+          default: 20
+          description: Certificates asked about per request to the connector
+          maximum: 50
+          minimum: 1
+        refreshRecheckInterval:
+          type: integer
+          format: int32
+          default: 604800
+          description: Delay in seconds before Core checks again a certificate for
+            which the CA answered `unknown` or `notSupported`
+          maximum: 31536000
+          minimum: 3600
+      required:
+      - refreshBatchSize
+      - refreshDefaultInterval
+      - refreshMaxInterval
+      - refreshMinInterval
+      - refreshRecheckInterval
     CertificateRequestAttributesSettingsDto:
       type: object
       description: Editable platform default request-attribute definitions (terminal
@@ -5983,6 +6085,10 @@ components:
           $ref: "#/components/schemas/CertificateUploadSettingsDto"
           description: "Certificate upload settings, which govern ownership of certificates\
             \ added by manual upload and by file import"
+        renewalInfo:
+          $ref: "#/components/schemas/CertificateRenewalInfoSettingsDto"
+          description: Settings of the refresh of certificate renewal information
+            obtained from authorities
     CertificateUploadSettingsDto:
       type: object
       properties:
@@ -6258,6 +6364,7 @@ components:
       - CertificateSubjectType
       - CertificateKeyUsage
       - CertificateRelationType
+      - RenewalWindowSource
       - OidCategory
       - KeyAlgorithm
       - KeyFormat

@@ -1151,6 +1151,21 @@ components:
             \ the order, and needs at least one pre-authorized identifier - to stop\
             \ a profile accepting orders at all, disable new orders instead. Omitting\
             \ the property keeps the profile's current mode."
+        renewalInfoEnabled:
+          type: boolean
+          description: Serve ACME Renewal Information (RFC 9773) for certificates
+            issued through this ACME Profile. Omitting the property keeps the profile's
+            current value.
+          example: false
+        renewalInfoRetryAfter:
+          type: integer
+          format: int32
+          description: Polling interval in seconds suggested to ACME clients in the
+            `Retry-After` header of the renewal information response. Omitting the
+            property keeps the profile's current value.
+          example: 21600
+          maximum: 86400
+          minimum: 300
       required:
       - issueCertificateAttributes
       - revokeCertificateAttributes
@@ -2666,6 +2681,19 @@ components:
           $ref: "#/components/schemas/AcmeIdentifierAuthorizationMode"
           description: What happens to an ordered identifier the pre-authorization
             policy does not cover.
+        renewalInfoEnabled:
+          type: boolean
+          default: false
+          description: ACME Renewal Information (RFC 9773) is served for this ACME
+            Profile
+          example: false
+        renewalInfoRetryAfter:
+          type: integer
+          format: int32
+          default: 21600
+          description: Polling interval in seconds suggested to ACME clients in the
+            `Retry-After` header of the renewal information response
+          example: 21600
       required:
       - enabled
       - name
@@ -2817,6 +2845,21 @@ components:
             \ it through the usual http-01 and dns-01 flow. 'preauthorizedOnly' refuses\
             \ the order, and needs at least one pre-authorized identifier - to stop\
             \ a profile accepting orders at all, disable new orders instead."
+        renewalInfoEnabled:
+          type: boolean
+          default: false
+          description: Serve ACME Renewal Information (RFC 9773) for certificates
+            issued through this ACME Profile
+          example: false
+        renewalInfoRetryAfter:
+          type: integer
+          format: int32
+          default: 21600
+          description: Polling interval in seconds suggested to ACME clients in the
+            `Retry-After` header of the renewal information response
+          example: 21600
+          maximum: 86400
+          minimum: 300
       required:
       - issueCertificateAttributes
       - name
