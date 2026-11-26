@@ -555,9 +555,12 @@ paths:
       tags:
       - Signing Profile Management
       summary: Activate the ILM Native API for Signing Profile
-      description: Enables the native signing API on a content-signing or raw-signing
-        profile that uses ILM-managed signing. Refused with 422 on a timestamping
-        profile and on a profile that uses delegated signing.
+      description: "Enables the native signing API on a content-signing or raw-signing\
+        \ profile that uses ILM-managed signing. Refused with 422 on a timestamping\
+        \ profile, on a profile that uses delegated signing, and on a raw-signing\
+        \ profile whose signing key signs, or has signed, for a content-signing or\
+        \ timestamping profile, including through another certificate on the same\
+        \ key."
       operationId: activateIlmNative
       parameters:
       - name: uuid
@@ -2918,8 +2921,9 @@ components:
             $ref: "#/components/schemas/RequestAttribute"
         recordPolicy:
           $ref: "#/components/schemas/SigningRecordPolicyRequestDto"
-          description: "Signing Record policy. When omitted, defaults are used (no\
-            \ signing record)."
+          description: "Signing Record policy. When omitted on create, each signature\
+            \ gets a metadata-only Signing Record: who signed, when, and with which\
+            \ profile and version. When omitted on update, the current policy is kept."
       required:
       - name
       - signingScheme

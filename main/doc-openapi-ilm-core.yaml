@@ -11756,12 +11756,17 @@ paths:
       description: "Onboard the selected keys into the specified token profile, reading\
         \ each key again from the key storage. Each key item that onboarding adds\
         \ starts disabled and is never exportable. A new key is owned by the caller.\
-        \ For a key pair, the inventory may already hold a key with its public key\
-        \ but no token instance. Onboarding then adds the private key to that key,\
-        \ and requires permission to update it. That key keeps its name, owner, groups,\
-        \ custom attributes and certificates. A key the inventory holds in any other\
-        \ way is skipped. A result names an existing key only when the caller may\
-        \ see that key in detail."
+        \ A private key that this reading finds without its public key is onboarded\
+        \ with its private item alone. Verification, encryption, certificate requests\
+        \ and certificate links need a public key and stay unavailable to it. Onboarding\
+        \ matches such a key to the inventory by its handle on this token instance\
+        \ only. When another token instance already holds the key, onboarding adds\
+        \ a second key. For a key pair, the inventory may already hold a key with\
+        \ its public key but no token instance. Onboarding then adds the private key\
+        \ to that key, and requires permission to update it. That key keeps its name,\
+        \ owner, groups, custom attributes and certificates. A key the inventory holds\
+        \ in any other way is skipped. A result names an existing key only when the\
+        \ caller may see that key in detail."
       operationId: onboardTokenKeys
       parameters:
       - name: tokenInstanceUuid
@@ -12563,6 +12568,99 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessageDto"
+  /v1/signing/signingProfiles/{signingProfileUuid}/raw/sign:
+    post:
+      tags:
+      - Native Signing
+      summary: Sign raw data
+      description: "Sign every item of the request with the Signing Profile's key\
+        \ and return the signatures in request order. The request succeeds or fails\
+        \ as a whole: a failed request returns no signature and writes no signing\
+        \ record. A retry is a new signing. A failure the platform can attribute to\
+        \ one item names it by its identifier; a validation failure names the field\
+        \ path by item index. The operation is synchronous and carries no signature\
+        \ activation data."
+      operationId: signRaw
+      parameters:
+      - name: signingProfileUuid
+        in: path
+        description: Signing Profile UUID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignRawRequest"
+        required: true
+      responses:
+        "200":
+          description: Items signed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignRawResponse"
+        "404":
+          description: Signing Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "422":
+          description: "Request cannot be processed: the Signing Profile is disabled,\
+            \ has the ILM Native API inactive or is not a raw-signing profile, `signatureInputMode`\
+            \ is `data`, a field fails validation (such as an empty item or an identifier\
+            \ that is blank or repeats), the request carries more items than the platform's\
+            \ `maxItemsPerRequest` signing setting allows, `digestAlgorithm` differs\
+            \ from the digest the Signing Profile's signature algorithm commits to,\
+            \ an item's length is not the digest size of `digestAlgorithm`, or `certificateFingerprint`\
+            \ does not match the certificate the request would be signed with"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Error Message 1
+              - Error Message 2
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationServiceExceptionDto"
+        "500":
+          description: Internal Server Error
+        "502":
+          description: A connector or the signer failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
+        "503":
+          description: A connector or the time source is unavailable; retry after
+            the Retry-After interval
+          headers:
+            Retry-After:
+              description: Seconds after which the request may be retried
+              style: simple
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessageDto"
   /v1/signing/signingProfiles/{signingProfileUuid}/documents/sign:
     post:
       tags:
@@ -12571,9 +12669,9 @@ paths:
       description: "Sign every document of the request at the Signing Profile's signature\
         \ level and return the signing outputs in request order. The request succeeds\
         \ or fails as a whole: a failed request returns no output and writes no signing\
-        \ record for its documents. A retry is a new signing. A signing failure names\
-        \ the item by its identifier; a validation failure names the field path by\
-        \ item index."
+        \ record for its documents. A retry is a new signing. A failure the platform\
+        \ can attribute to one item names it by its identifier; a validation failure\
+        \ names the field path by item index."
       operationId: signDocument
       parameters:
       - name: signingProfileUuid
@@ -20545,9 +20643,12 @@ paths:
       tags:
       - Signing Profile Management
       summary: Activate the ILM Native API for Signing Profile
-      description: Enables the native signing API on a content-signing or raw-signing
-        profile that uses ILM-managed signing. Refused with 422 on a timestamping
-        profile and on a profile that uses delegated signing.
+      description: "Enables the native signing API on a content-signing or raw-signing\
+        \ profile that uses ILM-managed signing. Refused with 422 on a timestamping\
+        \ profile, on a profile that uses delegated signing, and on a raw-signing\
+        \ profile whose signing key signs, or has signed, for a content-signing or\
+        \ timestamping profile, including through another certificate on the same\
+        \ key."
       operationId: activateIlmNative
       parameters:
       - name: uuid
@@ -40847,8 +40948,9 @@ components:
             $ref: "#/components/schemas/RequestAttribute"
         recordPolicy:
           $ref: "#/components/schemas/SigningRecordPolicyRequestDto"
-          description: "Signing Record policy. When omitted, defaults are used (no\
-            \ signing record)."
+          description: "Signing Record policy. When omitted on create, each signature\
+            \ gets a metadata-only Signing Record: who signed, when, and with which\
+            \ profile and version. When omitted on update, the current policy is kept."
       required:
       - name
       - signingScheme
@@ -48068,8 +48170,8 @@ components:
       properties:
         keyPairMeta:
           type: array
-          description: "Metadata of the key pair, exactly as the listing returned\
-            \ it"
+          description: "Metadata of the key pair or the private key alone, exactly\
+            \ as the listing returned it"
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -48106,7 +48208,8 @@ components:
       properties:
         keyPairMeta:
           type: array
-          description: "Metadata of the key pair, as the request sent it"
+          description: "Metadata of the key pair or the private key alone, as the\
+            \ request sent it"
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         outcome:
@@ -48148,7 +48251,6 @@ components:
       - inInventory
       - inInventoryWithoutToken
       - importInProgress
-      - publicKeyUnavailable
       - unaddressable
       - refused
       - unsupportedKeyType
@@ -48476,6 +48578,134 @@ components:
       - pageNumber
       - totalItems
       - totalPages
+    SignRawItem:
+      type: object
+      description: "Item to sign, identified by the caller"
+      properties:
+        identifier:
+          type: string
+          description: Identifier used to correlate the item with its result; unique
+            within the request
+          examples:
+          - installer-x64
+          maxLength: 255
+          minLength: 1
+          pattern: "^[^\\x00-\\x1F\\x7F-\\x9F]*$"
+        data:
+          type: string
+          format: byte
+          description: "Item to sign, base64-encoded in JSON. Under `dataDigest` it\
+            \ is the digest of the data, and its decoded length must match the output\
+            \ size of `digestAlgorithm` in bytes."
+          minLength: 1
+      required:
+      - data
+      - identifier
+    SignRawRequest:
+      type: object
+      description: Items to sign with the Signing Profile's key
+      properties:
+        signatureInputMode:
+          $ref: "#/components/schemas/SignatureInputMode"
+          description: What every item's `data` is. Only `dataDigest` is accepted;
+            `data` answers 422.
+        digestAlgorithm:
+          $ref: "#/components/schemas/DigestAlgorithm"
+          description: "Digest algorithm the Signing Profile's signature algorithm\
+            \ commits to, stated by the caller as a cross-check; any other answers\
+            \ 422. Under `dataDigest`, it is the algorithm the caller computed every\
+            \ item with."
+        items:
+          type: array
+          description: "Items to sign, each with an identifier unique within the request.\
+            \ The platform's `maxItemsPerRequest` signing setting bounds how many\
+            \ a request may carry, with a default of 100."
+          items:
+            $ref: "#/components/schemas/SignRawItem"
+          minItems: 1
+        certificateFingerprint:
+          type: string
+          description: "SHA-256 fingerprint of the signing certificate the caller\
+            \ expects, which is the first entry of `signerCertificateChain`, as the\
+            \ platform reports certificate fingerprints: 64 hexadecimal characters\
+            \ in either case, over the DER encoding. It is checked against the certificate\
+            \ the platform signs the request with; when that differs, the request\
+            \ answers 422 and nothing is signed. A Signing Profile update reaches\
+            \ every platform instance only after a short delay, so a request just\
+            \ after one can still be checked against, and signed with, the previous\
+            \ certificate. Absent means no check."
+          examples:
+          - 3f9a1c0e5b7d2e4f6a8c0b1d3e5f7a9c1b3d5e7f9a0c2e4b6d8f0a1c3e5b7d9f
+          pattern: "^[0-9a-fA-F]{64}$"
+      required:
+      - digestAlgorithm
+      - items
+      - signatureInputMode
+    SignatureInputMode:
+      type: string
+      description: "Whether each data item is the data to be signed or its digest.\
+        \ Under data the signer applies the complete signature algorithm, including\
+        \ any hashing the algorithm defines. Under dataDigest each item is already\
+        \ the digest of the data, as the signature algorithm fixes it. The platform\
+        \ sends dataDigest for raw signing, where its caller has already computed\
+        \ the digest"
+      enum:
+      - data
+      - dataDigest
+    SignRawResponse:
+      type: object
+      description: "Signatures of every request item, with what verifies them"
+      properties:
+        signatureAlgorithm:
+          $ref: "#/components/schemas/SignatureAlgorithm"
+          description: Signature algorithm every signature of the request was made
+            with
+        signerCertificateChain:
+          type: array
+          description: "Signing certificate and its chain, signing certificate first;\
+            \ each a DER-encoded X.509 certificate, base64-encoded in JSON."
+          items:
+            type: string
+            format: byte
+          minItems: 1
+        results:
+          type: array
+          description: "One result per request item, in request order"
+          items:
+            $ref: "#/components/schemas/SignRawResult"
+          minItems: 1
+      required:
+      - results
+      - signatureAlgorithm
+      - signerCertificateChain
+    SignRawResult:
+      type: object
+      description: Signature of one request item
+      properties:
+        identifier:
+          type: string
+          description: Identifier of the corresponding request item
+          examples:
+          - installer-x64
+        signingRecordUuid:
+          type: string
+          format: uuid
+          description: "UUID of this item's signing record; absent when the Signing\
+            \ Profile's record policy disables recording, or when a `best_effort`\
+            \ record could not be staged. A `best_effort` record may still be lost\
+            \ after it is staged."
+        signature:
+          type: string
+          format: byte
+          description: "Signature over the item's `data`, base64-encoded in JSON.\
+            \ Under `dataDigest`, `data` is already the digest, so a verifier for\
+            \ `signatureAlgorithm` checks the signature against the original data,\
+            \ or against `data` when it takes a precomputed digest. An ECDSA signature\
+            \ is the DER-encoded sequence of r and s, not the concatenation of r and\
+            \ s that JWS uses."
+      required:
+      - identifier
+      - signature
     SignDocumentItem:
       type: object
       description: "Document to sign, identified by the caller"
@@ -48486,7 +48716,9 @@ components:
             within the request
           examples:
           - contract-2026-17
+          maxLength: 255
           minLength: 1
+          pattern: "^[^\\x00-\\x1F\\x7F-\\x9F]*$"
         document:
           type: string
           format: byte
@@ -53398,8 +53630,9 @@ components:
       properties:
         keyPairMeta:
           type: array
-          description: Metadata identifying the key pair in the key storage. Send
-            it back unchanged to onboard the key pair.
+          description: "Metadata identifying the key pair in the key storage, or the\
+            \ private key alone when `privateOnly` is true. Send it back unchanged\
+            \ to onboard the key."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         storageName:
@@ -53420,6 +53653,10 @@ components:
         fingerprint:
           type: string
           description: SHA-256 fingerprint of the public key of a key pair
+        privateOnly:
+          type: boolean
+          description: Whether the connector of the token instance reported the private
+            key without its public key
         status:
           $ref: "#/components/schemas/TokenKeyStatus"
           description: Onboarding status of the key
@@ -53453,6 +53690,7 @@ components:
             \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
             \ size, and for a key the platform cannot name."
       required:
+      - privateOnly
       - status
     TokenKeyListResponseDto:
       type: object

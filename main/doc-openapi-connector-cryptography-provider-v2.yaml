@@ -5531,9 +5531,14 @@ components:
       properties:
         keyMeta:
           type: array
-          description: Connector-defined opaque private-key handle. Metadata must
-            identify the key durably—it must remain valid across connector restarts
-            and sessions; ephemeral handles must not be used.
+          description: "Connector-defined opaque handle of the private key, which\
+            \ must identify the key uniquely on the token and durably across connector\
+            \ restarts, sessions and token profiles. Each metadata name appears once,\
+            \ and every content item carries data. A private key listed without its\
+            \ public key has no fingerprint, so the platform recognises a duplicate\
+            \ by this metadata alone. Every response that returns the key, from creation\
+            \ or import to listing and resolution, must carry the same metadata names\
+            \ and content data, with each name's content items in the same order."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -5708,7 +5713,7 @@ components:
         keyMeta:
           type: array
           description: "Handle exactly as a listing returned it: `keyPairMeta` of\
-            \ a key pair, `keyMeta` of a secret key."
+            \ a key pair or of a private key listed alone, `keyMeta` of a secret key."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -5827,15 +5832,16 @@ components:
       type: object
       additionalProperties: false
       description: |
-        A key pair the token holds. Any later request accepts its metadata exactly like metadata returned at
-        creation.
+        A key pair the token holds, or its private key alone when the token lacks a public key object for it. Any
+        later request accepts its metadata exactly like metadata returned at creation.
       properties:
         keyPairMeta:
           type: array
-          description: "Connector-defined metadata for the pair as a whole. It must\
-            \ identify the pair durably. The key resolution takes it back as the key's\
-            \ handle. Each metadata name appears once, and every content item carries\
-            \ data. A key that cannot meet this is listed as `unaddressable`."
+          description: "Connector-defined metadata for the pair as a whole, or for\
+            \ the private key listed alone. It must identify the key durably. The\
+            \ key resolution takes it back as the key's handle. Each metadata name\
+            \ appears once, and every content item carries data. A key that cannot\
+            \ meet this is listed as `unaddressable`."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -5845,7 +5851,10 @@ components:
         publicKeyData:
           $ref: "#/components/schemas/PublicKeyDataResponseV2Dto"
           description: "Data of the public key, read from the public key object on\
-            \ the token. Absent when the token lacks a public key object for the pair."
+            \ the token. Absent when the token lacks a public key object for the pair.\
+            \ The entry carrying the private key alone must then set its `status`\
+            \ to `available` only when the connector can sign or decrypt with it under\
+            \ the token profile of the request, and to `refused` otherwise."
         keyRequestType:
           $ref: "#/components/schemas/KeyRequestType"
           description: Type of the listed key

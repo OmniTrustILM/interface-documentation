@@ -414,12 +414,17 @@ paths:
       description: "Onboard the selected keys into the specified token profile, reading\
         \ each key again from the key storage. Each key item that onboarding adds\
         \ starts disabled and is never exportable. A new key is owned by the caller.\
-        \ For a key pair, the inventory may already hold a key with its public key\
-        \ but no token instance. Onboarding then adds the private key to that key,\
-        \ and requires permission to update it. That key keeps its name, owner, groups,\
-        \ custom attributes and certificates. A key the inventory holds in any other\
-        \ way is skipped. A result names an existing key only when the caller may\
-        \ see that key in detail."
+        \ A private key that this reading finds without its public key is onboarded\
+        \ with its private item alone. Verification, encryption, certificate requests\
+        \ and certificate links need a public key and stay unavailable to it. Onboarding\
+        \ matches such a key to the inventory by its handle on this token instance\
+        \ only. When another token instance already holds the key, onboarding adds\
+        \ a second key. For a key pair, the inventory may already hold a key with\
+        \ its public key but no token instance. Onboarding then adds the private key\
+        \ to that key, and requires permission to update it. That key keeps its name,\
+        \ owner, groups, custom attributes and certificates. A key the inventory holds\
+        \ in any other way is skipped. A result names an existing key only when the\
+        \ caller may see that key in detail."
       operationId: onboardTokenKeys
       parameters:
       - name: tokenInstanceUuid
@@ -4995,8 +5000,8 @@ components:
       properties:
         keyPairMeta:
           type: array
-          description: "Metadata of the key pair, exactly as the listing returned\
-            \ it"
+          description: "Metadata of the key pair or the private key alone, exactly\
+            \ as the listing returned it"
           items:
             $ref: "#/components/schemas/MetadataAttribute"
           minItems: 1
@@ -5033,7 +5038,8 @@ components:
       properties:
         keyPairMeta:
           type: array
-          description: "Metadata of the key pair, as the request sent it"
+          description: "Metadata of the key pair or the private key alone, as the\
+            \ request sent it"
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         outcome:
@@ -5075,7 +5081,6 @@ components:
       - inInventory
       - inInventoryWithoutToken
       - importInProgress
-      - publicKeyUnavailable
       - unaddressable
       - refused
       - unsupportedKeyType
@@ -5569,8 +5574,9 @@ components:
       properties:
         keyPairMeta:
           type: array
-          description: Metadata identifying the key pair in the key storage. Send
-            it back unchanged to onboard the key pair.
+          description: "Metadata identifying the key pair in the key storage, or the\
+            \ private key alone when `privateOnly` is true. Send it back unchanged\
+            \ to onboard the key."
           items:
             $ref: "#/components/schemas/MetadataAttribute"
         storageName:
@@ -5591,6 +5597,10 @@ components:
         fingerprint:
           type: string
           description: SHA-256 fingerprint of the public key of a key pair
+        privateOnly:
+          type: boolean
+          description: Whether the connector of the token instance reported the private
+            key without its public key
         status:
           $ref: "#/components/schemas/TokenKeyStatus"
           description: Onboarding status of the key
@@ -5624,6 +5634,7 @@ components:
             \ or ML-DSA-65; absent for RSA and AES keys, whose `length` gives their\
             \ size, and for a key the platform cannot name."
       required:
+      - privateOnly
       - status
     TokenKeyListResponseDto:
       type: object
