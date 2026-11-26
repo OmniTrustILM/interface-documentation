@@ -500,7 +500,7 @@ groups:
     groupName: core-native-signing
     title: Native Signing API
     indexCategory: core
-    description: REST API for signing documents with a Signing Profile through the ILM Native API
+    description: REST API for signing documents and raw data with a Signing Profile through the ILM Native API
     interfaces:
       - com.otilm.api.interfaces.core.web.NativeSigningController
 
