@@ -994,8 +994,11 @@ paths:
       tags:
       - Authority Management v3
       summary: Check authority connection
-      description: Validate authority attributes by attempting to reach the upstream
-        CA
+      description: "Validate and prepare the authority: validate the authority attributes\
+        \ by reaching the upstream CA, and return any metadata learned from it. Core\
+        \ calls this on every create and edit of the authority and replaces the authority's\
+        \ metadata with the returned list; a 204, or a 200 whose metadata is absent,\
+        \ null or empty, clears it. Metadata must never carry secrets."
       operationId: checkAuthorityConnection
       requestBody:
         description: Authority attributes
@@ -1007,6 +1010,16 @@ paths:
                 $ref: "#/components/schemas/RequestAttribute"
         required: true
       responses:
+        "200":
+          description: Upstream CA is reachable with these attributes; the body carries
+            authority metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthorityConnectionResponseDto"
+        "204":
+          description: Upstream CA is reachable with these attributes; no authority
+            metadata
         "401":
           description: Unauthorized
           content:
@@ -1025,8 +1038,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetailExtended"
-        "204":
-          description: Upstream CA is reachable with these attributes
       security:
       - ConnectorAPIKeyAuth: []
       - CertificateTLSAuth: []
@@ -4475,6 +4486,20 @@ components:
             $ref: "#/components/schemas/MetadataAttribute"
       required:
       - meta
+    AuthorityConnectionResponseDto:
+      type: object
+      properties:
+        metadata:
+          type:
+          - array
+          - "null"
+          description: "Metadata the connector learned from the upstream CA while\
+            \ validating the authority, stored by Core as the authority's metadata.\
+            \ Replaces the metadata of an earlier save; absent, null or empty clears\
+            \ it, the same as a 204. Never carries secrets: metadata is shown to anyone\
+            \ who can read the authority."
+          items:
+            $ref: "#/components/schemas/MetadataAttribute"
     CrlRequestDtoV3:
       type: object
       properties:

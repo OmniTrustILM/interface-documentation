@@ -2332,6 +2332,14 @@ components:
           examples:
           - LegacyEjbca
           - ADCS
+        metadata:
+          type:
+          - array
+          - "null"
+          description: Metadata the connector returned when the authority was last
+            saved; v3 authorities only
+          items:
+            $ref: "#/components/schemas/MetadataResponseDto"
       required:
       - attributes
       - connector
@@ -2402,6 +2410,26 @@ components:
       - discoveryStopResume
       - certificateRenewalInfo
       - discoveryIncremental
+    MetadataResponseDto:
+      type: object
+      description: Metadata response attributes with their source connector
+      properties:
+        connectorUuid:
+          type: string
+          description: UUID of the Connector
+        connectorName:
+          type: string
+          description: Name of the Connector
+        sourceObjectType:
+          $ref: "#/components/schemas/Resource"
+          description: Source Object Type
+        items:
+          type: array
+          description: List of Metadata
+          items:
+            $ref: "#/components/schemas/ResponseMetadataDto"
+      required:
+      - items
     NameAndUuidDto:
       type: object
       properties:
@@ -2418,6 +2446,191 @@ components:
       required:
       - name
       - uuid
+    Resource:
+      type: string
+      enum:
+      - NONE
+      - ANY
+      - dashboard
+      - settings
+      - auditLogs
+      - credentials
+      - connectors
+      - attributes
+      - jobs
+      - proxies
+      - users
+      - roles
+      - acmeAccounts
+      - acmeProfiles
+      - cboms
+      - cryptoAssets
+      - scepProfiles
+      - cmpProfiles
+      - estProfiles
+      - authorities
+      - raProfiles
+      - certificates
+      - certificateRequests
+      - groups
+      - complianceProfiles
+      - discoveries
+      - oids
+      - entities
+      - locations
+      - tokenProfiles
+      - tokens
+      - keys
+      - approvalProfiles
+      - approvals
+      - comments
+      - notificationProfiles
+      - notificationInstances
+      - rules
+      - actions
+      - triggers
+      - resources
+      - resourceEvents
+      - searchFilters
+      - listViews
+      - keyItems
+      - platformEnums
+      - notifications
+      - conditions
+      - executions
+      - complianceRules
+      - complianceGroups
+      - customAttributes
+      - globalMetadata
+      - acmeOrders
+      - acmeAuthorizations
+      - acmeChallenges
+      - cmpTransactions
+      - endEntityProfiles
+      - authenticationProviders
+      - trustedCertificates
+      - vaults
+      - vaultProfiles
+      - secrets
+      - signingProfiles
+      - signingRecords
+      - timeQualityConfigurations
+      - tspProfiles
+      - tspProfileBasicCredentials
+    ResponseMetadataDto:
+      type: object
+      description: Request attribute to send attribute content for object
+      discriminator:
+        propertyName: version
+        mapping:
+          v2: "#/components/schemas/ResponseMetadataV2"
+          v3: "#/components/schemas/ResponseMetadataV3"
+      oneOf:
+      - $ref: "#/components/schemas/ResponseMetadataV3"
+      - $ref: "#/components/schemas/ResponseMetadataV2"
+      required:
+      - contentType
+      - label
+      - name
+      - sourceObjects
+      - type
+      - version
+    ResponseMetadataV2:
+      type: object
+      description: Response metadata attribute instance with content
+      properties:
+        sourceObjects:
+          type: array
+          description: Source Objects
+          items:
+            $ref: "#/components/schemas/NameAndUuidDto"
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the Attribute
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        name:
+          type: string
+          description: Name of the Attribute
+          examples:
+          - Attribute
+        label:
+          type: string
+          description: Label of the the Attribute
+          examples:
+          - Attribute Name
+        type:
+          $ref: "#/components/schemas/AttributeType"
+          description: Type of the Attribute
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
+          description: Content Type of the Attribute
+          examples:
+          - Attribute
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV2"
+        version:
+          $ref: "#/components/schemas/AttributeVersion"
+          description: Version of the Attribute
+          examples:
+          - Attribute
+      required:
+      - contentType
+      - label
+      - name
+      - sourceObjects
+      - type
+      - version
+    ResponseMetadataV3:
+      type: object
+      description: Response metadata attribute instance with content
+      properties:
+        sourceObjects:
+          type: array
+          description: Source Objects
+          items:
+            $ref: "#/components/schemas/NameAndUuidDto"
+        uuid:
+          type: string
+          format: uuid
+          description: UUID of the Attribute
+          example: b11c9be1-b619-4ef5-be1b-a1cd9ef265b7
+        name:
+          type: string
+          description: Name of the Attribute
+          examples:
+          - Attribute
+        label:
+          type: string
+          description: Label of the the Attribute
+          examples:
+          - Attribute Name
+        type:
+          $ref: "#/components/schemas/AttributeType"
+          description: Type of the Attribute
+        contentType:
+          $ref: "#/components/schemas/AttributeContentType"
+          description: Content Type of the Attribute
+          examples:
+          - Attribute
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BaseAttributeContentDtoV3"
+        version:
+          $ref: "#/components/schemas/AttributeVersion"
+          description: Version of the Attribute
+          examples:
+          - Attribute
+      required:
+      - contentType
+      - label
+      - name
+      - sourceObjects
+      - type
+      - version
     AuthorityInstanceRequestDto:
       type: object
       properties:

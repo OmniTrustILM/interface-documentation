@@ -44866,6 +44866,14 @@ components:
           examples:
           - LegacyEjbca
           - ADCS
+        metadata:
+          type:
+          - array
+          - "null"
+          description: Metadata the connector returned when the authority was last
+            saved; v3 authorities only
+          items:
+            $ref: "#/components/schemas/MetadataResponseDto"
       required:
       - attributes
       - connector
