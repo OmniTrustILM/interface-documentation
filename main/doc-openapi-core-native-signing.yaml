@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Native Signing API
-  description: REST API for signing documents with a Signing Profile through the ILM
-    Native API
+  description: REST API for signing documents and raw data with a Signing Profile
+    through the ILM Native API
   contact:
     name: ILM
     url: https://www.otilm.com
